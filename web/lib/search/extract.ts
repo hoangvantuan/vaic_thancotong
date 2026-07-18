@@ -73,7 +73,7 @@ export function extractMoney(f: string): [number | null, number | null] {
 }
 
 /** Hint nhận diện ngành: từ khoá trong config (đã fold), dò cụm DÀI trước. */
-function categoryHints(): Array<[string, CategorySlug]> {
+export function categoryHints(): Array<[string, CategorySlug]> {
   const out: Array<[string, CategorySlug]> = [];
   for (const c of CATEGORIES) {
     for (const kw of c.keywords) out.push([fold(kw), c.slug]);
