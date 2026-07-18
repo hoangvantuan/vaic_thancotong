@@ -33,11 +33,12 @@ for (const c of categories) {
   for (const n of c.sourceCategoryNames) bySourceName.set(n, c);
 }
 
-/** Danh sách field specs cần giữ cho một ngành = field của fit + của highlights. */
+/** Danh sách field specs cần giữ cho một ngành = field của fit + highlights + search. */
 function keepFieldsOf(cat) {
   const keep = new Set();
   for (const f of cat.fit?.fields ?? []) keep.add(f);
   for (const h of cat.highlights) for (const f of h.fields) keep.add(f);
+  for (const f of cat.search?.fields ?? []) keep.add(f);
   for (const b of cat.banned) keep.delete(b); // an toàn kép
   return keep;
 }

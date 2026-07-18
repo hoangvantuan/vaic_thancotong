@@ -10,14 +10,40 @@
 
 import type { SessionSecret, TurnId } from "../contracts/ids";
 import type { SavedDecisionRecord } from "../contracts/decision";
-import type { TurnInput, TurnResult } from "../contracts/turn";
+import type { RankedRow } from "../contracts/ranking";
+import type { Recommendation, TurnInput, TurnResult } from "../contracts/turn";
 import { toOneToThree } from "../contracts/turn";
 import { coreError, err, ok, type Result } from "../contracts/status";
 import type { CoreServices } from "../composition";
+import type { ExtractedNeeds } from "../ports/model-service";
 import { screenProducts, type HardRule } from "./screening";
 import { rankProducts, type SoftCriterion, type TieBreaker } from "./ranking";
 import { declineAfterFailedPublication, verifyForPublication } from "./publication";
 import type { SourcedProduct } from "../ports/product-source";
+
+/**
+ * Đánh giá đủ-thông-tin (#26): hoặc hỏi ĐÚNG MỘT câu, hoặc đi tiếp với nhu cầu
+ * ĐÃ KIỂM CHỨNG (số mô hình đưa mà lời khách không có là phỏng đoán — bị loại).
+ */
+export type SufficiencyAssessment =
+  | { kind: "ask"; question: string; targetGap: string }
+  | { kind: "proceed"; needs: ExtractedNeeds; caveats: readonly string[] };
+
+export interface SufficiencyPolicy {
+  /** Mã có phiên bản, vd "sufficiency@v1" — đối chiếu với bảng quy tắc. */
+  id: string;
+  assess(
+    candidate: ExtractedNeeds,
+    input: { userText: string; category?: string }
+  ): SufficiencyAssessment;
+}
+
+/** Dựng khuyến nghị từ dòng xếp hạng. Trả null = không đủ lý do → bỏ qua sản phẩm. */
+export type RecommendationBuilder = (
+  product: SourcedProduct,
+  row: RankedRow,
+  needs: ExtractedNeeds
+) => Recommendation | null;
 
 export interface TurnRules {
   hard: readonly HardRule[];
@@ -25,6 +51,10 @@ export interface TurnRules {
   tieBreaker: TieBreaker | null;
   rulesetVersion: string;
   rankerVersion: string;
+  /** Luật đủ-thông-tin & chọn câu hỏi (#26). Vắng mặt = không hỏi lại (khung #24). */
+  sufficiency?: SufficiencyPolicy | null;
+  /** Cách dựng khuyến nghị từ dòng xếp hạng. Vắng mặt = bản tối thiểu của khung. */
+  recommend?: RecommendationBuilder | null;
 }
 
 /**
@@ -57,11 +87,34 @@ function toRecommendation(product: SourcedProduct) {
 }
 
 /**
+ * Dựng tối đa 3 khuyến nghị theo ĐÚNG thứ tự xếp hạng. Sản phẩm không dựng được
+ * lý do có căn cứ thì bỏ qua — không đệm lựa chọn yếu cho đủ ba (#26).
+ */
+function buildTopRecommendations(
+  rows: readonly RankedRow[],
+  products: readonly SourcedProduct[],
+  rules: TurnRules,
+  needs: ExtractedNeeds
+): Recommendation[] {
+  const byId = new Map(products.map((p) => [p.id, p]));
+  const top: Recommendation[] = [];
+  for (const row of rows) {
+    if (top.length === 3) break;
+    const product = byId.get(row.productId);
+    if (!product) continue;
+    const rec = rules.recommend ? rules.recommend(product, row, needs) : toRecommendation(product);
+    if (rec) top.push(rec);
+  }
+  return top;
+}
+
+/**
  * Chạy trọn một lượt tư vấn.
  *
  * Thứ tự cố định và không bỏ qua được bước nào:
  *   1. Bất biến — mã lượt đã có thì trả bản ghi cũ, KHÔNG chạy lại.
- *   2. Trích nhu cầu (mô hình chỉ đề xuất, chưa được tin).
+ *   2. Trích nhu cầu (mô hình chỉ đề xuất, chưa được tin), rồi KIỂM CHỨNG và xét
+ *      đủ-thông-tin theo luật #26 — thiếu slot bắt buộc thì hỏi đúng một câu.
  *   3. Đọc sản phẩm trong phạm vi tiếp nhận.
  *   4. LỌC cứng.
  *   5. XẾP HẠNG mềm — chỉ trên tập đã qua lọc.
@@ -85,7 +138,26 @@ export async function runTurn(
   // 2. Trích nhu cầu. Kết quả mô hình là ỨNG VIÊN, chưa được tin.
   const extracted = await model.extractNeeds(input.userText);
   if (!extracted.ok) return err(extracted.error);
-  const needs = extracted.data;
+  let needs = extracted.data;
+  let caveats: readonly string[] = [];
+
+  // 2b. Kiểm chứng & đủ-thông-tin (#26): số liệu phải trích lại được từ nguyên văn
+  // lời khách; thiếu slot bắt buộc thì hỏi ĐÚNG MỘT câu — vẫn lưu ảnh chụp.
+  if (rules.sufficiency) {
+    const assessment = rules.sufficiency.assess(needs, {
+      userText: input.userText,
+      category: input.category,
+    });
+    if (assessment.kind === "ask") {
+      return save({
+        kind: "ask_one_question",
+        question: assessment.question,
+        targetGap: assessment.targetGap,
+      });
+    }
+    needs = assessment.needs;
+    caveats = assessment.caveats;
+  }
 
   const category = input.category ?? needs.category;
   if (!category) {
@@ -99,8 +171,14 @@ export async function runTurn(
     return save(declineTurn("data_unavailable", "Ngành hàng này chưa có dữ liệu trong bản trình diễn"));
   }
 
-  // 4. LỌC trước.
-  const eligibility = screenProducts(listed.data, needs, rules.hard, rules.rulesetVersion);
+  // 4. LỌC trước. Dấu thời gian lấy từ `receivedAt` để bản ghi tái lập được từng byte.
+  const eligibility = screenProducts(
+    listed.data,
+    needs,
+    rules.hard,
+    rules.rulesetVersion,
+    input.receivedAt
+  );
 
   // 5. XẾP HẠNG sau — tham số đầu là EligibilityReport nên không thể đảo hai bước này.
   const ranking = rankProducts(
@@ -109,7 +187,8 @@ export async function runTurn(
     needs,
     rules.soft,
     rules.tieBreaker,
-    rules.rankerVersion
+    rules.rankerVersion,
+    input.receivedAt
   );
 
   if (ranking.rows.length === 0) {
@@ -120,13 +199,7 @@ export async function runTurn(
     );
   }
 
-  const byId = new Map(listed.data.map((p) => [p.id, p]));
-  const top = ranking.rows
-    .slice(0, 3)
-    .map((row) => byId.get(row.productId))
-    .filter((p): p is SourcedProduct => p !== undefined)
-    .map(toRecommendation);
-
+  const top = buildTopRecommendations(ranking.rows, listed.data, rules, needs);
   const recommendations = toOneToThree(top);
   if (!recommendations) {
     return save(
@@ -136,7 +209,7 @@ export async function runTurn(
     );
   }
 
-  const result: TurnResult = { kind: "recommend", recommendations, caveats: [] };
+  const result: TurnResult = { kind: "recommend", recommendations, caveats };
   return save(result, eligibility, ranking);
 
   /** Dựng một kết quả từ chối có phạm vi. */
@@ -188,13 +261,20 @@ export async function runTurn(
       turnId: input.turnId,
       sessionId: input.sessionId,
       input,
+      appliedRuleVersions: {
+        ruleset: rules.rulesetVersion,
+        ranker: rules.rankerVersion,
+        sufficiency: rules.sufficiency?.id ?? null,
+      },
       eligibility,
       ranking,
       modelTraces: [],
       publicationCheck,
       result: verified,
       releaseVersion,
-      createdAt: new Date().toISOString(),
+      // Lấy từ thời điểm máy chủ NHẬN lượt, không phải giờ máy lúc chạy — cùng đầu
+      // vào (kể cả receivedAt) phải tạo bản ghi giống hệt từng byte (#26).
+      createdAt: input.receivedAt,
     };
   }
 }
