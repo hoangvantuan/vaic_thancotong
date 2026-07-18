@@ -109,6 +109,31 @@ function fuzzyCategory(f: string, hints: Array<[string, CategorySlug]>): Categor
   return best;
 }
 
+/**
+ * Dò ngành trên text ĐÃ fold, ưu tiên lượt MỚI NHẤT.
+ *
+ * Hội thoại nhiều lượt được nối bằng "\n" (mỗi dòng một lượt khách nói) — dò từ
+ * dòng cuối về đầu, để ngành khách vừa nhắc thắng ngành nhắc ở lượt trước. Thiếu
+ * bước này thì "điện thoại" (10 ký tự) ở lượt 1 đè "máy lạnh" (8 ký tự) ở lượt 2
+ * mãi mãi, vì vòng dò cũ lấy từ khoá dài nhất trên TOÀN hội thoại.
+ *
+ * Trong MỘT dòng vẫn dò cụm dài trước, khớp trọn từ (\b) để "loa" không dính
+ * trong "phao"; không dòng nào khớp nguyên chuỗi mới rơi về khớp mờ.
+ */
+function detectCategoryRecent(f: string): CategorySlug | null {
+  const hints = categoryHints();
+  const lines = f.split("\n").filter((l) => l.trim());
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const hit = hints.find(([w]) => hasWord(lines[i], w));
+    if (hit) return hit[1];
+  }
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const fuzzy = fuzzyCategory(lines[i], hints);
+    if (fuzzy) return fuzzy;
+  }
+  return null;
+}
+
 /** Câu khách → Need. `knownBrands` lấy từ catalog thật của ngành. */
 export function extract(
   text: string,
@@ -153,20 +178,8 @@ export function extract(
     if (v >= 10 && v <= 120) n.inches = v;
   }
 
-  // Ngành: hint của UI (khách bấm chip) thắng; sau đó dò cụm dài trước,
-  // khớp trọn từ (\b) để "loa" không dính trong "phao".
-  const hints = categoryHints();
-  if (opts.hintCategory) {
-    n.category = opts.hintCategory;
-  } else {
-    for (const [w, cat] of hints) {
-      if (hasWord(f, w)) {
-        n.category = cat;
-        break;
-      }
-    }
-    if (n.category == null) n.category = fuzzyCategory(f, hints);
-  }
+  // Ngành: hint của UI (khách bấm chip) thắng; không có hint thì dò từ lời khách.
+  n.category = opts.hintCategory ?? detectCategoryRecent(f);
 
   for (const b of opts.knownBrands ?? []) {
     // Chặn khớp nhầm chuỗi con: "lg" không được khớp trong "lgi".
