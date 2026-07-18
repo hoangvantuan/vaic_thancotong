@@ -43,7 +43,8 @@ const RE_MONEY_BARE = new RegExp(String.raw`(\d+(?:[.,]\d+)?)\s*` + MONEY_UNIT);
 const RE_MONEY_VND = /(\d[\d.,]{5,})\s*(?:vnd|d|dong)?\b/;
 
 // Không dùng \b sau đơn vị: "²" không phải ký tự word trong JS nên \b không khớp.
-const RE_AREA = /(\d+(?:[.,]\d+)?)\s*m\s*(?:2|²|vuong)(?![a-z0-9])/;
+// Nhận cả cách viết đầy đủ "mét vuông"/"met vuong" (đã fold) lẫn "m2", "m²", "m vuong".
+const RE_AREA = /(\d+(?:[.,]\d+)?)\s*m(?:et)?\s*(?:2|²|vuong)(?![a-z0-9])/;
 const RE_PEOPLE = /(\d+)\s*(?:nguoi|nhan khau|thanh vien)\b/;
 const RE_FAMILY = /gia dinh\s*(\d+)/;
 const RE_INCH = /(\d{2,3})\s*(?:inch|"|”|inc)(?!\d)/;
