@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Mẫu ba khuyến nghị máy lạnh có căn cứ"
+    />
+    <title>Ba khuyến nghị có căn cứ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Bỏ qua phần đầu trang</a>
+
+    <header class="site-header">
+      <a
+        class="wordmark"
+        href="?variant=A"
+        aria-label="Mở biến thể Dòng căn cứ"
+      >
+        <span class="wordmark-mark" aria-hidden="true">✓</span>
+        <span>Tư vấn có căn cứ</span>
+      </a>
+      <span class="prototype-label">Mẫu dùng để bỏ</span>
+    </header>
+
+    <main id="app" tabindex="-1"></main>
+
+    <nav
+      class="prototype-switcher"
+      aria-label="Chuyển biến thể mẫu"
+      data-prototype-only
+    >
+      <button
+        id="previous-variant"
+        type="button"
+        aria-label="Biến thể trước"
+      >
+        ←
+      </button>
+      <output id="variant-label" aria-live="polite"></output>
+      <button
+        id="next-variant"
+        type="button"
+        aria-label="Biến thể kế tiếp"
+      >
+        →
+      </button>
+    </nav>
+
+    <noscript>Mẫu cần JavaScript để chuyển giữa ba biến thể.</noscript>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
