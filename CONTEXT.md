@@ -260,6 +260,46 @@ _Không dùng_: mọi thay đổi tệp lõi, đánh giá tùy trường hợp s
 Kết luận rằng một phiên bản lõi đã dùng lại được trên các lát cắt ngành, gói, dữ liệu, ngưỡng và tình huống được ghi trong lần đánh giá cổng. Kết luận là bằng chứng ban đầu và hết hiệu lực khi hợp đồng lõi hoặc điều kiện đánh giá thay đổi đáng kể.
 _Không dùng_: chứng minh dùng cho mọi ngành, tổng quát hóa vĩnh viễn
 
+**Độ phù hợp có căn cứ**:
+Mức một hành động tư vấn đáp ứng nhu cầu, ràng buộc và ưu tiên đã đủ quyền trong tập sản phẩm hợp lệ, đồng thời giữ được đường truy nguyên tới bằng chứng. Độ phù hợp không đồng nhất với việc khớp một bộ ba do chuyên gia chọn hoặc dẫn tới giao dịch.
+_Không dùng_: tỷ lệ mua hàng, khớp đáp án sản phẩm duy nhất
+
+**Họ tình huống đánh giá**:
+Đơn vị đánh giá gồm một ca gốc và các biến thể có kiểm soát cùng chia sẻ lõi quyết định. Toàn bộ một họ phải nằm trong cùng phần phát triển, hiệu chỉnh hoặc giữ lại để tránh rò rỉ đáp án.
+_Không dùng_: tập ca độc lập, chia biến thể của cùng ca qua nhiều tập
+
+**Ca phải đổi**:
+Biến thể chỉ thay một dữ kiện có sức quyết định và yêu cầu hành động, tập hợp hợp lệ hoặc quan hệ thứ hạng thay đổi theo hợp đồng chấp nhận.
+_Không dùng_: ca khác toàn bộ, thay đổi không nêu kết quả bắt buộc
+
+**Ca phải giữ**:
+Biến thể chỉ thay cách diễn đạt hoặc dữ kiện không liên quan và yêu cầu phần quyết định tương ứng giữ ổn định.
+_Không dùng_: lặp nguyên ca gốc, kỳ vọng mọi câu chữ giống hệt
+
+**Hợp đồng chấp nhận**:
+Đáp án chuyên gia có cấu trúc, xác định điều bắt buộc, được phép và bị cấm đối với quan sát, giả thuyết, hành động, tính hợp lệ, thứ hạng, đánh đổi, bất định và bằng chứng. Hợp đồng cho phép nhiều cách diễn đạt và nhiều tập sản phẩm đúng khi chúng cùng thỏa ràng buộc.
+_Không dùng_: đáp án vàng bằng văn bản, bộ ba sản phẩm duy nhất
+
+**Cổng đánh giá bắt buộc**:
+Điều kiện không được bù bằng điểm khác, có ba trạng thái đạt, không đạt và chưa đủ bằng chứng. Chỉ trạng thái đạt mới cho phép một ca, phiên bản hoặc lần đánh giá đi tiếp.
+_Không dùng_: điểm phạt, cổng được bù bằng điểm trung bình
+
+**Thang chất lượng neo**:
+Thang thứ bậc từ 0 đến 3 có mô tả quan sát được cho từng mức, từ sai nghiêm trọng tới đầy đủ và rõ ràng. Trạng thái không áp dụng nằm ngoài thang và không được đưa vào mẫu số.
+_Không dùng_: điểm cảm tính không có mô tả, thang phần trăm giả chính xác
+
+**Tập hiệu chỉnh đánh giá**:
+Phần tình huống dùng để làm rõ hướng dẫn chấm, đo độ nhất quán chuyên gia và khóa ngưỡng mềm trước khi mở tập giữ lại. Kết quả trên tập này không được dùng như bằng chứng kiểm tra độc lập.
+_Không dùng_: tập giữ lại, tập được xem rồi vẫn gọi là độc lập
+
+**Ngưỡng mềm đã khóa**:
+Mức đạt theo từng chiều và ngành hàng được đăng ký sau hiệu chỉnh nhưng trước khi xem kết quả giữ lại. Mọi thay đổi ngưỡng tạo một lần đánh giá mới và không sửa kết luận cũ.
+_Không dùng_: ngưỡng chỉnh sau khi thấy kết quả, một ngưỡng chung cho mọi ngành
+
+**Lát cắt hồi quy**:
+Nhóm họ tình huống được đăng ký trước theo một rủi ro, hoàn cảnh hoặc mức dữ liệu để phát hiện suy giảm bị điểm trung bình che khuất. Lát cắt mô tả bề mặt kiểm thử, không mặc nhiên là phân khúc hay bản chất của khách hàng.
+_Không dùng_: nhóm tìm sau khi thấy lỗi, chân dung khách hàng
+
 **Bản phát hành tư vấn**:
 Tập bất biến khóa phiên bản lõi, các sổ đăng ký, gói ngành hàng, bản phát hành đồ thị, chính sách hỏi, lọc, xếp hạng, công bố, ánh xạ năng lực mô hình, bộ kiểm thử và quyết định phê duyệt được phép dùng cùng nhau. Giá, tồn kho và khuyến mãi hiện hành không nằm trong tập này; chúng được chụp riêng theo từng lượt tư vấn.
 _Không dùng_: cấu hình đang sửa, bản phát hành chỉ gồm mô hình ngôn ngữ
