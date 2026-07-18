@@ -316,6 +316,70 @@ _Không dùng_: câu trả lời cho khách hàng, tổng điểm sản phẩm
 Bản giải trình theo từng phiên bản sản phẩm cho biết sản phẩm đủ điều kiện, bị loại hay chưa xác minh, cùng quy tắc, giá trị, trạng thái nguồn và bằng chứng đã dẫn tới kết quả đó. Chưa xác minh đối với an toàn, pháp luật hoặc tương thích kỹ thuật phải đóng an toàn; chưa biết ở tiêu chí mềm không tự trở thành điểm yếu.
 _Không dùng_: danh sách sản phẩm đã lọc không có lý do, điểm phạt cho dữ liệu thiếu
 
+**Phạm vi tiếp nhận dữ liệu**:
+Tập sản phẩm mà bộ kết nối phải đọc và giữ nguyên trạng thái nguồn để kiểm tra, kể cả khi dữ liệu chưa đủ cho tư vấn. Việc nằm trong phạm vi tiếp nhận không cấp quyền lọc, xếp hạng hoặc công bố sản phẩm.
+_Không dùng_: tập sản phẩm được khuyến nghị, dữ liệu đã đạt chất lượng
+
+**Phạm vi phục vụ ngành hàng**:
+Tập ngành hàng mà một bản phát hành tư vấn được phép xem xét trong đường phục vụ. Chỉ sản phẩm vừa thuộc phạm vi này vừa vượt cổng điều kiện hợp lệ mới được đưa sang xếp hạng.
+_Không dùng_: toàn bộ dữ liệu đã nạp, phạm vi tiếp nhận dữ liệu
+
+**Sản phẩm có danh tính thương mại**:
+Phiên bản sản phẩm có tên hiển thị, định danh hoặc đường dẫn nguồn và thời điểm quan sát đủ để khách hàng nhận biết đúng lựa chọn đang được nói tới. Danh tính thương mại chỉ cấp quyền xem xét để hiển thị, không tự chứng minh các thuộc tính của sản phẩm là hợp lệ.
+_Không dùng_: bản ghi thông số không tên, sản phẩm đã đủ điều kiện
+
+**Giá quan sát**:
+Mức giá được ghi từ nguồn có thẩm quyền tại một thời điểm cụ thể nhưng chưa được bảo đảm còn hiệu lực ở lượt tư vấn hiện tại. Giá này phải đi kèm thời điểm và yêu cầu xác minh, không được công bố như giá hiện hành.
+_Không dùng_: giá hiện tại, giá đã giữ chỗ
+
+**Giao diện kiểm chứng**:
+Bề mặt tối giản cho phép đi hết hành trình tư vấn và mở dấu vết chuyên gia để đánh giá hợp đồng lõi. Nó không đại diện cho thiết kế giao diện sản xuất và chỉ chứa năng lực truy cập cùng xóa dữ liệu tối thiểu cần cho môi trường trình diễn kín.
+_Không dùng_: giao diện sản xuất, bản trình diễn hình ảnh không chạy qua lõi
+
+**Sản phẩm trình diễn vận hành**:
+Lát cắt triển khai được dùng dữ liệu, mô hình, lưu trữ và luồng xử lý thật để người được phép hoàn thành hành trình tư vấn xuyên suốt. Sản phẩm giảm phạm vi và mức hoàn thiện vận hành, nhưng không được thay lõi bằng dữ liệu dựng sẵn hoặc thao tác giả.
+_Không dùng_: mẫu giao diện, kịch bản quay sẵn, hệ thống sản xuất diện rộng
+
+**Môi trường trình diễn kín**:
+Môi trường triển khai có đường dẫn truy cập nhưng chỉ cho người được cấp quyền sử dụng sản phẩm trình diễn vận hành. Môi trường này không mở công khai và không mang cam kết tải, độ sẵn sàng hoặc hỗ trợ như hệ thống sản xuất.
+_Không dùng_: máy cục bộ của người phát triển, môi trường sản xuất công khai
+
+**Mã truy cập trình diễn**:
+Bí mật dùng chung cấp quyền sử dụng môi trường trình diễn kín nhưng không đại diện cho danh tính người dùng và không cấp quyền xóa dữ liệu của người khác. Mã được giữ ngoài mã nguồn, không ghi vào nhật ký và có thể thay ngay khi cần.
+_Không dùng_: tài khoản cá nhân, mã quản trị xóa dữ liệu
+
+**Lưu đến khi xóa thủ công**:
+Chính sách giữ hội thoại và ảnh chụp quyết định không có thời hạn tự hết, cho tới khi một hành động xóa được cấp quyền hoàn tất. Chính sách này đòi hỏi hiển thị thời điểm tạo, khả năng xóa rõ ràng và theo dõi mức tích tụ dữ liệu.
+_Không dùng_: lưu vĩnh viễn, tự xóa theo thời hạn
+
+**Quyền xóa phiên**:
+Quyền cho người dùng xóa phiên hiện tại của mình và quyền quản trị riêng để xóa phiên khác hoặc toàn bộ dữ liệu trình diễn. Dấu vết xóa chỉ giữ thời điểm, phạm vi và kết quả, không giữ lại nội dung đã xóa.
+_Không dùng_: mọi người dùng được xóa toàn bộ, xóa nội dung nhưng giữ bản sao ẩn
+
+**Lõi bảo toàn của sản phẩm trình diễn**:
+Tập bất biến và năng lực xuyên suốt bắt buộc phải còn nguyên dù sản phẩm trình diễn phải giảm phạm vi vì giới hạn thời gian. Một kết quả thiếu bất kỳ phần nào của lõi này không được công nhận là sản phẩm trình diễn vận hành hoặc đã chứng minh đường tư vấn thích nghi.
+_Không dùng_: danh sách tính năng mong muốn, phạm vi tối đa của sản phẩm trình diễn
+
+**Bậc cắt giảm**:
+Thứ tự đã đăng ký để bỏ dần các lớp trình bày hoặc độ tinh vi tùy chọn mà không làm yếu lõi bảo toàn của sản phẩm trình diễn. Không được dùng cắt giảm để bỏ triển khai kín, dữ liệu thật, mô hình thật, lưu trữ, cổng bằng chứng, an toàn, dấu vết hoặc bộ đánh giá tối thiểu.
+_Không dùng_: cắt tùy hứng, hạ tiêu chuẩn chấp nhận
+
+**Hợp đồng hoàn thành sản phẩm trình diễn**:
+Tập điều kiện không bù trừ chứng minh lát cắt đã chạy xuyên suốt, giữ đúng bằng chứng, an toàn, dấu vết, đánh giá và ranh giới cải tiến. Điểm mềm hoặc chất lượng trình bày không thể bù cho một điều kiện bắt buộc chưa đạt.
+_Không dùng_: danh sách tính năng đã làm, bản trình diễn chạy được một ca thuận lợi
+
+**Gói hợp đồng khởi động**:
+Tập có phiên bản khóa giao diện mô-đun, bất biến, lỗi, dữ liệu mẫu, bộ chuyển tiếp kiểm thử, phạm vi sở hữu và tiêu chí bàn giao để nhiều luồng triển khai có thể bắt đầu mà không tự đặt thêm quy tắc miền.
+_Không dùng_: tài liệu định hướng chung, kế hoạch việc chưa khóa giao diện
+
+**Cổng sẵn sàng triển khai**:
+Cổng xác nhận gói hợp đồng khởi động đã đủ để các luồng triển khai làm việc độc lập và tích hợp qua cùng giao diện. Dữ liệu chưa được làm sạch toàn bộ không chặn cổng nếu trạng thái nguồn, quyền sử dụng và mẫu kiểm thử tối thiểu đã rõ.
+_Không dùng_: chờ hoàn thiện mọi dữ liệu, bắt đầu chỉ vì đã chia người
+
+**Luồng triển khai song song**:
+Phạm vi triển khai sở hữu một mô-đun sâu hoặc một bộ chuyển tiếp tại đường nối đã khóa, kèm kiểm thử hợp đồng và vùng tệp riêng. Luồng không được sao chép quy tắc miền hoặc đổi giao diện chung để tránh phụ thuộc vào luồng khác.
+_Không dùng_: chia theo từng hàm nhỏ, nhiều người cùng sửa một mô-đun
+
 **Báo cáo xếp hạng**:
 Bản giải trình thứ tự của riêng các sản phẩm đã đủ điều kiện, gồm đóng góp của từng tiêu chí, điểm đánh đổi, cách phá hòa và phân tích độ nhạy. Bộ xếp hạng lại nếu được dùng chỉ được đổi thứ tự tập đã khóa, không được thêm hoặc hồi sinh sản phẩm bị loại.
 _Không dùng_: điểm phù hợp duy nhất, thứ hạng không có phân tích độ nhạy
@@ -363,6 +427,10 @@ _Không dùng_: ngưỡng sự kiện duy nhất, điểm bất thường chung
 **Mẫu thất bại kiểm chứng được**:
 Nhóm biểu hiện cùng phạm vi và điểm quyết định, có thể được xác nhận hoặc bác bỏ bằng một phép thử chung. Tín hiệu cần phép thử hoặc mô-đun khác phải nằm trong ứng viên vấn đề khác.
 _Không dùng_: nhóm câu chữ giống nhau, phân khúc khách hàng
+
+**Lỗi gieo có kiểm soát**:
+Sai lệch đã đăng ký trước và chỉ đưa vào bản dự tuyển hoặc bộ kiểm thử để chứng minh đường phát hiện, đề xuất và đánh giá hoạt động. Lỗi này không được xuất hiện trong bản phát hành đang phục vụ hoặc được dùng như bằng chứng về lỗi tự nhiên ngoài phạm vi phép thử.
+_Không dùng_: lỗi sản xuất, tín hiệu cải tiến quan sát từ khách hàng thật
 
 **Đề xuất cải tiến nguyên tử**:
 Hồ sơ đề xuất chỉ có một giả thuyết thay đổi chính và một tập thay đổi không thể tách rời để kiểm tra tác động cùng quay lui. Các cách sửa cạnh tranh cho cùng ứng viên vấn đề phải thành đề xuất riêng.
