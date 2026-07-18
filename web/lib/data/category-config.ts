@@ -65,6 +65,11 @@ export interface HighlightConfig {
   plain?: PlainConfig;
 }
 
+/** Field specs giữ thêm cho tầng search (tag tiện ích, công nghệ tiết kiệm điện…). */
+export interface SearchConfig {
+  fields: string[];
+}
+
 export interface CategoryConfig {
   slug: CategorySlug;
   label: string;
@@ -74,6 +79,7 @@ export interface CategoryConfig {
   banned: string[];
   fit: FitConfig | null;
   highlights: HighlightConfig[];
+  search?: SearchConfig;
 }
 
 interface RawRegistry {

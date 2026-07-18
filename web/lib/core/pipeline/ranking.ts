@@ -45,7 +45,9 @@ export function rankProducts(
   needs: ExtractedNeeds,
   criteria: readonly SoftCriterion[],
   tieBreaker: TieBreaker | null,
-  rankerVersion: string
+  rankerVersion: string,
+  /** Dấu thời gian ghi vào báo cáo. Truyền `receivedAt` của lượt để tái lập được. */
+  rankedAt: string = new Date().toISOString()
 ): RankingReport {
   const allowed = new Set(eligibleIds(report));
   const byId = new Map(products.map((p) => [p.id, p]));
@@ -84,7 +86,7 @@ export function rankProducts(
     rows,
     sensitivity: buildSensitivity(scored),
     rankerVersion,
-    rankedAt: new Date().toISOString(),
+    rankedAt,
   };
 
   return data as RankingReport;

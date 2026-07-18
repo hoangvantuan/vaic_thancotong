@@ -8,3 +8,7 @@ Thumbs.db
 # Dữ liệu thô BTC cấp — chat history có PII khách + tài liệu nội bộ DMX.
 # Repo phải public để nộp bài nên TUYỆT ĐỐI không commit thư mục này.
 docs/raw/
+
+# Python
+__pycache__/
+*.pyc

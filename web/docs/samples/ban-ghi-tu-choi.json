@@ -1,0 +1,190 @@
+{
+  "turnId": "turn_00000000000000000000000000000000",
+  "sessionId": "ses_00000000000000000000000000000000",
+  "input": {
+    "sessionId": "ses_00000000000000000000000000000000",
+    "turnId": "turn_00000000000000000000000000000000",
+    "userText": "máy lạnh cho phòng 30m2, khoảng 10 triệu",
+    "receivedAt": "2026-07-18T02:00:00.000Z"
+  },
+  "appliedRuleVersions": {
+    "ruleset": "may-lanh@v1",
+    "ranker": "ranker@v1",
+    "sufficiency": "sufficiency@v1"
+  },
+  "eligibility": {
+    "rows": [
+      {
+        "productId": "mock-ml-001",
+        "verdict": "excluded",
+        "findings": [
+          {
+            "ruleId": "pham_vi_dien_tich@v1",
+            "verdict": "excluded",
+            "explanation": "Máy chỉ dùng cho 0–15m², quá yếu so với phòng 30m² khách nêu — mua về không mát, không phải trade-off",
+            "evidence": [
+              {
+                "claim": "Phạm vi sử dụng tối đa 15m² < phòng 30m²",
+                "provenance": {
+                  "sourceUrl": "https://www.dienmayxanh.com/may-lanh/mock-0",
+                  "recordLocation": "mock_may_lanh.json#/products/0/specs/pham_vi",
+                  "rawValue": "Dưới 15m²",
+                  "observedAt": "2026-07-18T02:00:00.000Z",
+                  "normalizedValue": {
+                    "status": "observed",
+                    "value": 15
+                  },
+                  "transformRule": "parse_area_m2@v1"
+                }
+              }
+            ]
+          },
+          {
+            "ruleId": "tran_ngan_sach@v1",
+            "verdict": "eligible",
+            "explanation": "Giá 8.990.000₫ trong ngân sách 10.000.000₫ khách nêu",
+            "evidence": [
+              {
+                "claim": "Giá bán 8.990.000₫ ≤ ngân sách 10.000.000₫",
+                "provenance": {
+                  "sourceUrl": "https://www.dienmayxanh.com/may-lanh/mock-0",
+                  "recordLocation": "mock_may_lanh.json#/products/0/specs/gia",
+                  "rawValue": "8.990.000₫",
+                  "observedAt": "2026-07-18T02:00:00.000Z",
+                  "normalizedValue": {
+                    "status": "observed",
+                    "value": 8990000
+                  },
+                  "transformRule": "parse_vnd@v1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "productId": "mock-ml-002",
+        "verdict": "excluded",
+        "findings": [
+          {
+            "ruleId": "pham_vi_dien_tich@v1",
+            "verdict": "excluded",
+            "explanation": "Máy chỉ dùng cho 15–20m², quá yếu so với phòng 30m² khách nêu — mua về không mát, không phải trade-off",
+            "evidence": [
+              {
+                "claim": "Phạm vi sử dụng tối đa 20m² < phòng 30m²",
+                "provenance": {
+                  "sourceUrl": "https://www.dienmayxanh.com/may-lanh/mock-1",
+                  "recordLocation": "mock_may_lanh.json#/products/1/specs/pham_vi",
+                  "rawValue": "Từ 15 - 20m²",
+                  "observedAt": "2026-07-18T02:00:00.000Z",
+                  "normalizedValue": {
+                    "status": "observed",
+                    "value": 20
+                  },
+                  "transformRule": "parse_area_m2@v1"
+                }
+              }
+            ]
+          },
+          {
+            "ruleId": "tran_ngan_sach@v1",
+            "verdict": "unverified",
+            "explanation": "Nguồn chưa công bố giá nhất quán nên chưa so được với ngân sách",
+            "evidence": [
+              {
+                "claim": "Giá bán không đọc được từ nguồn",
+                "provenance": {
+                  "sourceUrl": "https://www.dienmayxanh.com/may-lanh/mock-1",
+                  "recordLocation": "mock_may_lanh.json#/products/1/specs/gia",
+                  "rawValue": "Liên hệ",
+                  "observedAt": "2026-07-18T02:00:00.000Z",
+                  "normalizedValue": {
+                    "status": "absent",
+                    "reason": "undisclosed"
+                  },
+                  "transformRule": "parse_vnd@v1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "productId": "mock-ml-003",
+        "verdict": "excluded",
+        "findings": [
+          {
+            "ruleId": "pham_vi_dien_tich@v1",
+            "verdict": "eligible",
+            "explanation": "Phạm vi 20–30m² dùng được cho phòng 30m² khách nêu",
+            "evidence": [
+              {
+                "claim": "Phạm vi sử dụng 20–30m² phủ phòng 30m²",
+                "provenance": {
+                  "sourceUrl": "https://www.dienmayxanh.com/may-lanh/mock-2",
+                  "recordLocation": "mock_may_lanh.json#/products/2/specs/pham_vi",
+                  "rawValue": "Từ 20 - 30m²",
+                  "observedAt": "2026-07-18T02:00:00.000Z",
+                  "normalizedValue": {
+                    "status": "observed",
+                    "value": 20
+                  },
+                  "transformRule": "parse_area_m2@v1"
+                }
+              }
+            ]
+          },
+          {
+            "ruleId": "tran_ngan_sach@v1",
+            "verdict": "excluded",
+            "explanation": "Giá 15.490.000₫ vượt ngân sách 10.000.000₫ khách nêu",
+            "evidence": [
+              {
+                "claim": "Giá bán 15.490.000₫ > ngân sách 10.000.000₫",
+                "provenance": {
+                  "sourceUrl": "https://www.dienmayxanh.com/may-lanh/mock-2",
+                  "recordLocation": "mock_may_lanh.json#/products/2/specs/gia",
+                  "rawValue": "15.490.000₫",
+                  "observedAt": "2026-07-18T02:00:00.000Z",
+                  "normalizedValue": {
+                    "status": "observed",
+                    "value": 15490000
+                  },
+                  "transformRule": "parse_vnd@v1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "rulesetVersion": "may-lanh@v1",
+    "screenedAt": "2026-07-18T02:00:00.000Z"
+  },
+  "ranking": {
+    "rows": [],
+    "sensitivity": [
+      {
+        "perturbation": "không có ứng viên thứ hai",
+        "rankingChanges": false,
+        "explanation": "Chỉ có một sản phẩm đủ điều kiện nên không có thứ hạng để đảo."
+      }
+    ],
+    "rankerVersion": "ranker@v1",
+    "rankedAt": "2026-07-18T02:00:00.000Z"
+  },
+  "modelTraces": [],
+  "publicationCheck": {
+    "passed": true,
+    "checkedClaims": [],
+    "repairAttempted": false
+  },
+  "result": {
+    "kind": "decline",
+    "reason": "no_eligible_product",
+    "whatWouldHelp": "Chưa có sản phẩm nào thoả hết ràng buộc, mình nới ngân sách hoặc đổi tiêu chí nhé ạ"
+  },
+  "releaseVersion": "test@v0",
+  "createdAt": "2026-07-18T02:00:00.000Z"
+}
