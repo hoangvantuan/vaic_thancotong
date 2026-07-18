@@ -1,0 +1,55 @@
+TRỢ LÝ AI TƯ VẤN SẢN PHẨM THEO NHU CẦU THẬT
+
+1. VẤN ĐỀ
+
+Khi mua sản phẩm điện máy, khách hàng phải lựa chọn giữa hàng trăm sản phẩm với nhiều thông số khó hiểu. Điều họ thực sự cần là biết sản phẩm nào phù hợp nhất, vì sao phù hợp và phải đánh đổi điều gì.
+
+Các công cụ hiện tại chủ yếu tìm theo từ khóa hoặc liệt kê thông số. Chúng ít hỏi ngược, chưa giải thích ý nghĩa thực tế của từng khác biệt và thường gợi ý chung chung. Chất lượng tư vấn vẫn phụ thuộc vào kinh nghiệm từng nhân viên.
+
+Hệ quả là khách khó quyết định và có thể mua nhầm. Nhân viên phải trả lời nhiều câu hỏi lặp lại, còn doanh nghiệp chưa chuyển hóa tốt lượng truy cập thành đơn hàng.
+
+Gốc rễ là hệ thống mới hiển thị sản phẩm, chưa hiểu hoàn cảnh người mua và giải thích được quyết định tư vấn.
+
+2. GIẢI PHÁP CỐT LÕI
+
+Nhóm xây dựng một trợ lý trí tuệ nhân tạo hoạt động như một nhân viên tư vấn giỏi, trung thực và nhất quán. Trợ lý thực hiện năm bước.
+
+Bước 1, hiểu nhu cầu. Trợ lý tách lời khách thành dữ kiện đã rõ, ưu tiên và thông tin còn thiếu. Hệ thống không tự suy đoán những điều khách chưa cung cấp.
+
+Bước 2, hỏi ngược đúng lúc. Nếu thiếu thông tin có thể thay đổi quyết định, trợ lý chỉ hỏi câu quan trọng nhất. Khi đủ căn cứ, hệ thống dừng hỏi.
+
+Bước 3, lọc và xếp hạng. Hệ thống loại sản phẩm vượt ngân sách hoặc không đạt điều kiện bắt buộc, rồi xếp hạng theo ưu tiên của khách. Kết quả gồm tối đa ba lựa chọn, kèm lý do và điểm đánh đổi.
+
+Bước 4, kiểm tra trước khi trả lời. Sản phẩm được chọn bằng mã nghiệp vụ trên dữ liệu thật. Mọi thông số, giá và lý do phải truy ngược được về nguồn. Nếu dữ liệu thiếu, hệ thống nói rõ thay vì tự bịa.
+
+Bước 5, tự cải tiến từ dữ liệu trả lời thật của khách hàng. Hệ thống ghi nhận khách đã trả lời các câu hỏi làm rõ như thế nào, chọn sản phẩm nào, có hài lòng, đổi trả hoặc từ chối đề xuất hay không. Từ các dữ liệu thực tế này, hệ thống phát hiện mẫu lỗi lặp lại và đề xuất điều chỉnh câu hỏi, tiêu chí lọc hoặc cách xếp hạng. Ví dụ, nếu nhiều khách có phòng hướng tây nhận đề xuất máy lạnh chưa phù hợp, hệ thống sẽ nhận ra yếu tố nắng chiếu chưa được xem xét đúng mức. Mọi cải tiến phải được kiểm thử và con người phê duyệt trước khi áp dụng.
+
+3. ĐIỂM KHÁC BIỆT
+
+Giải pháp tư vấn theo hoàn cảnh cụ thể, giải thích ý nghĩa của thông số và nói rõ điểm đánh đổi, thay vì chỉ gợi ý sản phẩm bán chạy.
+
+Trí tuệ nhân tạo chỉ hiểu nhu cầu và diễn đạt. Mã nghiệp vụ chọn sản phẩm và kiểm tra dữ liệu, qua đó hạn chế rủi ro bịa thông tin.
+
+Một lõi chung phục vụ mọi ngành hàng. Muốn mở rộng, doanh nghiệp chỉ cần bổ sung dữ liệu và quy tắc tư vấn riêng.
+
+Điểm khác biệt quan trọng là hệ thống không đứng yên sau khi triển khai. Dữ liệu trả lời và kết quả thật của khách hàng tạo thành vòng phản hồi, giúp hệ thống ngày càng hỏi đúng hơn, tư vấn sát hơn và phát hiện những sai lệch mà quy tắc ban đầu chưa bao quát.
+
+4. KẾT QUẢ HIỆN TẠI
+
+Bản trình diễn hiện hỗ trợ 6 ngành hàng gồm máy lạnh, tủ lạnh, máy giặt, tivi, điện thoại và máy tính xách tay, với tổng cộng 1.620 sản phẩm từ bộ dữ liệu được cung cấp.
+
+Hệ thống hiểu yêu cầu tiếng Việt, nhận diện ngành hàng, trích xuất nhu cầu, hỏi thêm khi cần, lọc theo hoàn cảnh và ngân sách, sau đó đề xuất tối đa ba sản phẩm có nguồn.
+
+Giải pháp có thể triển khai tại hạ tầng doanh nghiệp để giữ dữ liệu trong môi trường nội bộ và cho phép thay đổi mô hình mà không phải xây lại hệ thống.
+
+5. GIÁ TRỊ VÀ LỘ TRÌNH
+
+Giải pháp giúp khách chọn nhanh và tự tin hơn, giúp nhân viên giảm việc lặp lại, đồng thời giúp doanh nghiệp chuẩn hóa tư vấn, tăng khả năng chuyển đổi và giảm rủi ro tư vấn sai. Quan trọng hơn, mỗi lượt tư vấn thật tiếp tục tạo dữ liệu để hệ thống phát hiện điểm yếu và cải thiện chất lượng theo thời gian.
+
+Nhóm đề xuất thử nghiệm 3 tháng với ngành máy lạnh và 1.000 đến 10.000 lượt hội thoại. Các chỉ số chính gồm độ đúng nhu cầu, tỷ lệ thông tin có nguồn, thời gian phản hồi, mức hài lòng và tác động đến tỷ lệ chuyển đổi. Hệ thống chỉ mở rộng khi đạt yêu cầu.
+
+6. KẾT LUẬN
+
+Đây không phải công cụ liệt kê sản phẩm, mà là quy trình tư vấn biết lắng nghe, hỏi đúng, chọn bằng dữ liệu thật, giải thích được quyết định và tự cải tiến từ phản hồi thực tế của khách hàng.
+
+Giá trị cốt lõi của giải pháp là: đúng nhu cầu, có căn cứ và thành thật về giới hạn.
