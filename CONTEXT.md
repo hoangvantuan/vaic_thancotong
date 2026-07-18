@@ -164,6 +164,22 @@ _Không dùng_: kiến thức của ngành đầu tiên, cấu hình máy lạnh
 Kiến thức có phiên bản của một ngành, gồm từ vựng thuộc tính, đơn vị, quy tắc chuẩn hóa, năng lực, kết quả, điều kiện, đánh đổi, quan hệ có bằng chứng, câu hỏi và ca kiểm thử. Gói không được định nghĩa lại ngữ pháp hoặc cơ chế kiểm soát của lõi.
 _Không dùng_: lõi riêng của ngành, tác nhân tự trị riêng ngành
 
+**Gói tâm lý hành vi ngành hàng**:
+Phần của gói ngành hàng định nghĩa từ vựng hoàn cảnh, mẫu giả thuyết, tín hiệu, cách giải thích thay thế, câu hỏi kiểm chứng và tình huống thử riêng của ngành. Phần này chỉ điền nội dung vào các chiều hành vi của lõi, không được tạo kiểu hồ sơ, mức tin cậy hoặc quyền ảnh hưởng riêng.
+_Không dùng_: mô hình tâm lý riêng ngành, kịch bản bán hàng cố định
+
+**Mẫu giả thuyết ngành hàng**:
+Khuôn có phiên bản mô tả một dạng nhận định có thể kiểm chứng trong ngành, gồm tín hiệu liên quan, cách giải thích thay thế, câu hỏi trung lập, thời hạn và quyền ảnh hưởng tối đa. Mẫu chỉ giúp tạo giả thuyết, không phải kết luận điền sẵn về khách hàng.
+_Không dùng_: chân dung khách hàng mặc định, luật suy diễn chắc chắn
+
+**Tình huống tư vấn chuẩn**:
+Ca kiểm thử có cấu trúc kết hợp chủ thể, hoàn cảnh sử dụng, mục tiêu, ràng buộc, khoảng trống và kết quả mong đợi để kiểm tra hành vi tư vấn. Tình huống không đại diện cho một loại người và không được dùng làm nhãn phân khúc khách hàng.
+_Không dùng_: chân dung khách hàng, nhóm tính cách
+
+**Thư viện câu hỏi kiểm chứng ngành hàng**:
+Tập câu hỏi trung lập có phiên bản, mỗi câu gắn với một khoảng trống hoặc giả thuyết cùng các kết quả có thể xảy ra. Lõi chọn câu hỏi theo giá trị thông tin và công sức trả lời; gói ngành hàng không ấn định một kịch bản hỏi tuần tự.
+_Không dùng_: cây hội thoại cố định, câu hỏi dẫn dắt
+
 **Bộ kết nối môi trường**:
 Thành phần thích nghi việc đọc và ghi dữ liệu với hệ thống nguồn, doanh nghiệp hoặc thị trường cụ thể, như danh mục, giá, tồn kho, khuyến mãi và chính sách. Bộ kết nối không chứa ý nghĩa hành vi hoặc quan hệ giá trị sản phẩm.
 _Không dùng_: gói ngành hàng, quy tắc quyết định lõi
