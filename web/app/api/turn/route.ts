@@ -11,7 +11,7 @@ import { newTurnId, parseSessionId, parseTurnId } from "@/lib/core/contracts/ids
 import { coreError } from "@/lib/core/contracts/status";
 import { errorResponse, isCoreError, readSessionSecret } from "@/lib/core/http";
 import { runTurn } from "@/lib/core/pipeline/run-turn";
-import { DEMO_TURN_RULES } from "@/lib/core/rules";
+import { TURN_RULES_REGISTRY } from "@/lib/core/rules";
 import type { TurnInput } from "@/lib/core/contracts/turn";
 
 export const runtime = "nodejs";
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
   const services = createCoreServices();
   // Bộ luật thật của #26 (bảng quy tắc docs/quy-tac-quyet-dinh.md, may-lanh@v1).
-  const result = await runTurn(input, secret, services, DEMO_TURN_RULES);
+  const result = await runTurn(input, secret, services, TURN_RULES_REGISTRY);
   if (!result.ok) return errorResponse(result.error);
 
   return Response.json({

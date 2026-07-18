@@ -33,7 +33,7 @@ export function Assistant() {
   const [input, setInput] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const busy = status === "submitted" || status === "streaming";
 
@@ -234,16 +234,33 @@ export function Assistant() {
               onSubmit={(e) => {
                 e.preventDefault();
                 submit(input);
+                // Ô đã gửi thì thu lại một dòng, không để chừa khoảng trống cao.
+                if (inputRef.current) inputRef.current.style.height = "auto";
               }}
-              className="flex items-center gap-2"
+              className="flex items-end gap-2"
             >
-              <input
+              {/* Ô nhập NHIỀU DÒNG tự giãn: câu khách dán vào (vd tên sản phẩm dài)
+                  phải đọc được hết, không bị cắt trong một dòng. Enter = gửi,
+                  Shift+Enter = xuống dòng. Giãn tối đa ~5 dòng rồi mới cuộn. */}
+              <textarea
                 ref={inputRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  const el = e.currentTarget;
+                  el.style.height = "auto";
+                  el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    submit(input);
+                  }
+                }}
                 placeholder="Nhập nhu cầu của mình…"
                 aria-label="Nội dung tin nhắn"
-                className="h-10 flex-1 rounded-full border border-border-strong bg-surface-2 px-4 text-[0.85rem] text-foreground outline-none focus:border-brand focus:bg-surface focus:ring-2 focus:ring-ring/25"
+                className="max-h-[120px] min-h-10 flex-1 resize-none overflow-y-auto rounded-2xl border border-border-strong bg-surface-2 px-4 py-2.5 text-[0.85rem] leading-snug text-foreground outline-none focus:border-brand focus:bg-surface focus:ring-2 focus:ring-ring/25"
               />
               {busy ? (
                 <button

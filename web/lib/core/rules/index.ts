@@ -3,7 +3,8 @@
 // Mọi mã phiên bản ở đây phải khớp bảng quy tắc docs/quy-tac-quyet-dinh.md;
 // đổi luật là đổi bảng trước, tăng phiên bản, rồi mới sửa mã.
 
-import type { TurnRules } from "../pipeline/run-turn";
+import type { TurnRules, TurnRulesRegistry } from "../pipeline/run-turn";
+import { GENERIC_TURN_RULES } from "./generic-rules";
 import {
   DEMO_HARD_RULES,
   DEMO_SOFT_CRITERIA,
@@ -24,6 +25,17 @@ export const DEMO_TURN_RULES: TurnRules = {
   relax: goiYGanNhat,
 };
 
+/**
+ * BỘ LUẬT THEO NGÀNH — máy lạnh giữ luật riêng (giàu độ ồn/tiết kiệm điện); mọi
+ * ngành khác dùng `generic@v1` đọc fit/đơn vị từ registry. Thêm ngành = thêm dữ
+ * liệu + khai báo trong config/categories.json, KHÔNG sửa logic lõi.
+ */
+export const TURN_RULES_REGISTRY: TurnRulesRegistry = {
+  byCategory: { may_lanh: DEMO_TURN_RULES },
+  default: GENERIC_TURN_RULES,
+};
+
+export { GENERIC_TURN_RULES } from "./generic-rules";
 export {
   DEMO_HARD_RULES,
   DEMO_SOFT_CRITERIA,

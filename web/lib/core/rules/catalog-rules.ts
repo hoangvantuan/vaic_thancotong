@@ -14,6 +14,8 @@ import type { SourcedProduct } from "../ports/product-source";
 import type { HardRule } from "../pipeline/screening";
 import type { SoftCriterion, TieBreaker } from "../pipeline/ranking";
 import type { RelaxPolicy } from "../pipeline/run-turn";
+import type { CategorySlug } from "@/lib/types";
+import { getCategory } from "@/lib/data/category-config";
 
 const vnd = (n: number) => `${n.toLocaleString("vi-VN")}₫`;
 
@@ -133,6 +135,73 @@ export const tranNganSach: HardRule = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// SP+/Ngành+ — MỘT luật phù-hợp-nhu-cầu dùng cho MỌI ngành.
+//
+// Đơn vị (m²/người/inch), danh từ ("phòng"/"nhà"), biên nới (`slack`) và độ dốc
+// chấm điểm (`spread`) đều đọc từ `config/categories.json`. Thêm ngành = thêm khai
+// báo, KHÔNG sửa mã. Nguồn sản phẩm phơi thuộc tính chuẩn `fitMin`/`fitMax`.
+// ---------------------------------------------------------------------------
+
+/** Cấu hình fit của ngành đang tư vấn (rỗng nếu ngành không ràng buộc tiêu chí này). */
+function fitOf(needs: { category?: string | null }) {
+  const cfg = needs.category ? getCategory(needs.category as CategorySlug) : undefined;
+  return cfg?.fit ?? null;
+}
+
+/** `phu_hop_nhu_cau@v1` — thay `pham_vi_dien_tich@v1` ở dạng tổng quát theo ngành. */
+export const phuHopNhuCau: HardRule = {
+  id: "phu_hop_nhu_cau@v1",
+  safetyCritical: true,
+
+  evaluate(product, needs): EligibilityFinding {
+    const id = this.id;
+    const fit = fitOf(needs);
+    const value = needs.fitValue;
+    if (!fit || value == null) {
+      return {
+        ruleId: id,
+        verdict: "eligible",
+        explanation: "Khách chưa nêu tiêu chí này nên luật không ràng buộc",
+        evidence: [],
+      };
+    }
+
+    const { unit, subject } = fit;
+    const slack = fit.slack ?? 0;
+    const min = attrNumber(product, "fitMin");
+    const max = attrNumber(product, "fitMax");
+
+    if (min === null && max === null) {
+      return {
+        ruleId: id,
+        verdict: "unverified",
+        explanation: `Khách cần cho ${subject} ${value} ${unit} nhưng nguồn không có thông số phù hợp nhất quán — không có cơ sở khẳng định hợp`,
+        evidence: claimFrom(product, "fitMin", "Thông số phù hợp không đọc được từ nguồn"),
+      };
+    }
+
+    // Cận trên vắng mặt = "trở lên" (vd tủ lạnh "Trên 5 người"), KHÔNG phải thiếu dữ
+    // liệu — coi là thiếu sẽ loại sạch đúng nhóm hợp nhu cầu lớn nhất.
+    if (max !== null && max + slack < value) {
+      return {
+        ruleId: id,
+        verdict: "excluded",
+        explanation: `Mẫu chỉ đáp ứng tới ${max} ${unit}, quá nhỏ so với ${subject} ${value} ${unit} khách nêu`,
+        evidence: claimFrom(product, "fitMax", `Đáp ứng tối đa ${max} ${unit} < ${value} ${unit}`),
+      };
+    }
+
+    const hi = max === null ? "trở lên" : `${max} ${unit}`;
+    return {
+      ruleId: id,
+      verdict: "eligible",
+      explanation: `Mẫu hợp ${min ?? "?"}–${hi} dùng được cho ${subject} ${value} ${unit} khách nêu`,
+      evidence: claimFrom(product, "fitMin", `Đáp ứng ${subject} ${value} ${unit} khách nêu`),
+    };
+  },
+};
+
 export const DEMO_HARD_RULES: readonly HardRule[] = [phamViDienTich, tranNganSach];
 
 // ---------------------------------------------------------------------------
@@ -183,7 +252,7 @@ const vuaDienTich: SoftCriterion = {
 };
 
 /** `du_ngan_sach@v1` ×0.7 — tiền dư so với trần. Không có ngân sách/giá → 0. */
-const duNganSach: SoftCriterion = {
+export const duNganSach: SoftCriterion = {
   id: "du_ngan_sach@v1",
   label: "Dư ngân sách",
 
@@ -233,6 +302,51 @@ const doOnThap: SoftCriterion = {
       label: this.label,
       contribution: raw * weight,
       evidence: claimFrom(product, "noiseDb", `Độ ồn ${db}dB — ${quality}`),
+    };
+  },
+};
+
+/**
+ * `vua_nhu_cau@v1` ×1.0 — bản tổng quát của `vua_dien_tich@v1`: mức vừa vặn với
+ * tiêu chí ngành, câu chữ theo đơn vị/danh từ của chính ngành đó. Dư nhiều ra đóng
+ * góp ÂM để builder biến thành điểm đánh đổi (độ dốc lấy từ `spread` của registry).
+ */
+export const vuaNhuCau: SoftCriterion = {
+  id: "vua_nhu_cau@v1",
+  label: "Vừa nhu cầu",
+
+  score(product, needs) {
+    const id = this.id;
+    const fit = fitOf(needs);
+    const value = needs.fitValue;
+    const min = attrNumber(product, "fitMin");
+    const max = attrNumber(product, "fitMax");
+    if (!fit || value == null || (min === null && max === null)) return zero(id, this.label);
+
+    const { unit, subject } = fit;
+    const spread = fit.spread ?? 10;
+    const lo = min ?? (max as number);
+    const hi = max ?? Number.POSITIVE_INFINITY;
+    const hiText = max === null ? "trở lên" : `${max} ${unit}`;
+
+    let raw: number;
+    let text: string;
+    if (value >= lo && value <= hi) {
+      raw = 1;
+      text = `Vừa đúng ${subject} ${value} ${unit} (mẫu hợp ${lo}–${hiText})`;
+    } else if (value < lo) {
+      raw = Math.max(-1, 1 - (lo - value) / spread);
+      text = `Dư so với ${subject} ${value} ${unit} (mẫu hợp ${lo}–${hiText}) — thừa công suất, tốn hơn mức cần`;
+    } else {
+      raw = Math.max(-1, 1 - (value - hi) / spread);
+      text = `Hơi đuối so với ${subject} ${value} ${unit} (mẫu hợp ${lo}–${hiText})`;
+    }
+
+    return {
+      criterionId: id,
+      label: this.label,
+      contribution: raw,
+      evidence: claimFrom(product, "fitMin", text),
     };
   },
 };

@@ -186,6 +186,7 @@
     "reason": "no_eligible_product",
     "whatWouldHelp": "Chưa có sản phẩm nào thoả hết ràng buộc, mình nới ngân sách hoặc đổi tiêu chí nhé ạ"
   },
+  "establishedCategory": "may_lanh",
   "releaseVersion": "test@v0",
   "createdAt": "2026-07-18T02:00:00.000Z"
 }

@@ -121,10 +121,17 @@ function fuzzyCategory(f: string, hints: Array<[string, CategorySlug]>): Categor
  * trong "phao"; không dòng nào khớp nguyên chuỗi mới rơi về khớp mờ.
  */
 function detectCategoryRecent(f: string): CategorySlug | null {
-  const hints = categoryHints();
+  // Cụm CỤ THỂ (dài) thắng cụm chung: "quat dieu hoa" phải thắng "dieu hoa" (máy lạnh).
+  const hints = [...categoryHints()].sort((a, b) => b[0].length - a[0].length);
   const lines = f.split("\n").filter((l) => l.trim());
   for (let i = lines.length - 1; i >= 0; i--) {
-    const hit = hints.find(([w]) => hasWord(lines[i], w));
+    const line = lines[i];
+    const hit = hints.find(([w, slug]) => {
+      if (!hasWord(line, w)) return false;
+      // "quạt điều hòa"/"quạt hơi nước" KHÔNG phải máy lạnh dù chứa chuỗi "điều hòa".
+      if (slug === "may_lanh" && hasWord(line, "quat")) return false;
+      return true;
+    });
     if (hit) return hit[1];
   }
   for (let i = lines.length - 1; i >= 0; i--) {

@@ -1,0 +1,320 @@
+{
+  "note": "Kho BÀI HỌC bồi dần của trợ lý tư vấn — 'nhân viên trải nghiệm rồi ghi nhớ'. accepted = đã duyệt, nạp vào prompt runtime. proposed = LLM-judge đề xuất từ hội thoại thật, chờ duyệt. KHÔNG train weights — học bằng cách tích lũy luật/ví dụ rồi áp dụng.",
+  "lessons": [
+    {
+      "id": "L001",
+      "scope": "intent",
+      "trigger": "Khách than nóng/oi/hầm mà chưa nói ngành (vd 'trời nóng quá', 'nóng chảy mỡ', 'cái gì mát mát')",
+      "mistake": "Hỏi trống 'anh/chị quan tâm nhóm sản phẩm nào' — vô cảm, không bắt sóng.",
+      "lesson": "Suy ý định LÀM MÁT → gợi máy lạnh (ngành đang hỗ trợ), hỏi xác nhận ngắn kèm 1 lựa chọn thay thế nếu hợp. Không hỏi trống.",
+      "status": "accepted",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "L002",
+      "scope": "category",
+      "trigger": "Khách nói 'quạt điều hòa' / 'quạt hơi nước' / 'quạt'",
+      "mistake": "Nhận nhầm thành MÁY LẠNH vì chuỗi con 'điều hòa'.",
+      "lesson": "'quạt điều hòa' là NGÀNH KHÁC máy lạnh. Nếu ngành khách nêu KHÔNG nằm trong ngành đang hỗ trợ (máy lạnh…), nói thẳng chưa tư vấn được ngành đó, đề nghị ngành đang hỗ trợ — TUYỆT ĐỐI không âm thầm đổi sang máy lạnh.",
+      "status": "accepted",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "L003",
+      "scope": "intent",
+      "trigger": "Khách ủy thác: 'không biết', 'ko biết', 'k biết', 'tùy em', 'cứ tư vấn giúp'",
+      "mistake": "Hỏi lại xác nhận ngành lần nữa → kẹt vòng lặp.",
+      "lesson": "Khi khách ủy thác và đã đoán được ngành hợp lý → CHỐT ngành đó, tiến sang hỏi thông tin kế (diện tích/số người). Không hỏi lại điều đã hỏi.",
+      "status": "accepted",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "L004",
+      "scope": "policy",
+      "trigger": "Câu hỏi CHÍNH SÁCH kèm tên ngành (vd 'máy lạnh bảo hành mấy năm', 'tủ lạnh có trả góp không')",
+      "mistake": "Thấy tên ngành → nhảy vào luồng mua, hỏi diện tích thay vì trả lời bảo hành.",
+      "lesson": "Ý định hỏi chính sách phải được nhận diện ĐỘC LẬP với việc đã biết ngành hay chưa. Có tín hiệu chính sách (bảo hành/đổi trả/giao lắp/trả góp) → trả lời từ tài liệu chính sách trước.",
+      "status": "accepted",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P5",
+      "scope": "intent",
+      "trigger": "Khách nói 'quat dieu hoa'",
+      "mistake": "Bot không nhận diện được intent quạt điều hòa, tiếp tục hỏi diện tích và gợi ý máy lạnh.",
+      "lesson": "Khi khách nói rõ sản phẩm mong muốn (quạt điều hòa), bot phải xác nhận và tư vấn đúng loại sản phẩm đó, không âm thầm đổi sang máy lạnh.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P6",
+      "scope": "category",
+      "trigger": "Khách yêu cầu quạt điều hòa",
+      "mistake": "Bot gợi ý máy lạnh, sai danh mục sản phẩm.",
+      "lesson": "Luôn kiểm tra category khách yêu cầu trước khi gợi ý; nếu khách nói quạt điều hòa thì chỉ tư vấn quạt điều hòa, không tự ý chuyển sang máy lạnh.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P7",
+      "scope": "category",
+      "trigger": "khách nói 'trời nóng quá'",
+      "mistake": "bot gợi ý quạt điều hòa thay vì chỉ hỏi về máy lạnh",
+      "lesson": "Khi khách chưa nêu rõ nhu cầu, nên tập trung vào sản phẩm chính (máy lạnh) và chỉ đề cập đến các lựa chọn khác nếu khách hỏi hoặc có dấu hiệu rõ ràng về ngân sách thấp.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P8",
+      "scope": "policy",
+      "trigger": "khách hỏi 'máy lạnh bảo hành mấy năm'",
+      "mistake": "bot hỏi diện tích phòng thay vì trả lời chính sách bảo hành",
+      "lesson": "Khi khách hỏi về chính sách (bảo hành, đổi trả, v.v.), phải trả lời trực tiếp dựa trên tài liệu chính sách, không chuyển sang tư vấn mua hàng hay hỏi thông tin khác.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P9",
+      "scope": "intent",
+      "trigger": "Khách nói 'quat dieu hoa' sau khi đã phân vân",
+      "mistake": "Bot vẫn hỏi diện tích thay vì chuyển sang tư vấn quạt điều hòa hoặc từ chối khéo nếu không có dữ liệu.",
+      "lesson": "Khi khách đã xác định rõ sản phẩm, cần phản hồi đúng sản phẩm đó, không hỏi lại thông tin không liên quan hoặc lặp câu hỏi.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P10",
+      "scope": "category",
+      "trigger": "Khách yêu cầu quạt điều hòa (ngành ngoài máy lạnh)",
+      "mistake": "Bot âm thầm tư vấn máy lạnh thay vì từ chối khéo hoặc chuyển hướng.",
+      "lesson": "Nếu khách hỏi sản phẩm ngoài ngành đang hỗ trợ, phải từ chối khéo (ví dụ: 'Em chỉ hỗ trợ máy lạnh, anh/chị có thể tham khảo thêm quạt điều hòa ở nơi khác ạ') chứ không được đổi ngành.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P11",
+      "scope": "intent",
+      "trigger": "Khách nói 'không biết nữa, tư vấn giúp mình đi'",
+      "mistake": "Bot vội đưa gợi ý sản phẩm ở lượt 3 mà chưa hỏi ngân sách, dẫn đến phải đưa ra danh sách khác sau đó.",
+      "lesson": "Nên hỏi ngân sách trước khi gợi ý sản phẩm cụ thể để tránh thay đổi danh sách và gây nhầm lẫn.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P12",
+      "scope": "policy",
+      "trigger": "Khách nói ngân sách 'tầm 12 triệu'",
+      "mistake": "Bot chỉ gợi ý sản phẩm rẻ hơn nhiều (dưới 8 triệu) mà không hỏi khách có ưu tiên thương hiệu, tính năng hay muốn sản phẩm cao cấp hơn.",
+      "lesson": "Khi khách có ngân sách cao hơn sản phẩm gợi ý, nên hỏi thêm mong muốn (thương hiệu, tính năng) để tư vấn phù hợp, hoặc giải thích lý do gợi ý sản phẩm đó.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P13",
+      "scope": "phrase",
+      "trigger": "khách hỏi ngành không có dữ liệu",
+      "mistake": "bot trả lời cứng nhắc 'chưa có dữ liệu'",
+      "lesson": "Nên từ chối khéo: 'Em rất tiếc, hiện tại em chỉ hỗ trợ tư vấn máy lạnh. Anh/chị có cần tư vấn máy lạnh không ạ?'",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P14",
+      "scope": "policy",
+      "trigger": "Khách hỏi giờ đóng cửa (chính sách chung của cửa hàng)",
+      "mistake": "Bot nói không rõ và ngay lập tức hỏi nhu cầu mua, thay vì từ chối khéo hoặc chuyển hướng phù hợp.",
+      "lesson": "Khi không có thông tin về chính sách ngoài phạm vi sản phẩm, nên từ chối khéo (ví dụ: 'Em xin lỗi, em không có thông tin về giờ đóng cửa ạ.') và hỏi nhu cầu tư vấn sản phẩm cụ thể (ví dụ: 'Mình cần tư vấn về máy lạnh không ạ?') thay vì hỏi mua trực tiếp.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P15",
+      "scope": "category",
+      "trigger": "khách nói 'nong qua cuu toi' (chưa rõ sản phẩm)",
+      "mistake": "bot đưa ra lựa chọn quạt điều hòa không thuộc ngành tư vấn chính (máy lạnh)",
+      "lesson": "Chỉ nên hỏi khách muốn tư vấn máy lạnh hay cần hỗ trợ gì, không tự ý đề xuất sản phẩm ngoài ngành.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P16",
+      "scope": "intent",
+      "trigger": "khách nói 'khoang 10m2' sau khi bot từ chối quạt điều hòa",
+      "mistake": "bot hiểu sai rằng khách đồng ý tư vấn máy lạnh, trong khi khách chưa xác nhận",
+      "lesson": "Sau khi từ chối sản phẩm ngoài ngành, cần xác nhận lại ý định: 'Anh/chị có muốn tư vấn máy lạnh không ạ?' trước khi đưa ra gợi ý.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P17",
+      "scope": "intent",
+      "trigger": "nhà 5 người mua tủ lạnh loại nào",
+      "mistake": "Bot hiểu sai ngành, cho rằng đang tư vấn máy lạnh và trả lời không có sản phẩm thỏa ràng buộc, thay vì từ chối khéo vì không hỗ trợ tủ lạnh",
+      "lesson": "Khi khách hỏi sản phẩm ngoài ngành được hỗ trợ (máy lạnh), bot phải từ chối khéo bằng câu như 'Em chỉ hỗ trợ tư vấn máy lạnh thôi ạ, anh/chị thông cảm nhé' và không được đưa ra lý do sai về ràng buộc sản phẩm.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P18",
+      "scope": "phrase",
+      "trigger": "tầm 15 triệu",
+      "mistake": "Bot lặp lại câu từ chối giống hệt lượt 1 mà không có thông tin mới hoặc hướng dẫn khác",
+      "lesson": "Mỗi lượt phải tiến 1 bước: nếu đã từ chối, có thể giải thích lý do rõ hơn hoặc chuyển hướng khách sang ngành phù hợp, không lặp lại nguyên văn.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P19",
+      "scope": "category",
+      "trigger": "khách hỏi máy giặt",
+      "mistake": "bot trả lời như có dữ liệu máy giặt và từ chối vì không có sản phẩm phù hợp, trong khi ngành được hỗ trợ là máy lạnh",
+      "lesson": "Khi khách hỏi ngành ngoài phạm vi tư vấn, bot phải từ chối khéo (ví dụ: 'Em chuyên tư vấn máy lạnh, máy giặt em không rõ ạ') và không được giả vờ có dữ liệu sản phẩm.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P20",
+      "scope": "category",
+      "trigger": "mua tivi 55 inch tầm 12 triệu",
+      "mistake": "Bot xử lý như thể có sản phẩm tivi, yêu cầu nới ngân sách thay vì từ chối khéo vì không thuộc ngành máy lạnh.",
+      "lesson": "Khi khách hỏi sản phẩm ngoài ngành được hỗ trợ, cần từ chối khéo ngay từ đầu, không giả vờ có sản phẩm để xử lý.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P21",
+      "scope": "policy",
+      "trigger": "Khách hỏi về giờ đóng cửa của cửa hàng",
+      "mistake": "Bot nói ngoài chuyên môn rồi hỏi mua hàng",
+      "lesson": "Khi khách hỏi chính sách cửa hàng mà không có thông tin, nên từ chối khéo và không chuyển hướng hỏi mua; chỉ hỗ trợ nếu khách tự chuyển hướng sang sản phẩm.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P22",
+      "scope": "intent",
+      "trigger": "Khách nói 'nong qua cuu toi'",
+      "mistake": "Bot gợi ý quạt điều hòa thay vì xác nhận khách muốn máy lạnh",
+      "lesson": "Khi khách kêu nóng, mặc định hiểu khách cần máy lạnh, không tự ý giới thiệu sản phẩm khác ngành dù dưới dạng câu hỏi lựa chọn.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P23",
+      "scope": "phrase",
+      "trigger": "Khách nói 'quat dieu hoa'",
+      "mistake": "Bot từ chối quạt nhưng trước đó đã gợi ý quạt gây hiểu lầm",
+      "lesson": "Nếu ngành chỉ tư vấn máy lạnh, tuyệt đối không nhắc đến quạt trong bất kỳ lượt nào, kể cả để so sánh hay hỏi ý kiến.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P24",
+      "scope": "intent",
+      "trigger": "Khách nói 'tầm 12 triệu'",
+      "mistake": "Bot hiểu là dưới 12 triệu và đưa ra sản phẩm rẻ hơn nhiều, không đáp ứng mong muốn của khách.",
+      "lesson": "Khi khách đưa ngân sách dạng 'tầm X', cần hiểu là khoảng X, nên lọc sản phẩm trong biên độ ±2 triệu hoặc hỏi lại để xác nhận.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P25",
+      "scope": "phrase",
+      "trigger": "Khách nói 'trời nóng quá'",
+      "mistake": "Bot gợi ý quạt điều hòa thay vì hỏi trực tiếp nhu cầu mua máy lạnh.",
+      "lesson": "Với câu mở đầu mơ hồ, nên hỏi rõ khách muốn mua máy lạnh hay sản phẩm khác trước khi gợi ý.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P26",
+      "scope": "policy",
+      "trigger": "Khách hỏi 'bảo hành mấy năm'",
+      "mistake": "Bot trả lời cụ thể '12 tháng' dù dữ liệu chính sách không có thông tin thời gian bảo hành.",
+      "lesson": "Khi không có dữ liệu chính xác về thời gian bảo hành, bot phải từ chối trả lời hoặc nói 'em chưa có thông tin cụ thể, để em kiểm tra lại' thay vì tự bịa số.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P27",
+      "scope": "intent",
+      "trigger": "khách nói 'tầm 15 triệu'",
+      "mistake": "bot gợi ý sản phẩm giá 8-10 triệu, quá xa so với ngân sách khách",
+      "lesson": "Khi khách đưa ra ngân sách, cần gợi ý sản phẩm trong khoảng giá đó hoặc hỏi lại nếu không có sản phẩm phù hợp. Không nên tự ý gợi ý sản phẩm rẻ hơn nhiều mà không giải thích.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P28",
+      "scope": "category",
+      "trigger": "Khách hỏi về máy giặt (ngành khác)",
+      "mistake": "Bot trả lời chi tiết sản phẩm máy giặt thay vì từ chối khéo hoặc chỉ trả lời chính sách",
+      "lesson": "Khi khách hỏi về ngành không được hỗ trợ, bot phải từ chối khéo (ví dụ: 'Em chuyên tư vấn máy lạnh, anh/chị vui lòng liên hệ bộ phận khác') và không đưa thông tin sản phẩm ngoài ngành.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P29",
+      "scope": "category",
+      "trigger": "khách hỏi mua tivi",
+      "mistake": "bot tư vấn tivi thay vì từ chối khéo vì không thuộc ngành máy lạnh",
+      "lesson": "Khi khách hỏi sản phẩm ngoài ngành được hỗ trợ (máy lạnh), bot phải từ chối khéo hoặc chỉ trả lời chính sách, không tư vấn sản phẩm.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P30",
+      "scope": "policy",
+      "trigger": "Khách hỏi giờ đóng cửa",
+      "mistake": "Bot hứa kiểm tra rồi hỏi tư vấn thay vì trả lời trực tiếp hoặc từ chối khéo",
+      "lesson": "Khi khách hỏi chính sách cửa hàng, cần trả lời ngay nếu có dữ liệu; nếu không, nói rõ không có thông tin và không chuyển sang hỏi mua ngay lập tức.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P31",
+      "scope": "category",
+      "trigger": "Khách nói 'nong qua cuu toi' (chưa xác định sản phẩm cụ thể)",
+      "mistake": "Bot gợi ý quạt điều hòa (ngành ngoài phạm vi) thay vì chỉ hỏi hoặc gợi ý trong danh sách được hỗ trợ (máy lạnh).",
+      "lesson": "Khi khách chưa nêu rõ nhu cầu, chỉ nên gợi ý sản phẩm thuộc danh sách được hỗ trợ (máy lạnh, tủ lạnh, máy giặt, tivi, điện thoại, laptop). Không tự ý mở rộng sang ngành khác để tránh mâu thuẫn sau này.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P32",
+      "scope": "category",
+      "trigger": "Khách nói 'trời nóng quá'",
+      "mistake": "Bot gợi ý quạt điều hòa (ngành ngoài danh sách hỗ trợ)",
+      "lesson": "Khi khách phàn nàn về nóng, chỉ nên hỏi khách có quan tâm máy lạnh không, không tự ý gợi ý sản phẩm ngoài danh mục. Nếu khách hỏi sản phẩm khác, phải từ chối khéo.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P33",
+      "scope": "intent",
+      "trigger": "khách nói 'tầm 15 triệu'",
+      "mistake": "bot đưa sản phẩm giá 8-9 triệu, không giải thích, không hỏi lại",
+      "lesson": "Khi khách đưa ngân sách, cần tìm sản phẩm trong khoảng đó; nếu không có, thông báo và hỏi khách có muốn xem sản phẩm thấp hơn hoặc cao hơn không.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P34",
+      "scope": "intent",
+      "trigger": "Khách nói 'tầm 12 triệu'",
+      "mistake": "Bot tự suy diễn khách muốn rẻ hơn nên chỉ đưa sản phẩm giá thấp, không đáp ứng đúng nhu cầu.",
+      "lesson": "Khi khách đưa ra mức giá, cần hiểu đó là khoảng giá mong muốn, không tự ý giảm xuống. Nếu không có sản phẩm trong tầm giá, nên thông báo và hỏi khách có thể điều chỉnh hay không.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    },
+    {
+      "id": "P35",
+      "scope": "policy",
+      "trigger": "khách hỏi giờ đóng cửa",
+      "mistake": "bot không trả lời mà lảng sang hỏi mua",
+      "lesson": "Khi khách hỏi chính sách/giờ giấc, cần trả lời từ tài liệu hoặc xin kiểm tra lại, không chuyển chủ đề ngay.",
+      "status": "proposed",
+      "createdAt": "2026-07-18"
+    }
+  ]
+}

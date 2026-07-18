@@ -107,9 +107,14 @@ export function ProductCard({ p }: { p: RecommendedProduct }) {
           </dl>
         )}
 
+        {/* Khuyến mãi: CHỈ một dòng quà chính — chuỗi gốc dài cả đoạn làm vỡ chiều
+            cao thẻ. Giữ nguyên văn đầy đủ ở tooltip để không mất thông tin. */}
         {p.promotion && (
-          <p className="mt-2 rounded-md bg-promo/10 px-2 py-1 text-[0.7rem] leading-snug text-promo">
-            {p.promotion}
+          <p
+            className="mt-2 line-clamp-1 rounded-md bg-promo/10 px-2 py-1 text-[0.7rem] leading-snug text-promo"
+            title={p.promotion}
+          >
+            🎁 {p.promotion.split(";")[0].trim()}
           </p>
         )}
 

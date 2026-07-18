@@ -22,7 +22,22 @@ export interface ExtractedNeeds {
   quotedSpans: readonly string[];
 }
 
-/** Ba năng lực mô hình được phép dùng ở bản trình diễn 48 giờ. */
+/**
+ * Ý định khách + ngành ĐOÁN được, để mở đầu hội thoại cho tự nhiên.
+ *
+ * RANH GIỚI: đây là "đoán ý định" (phép lịch sự của người bán), KHÁC "bịa dữ liệu".
+ * `suggestedCategory` CHỈ dùng để sinh câu hỏi xác nhận — KHÔNG được đẩy thẳng vào
+ * lọc/xếp hạng; số liệu (giá/diện tích/thông số) vẫn do tầng tất định kiểm chứng.
+ */
+export interface IntentRead {
+  intent: "mua" | "chinh_sach" | "su_co" | "chao_hoi" | "ngoai_pham_vi";
+  /** Slug ngành đoán từ hoàn cảnh (nóng→may_lanh…), hoặc null. Chỉ để hỏi lại. */
+  suggestedCategory: string | null;
+  /** Câu tư vấn viên nói ra (đồng cảm + hỏi trúng). Rỗng = không có gì để nói thêm. */
+  reply: string;
+}
+
+/** Bốn năng lực mô hình được phép dùng ở bản trình diễn 48 giờ. */
 export interface ModelService {
   /** Tên bản hiện thực, ghi vào ảnh chụp quyết định. */
   readonly name: string;
@@ -32,6 +47,22 @@ export interface ModelService {
 
   /** Năng lực 1: đề xuất cách trích xuất quan sát từ lời khách. */
   extractNeeds(userText: string): Promise<Result<ExtractedNeeds>>;
+
+  /**
+   * Năng lực 4: đọc Ý ĐỊNH khách + đoán ngành để HỎI XÁC NHẬN mềm mại.
+   *
+   * Chỉ chạy ở cửa vào khi chưa biết ngành. KHÔNG chạm số liệu, KHÔNG chọn sản
+   * phẩm — chỉ phân loại ý định và đề xuất ngành để mở lời cho tự nhiên.
+   */
+  readIntent(conversation: string): Promise<Result<IntentRead>>;
+
+  /**
+   * Năng lực 5: trả lời câu hỏi CHÍNH SÁCH (bảo hành/đổi trả/giao lắp…) CHỈ dựa
+   * trên trích đoạn tài liệu chính sách thật, có dẫn nguồn. Không tìm được tài liệu
+   * liên quan / không có LLM → trả chuỗi rỗng để nơi gọi dùng câu hỏi lại tất định.
+   * Grounding: chỉ được nói điều CÓ trong tài liệu, tuyệt đối không suy diễn.
+   */
+  answerPolicy(conversation: string): Promise<Result<string>>;
 
   /** Năng lực 2: diễn đạt một câu hỏi kiểm chứng cho khoảng trống đã xác định. */
   phraseQuestion(gap: string, context: string): Promise<Result<string>>;

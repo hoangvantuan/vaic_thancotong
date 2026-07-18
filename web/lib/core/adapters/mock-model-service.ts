@@ -7,7 +7,7 @@
 // DIỄN ĐẠT, không quyết định sản phẩm nào hợp lệ.
 
 import { ok, type Result } from "../contracts/status";
-import type { ExtractedNeeds, ModelService } from "../ports/model-service";
+import type { ExtractedNeeds, IntentRead, ModelService } from "../ports/model-service";
 import type { SourcedProduct } from "../ports/product-source";
 
 /** Trích số đầu tiên khớp một mẫu, hoặc null. Cố tình thô — đây là bản giả. */
@@ -49,6 +49,19 @@ export class MockModelService implements ModelService {
    * và ảnh chụp quyết định mẫu không lẫn văn bản gỡ rối của bản giả.
    */
   async phraseQuestion(): Promise<Result<string>> {
+    return ok("");
+  }
+
+  /**
+   * Bản giả KHÔNG suy ý định — trả `reply` rỗng để nơi gọi BỎ QUA tầng bắt sóng và
+   * rơi xuống luật tất định như cũ. Nhờ vậy luồng không-có-mô-hình giữ nguyên hành vi.
+   */
+  async readIntent(): Promise<Result<IntentRead>> {
+    return ok({ intent: "mua", suggestedCategory: null, reply: "" });
+  }
+
+  /** Bản giả KHÔNG đọc tài liệu chính sách — trả rỗng để nơi gọi hỏi lại tất định. */
+  async answerPolicy(): Promise<Result<string>> {
     return ok("");
   }
 
