@@ -155,3 +155,59 @@ _Không dùng_: giá trị mặc định, dữ liệu sai
 **Đặc điểm cốt lõi theo hoàn cảnh**:
 Kết luận rằng một thuộc tính hoặc tổ hợp thuộc tính có đường giá trị đủ bằng chứng và có thể làm thay đổi việc lọc hoặc thứ hạng trong hoàn cảnh cụ thể. Đây là kết quả đánh giá theo phiên, không phải nhãn quan trọng cố định của thông số.
 _Không dùng_: thông số cốt lõi toàn ngành, đặc điểm nổi bật nhất
+
+**Lõi dùng chung**:
+Ngữ pháp và cơ chế không đổi theo ngành hàng, gồm bằng chứng, giả thuyết, đồ thị giá trị, phiên bản, ghép quyết định, đánh giá, phê duyệt và quay lui.
+_Không dùng_: kiến thức của ngành đầu tiên, cấu hình máy lạnh dùng lại
+
+**Gói ngành hàng**:
+Kiến thức có phiên bản của một ngành, gồm từ vựng thuộc tính, đơn vị, quy tắc chuẩn hóa, năng lực, kết quả, điều kiện, đánh đổi, quan hệ có bằng chứng, câu hỏi và ca kiểm thử. Gói không được định nghĩa lại ngữ pháp hoặc cơ chế kiểm soát của lõi.
+_Không dùng_: lõi riêng của ngành, tác nhân tự trị riêng ngành
+
+**Bộ kết nối môi trường**:
+Thành phần thích nghi việc đọc và ghi dữ liệu với hệ thống nguồn, doanh nghiệp hoặc thị trường cụ thể, như danh mục, giá, tồn kho, khuyến mãi và chính sách. Bộ kết nối không chứa ý nghĩa hành vi hoặc quan hệ giá trị sản phẩm.
+_Không dùng_: gói ngành hàng, quy tắc quyết định lõi
+
+**Hợp đồng gói ngành hàng**:
+Ranh giới khai báo, có phiên bản và được kiểm tra tự động, quy định nội dung gói được cung cấp cùng các cơ chế lõi tuyệt đối không được định nghĩa lại. Nhu cầu ngoài hợp đồng phải trở thành đề xuất thay đổi lõi thay vì được triển khai đường vòng trong gói.
+_Không dùng_: quy ước tự giác, mã tùy ý của tác nhân chuyên ngành
+
+**Phiên bản lõi đường cơ sở**:
+Phiên bản lõi được khóa trước khi thêm ngành hàng tương phản để mọi nhu cầu sửa lõi được quan sát như kết quả của phép thử tổng quát hóa. Nếu lõi phải đổi, phiên bản đường cơ sở chưa vượt cổng và phiên bản mới phải kiểm thử lại trên tất cả ngành đã có.
+_Không dùng_: lõi bất biến vĩnh viễn, lõi được sửa trong lúc thử
+
+**Lát cắt ngành tương phản**:
+Tập sản phẩm và hành trình của ngành thứ hai được chọn để bao phủ những cấu trúc khác ngành đầu, như tương tác nhiều thuộc tính, tương thích cứng, đánh đổi, dữ liệu thiếu và đảo hạng. Lát cắt chứng minh ngữ pháp lõi qua độ bao phủ tình huống, không qua quy mô toàn danh mục.
+_Không dùng_: bản trình diễn một sản phẩm, toàn bộ ngành hàng
+
+**Cổng tổng quát hóa**:
+Tập điều kiện đồng thời chứng minh một phiên bản lõi có thể tiếp nhận lát cắt ngành tương phản mà không sửa ngữ pháp, lách hợp đồng, suy giảm ngành cũ hoặc hạ chất lượng ngành mới. Một điều kiện bắt buộc không đạt làm toàn bộ cổng chưa đạt; ngành thứ hai chỉ cung cấp bằng chứng ban đầu, không chứng minh tính phổ quát.
+_Không dùng_: điểm tổng hợp đa ngành, chứng nhận lõi dùng cho mọi ngành
+
+**Bảng đánh giá đa ngành**:
+Bộ chiều đánh giá dùng cùng cách đo cho mọi ngành, gồm tính hợp lệ, độ phù hợp, độ trung thực, điểm đánh đổi, bất định, chất lượng câu hỏi, độ dễ hiểu và khả năng truy nguyên. Mỗi ngành có tình huống và ngưỡng riêng được đăng ký trước, cùng một phần giữ lại không dùng để điều chỉnh.
+_Không dùng_: so khớp một bộ ba duy nhất, tỷ lệ mua hàng làm nhãn đúng
+
+**Biên suy giảm**:
+Mức giảm tối đa được đăng ký trước mà một chỉ số mềm có thể chấp nhận khi so phiên bản mới với đường cơ sở trên cùng tình huống. Chỉ số an toàn, bằng chứng và tuân thủ hợp đồng có biên bằng không; chưa đủ dữ liệu để kết luận không được tính là đạt.
+_Không dùng_: bù bằng điểm trung bình, kết luận không khác bằng quan sát chủ quan
+
+**Ngân sách mở rộng ngành**:
+Giới hạn người, thời gian và ngoại lệ được đăng ký trước cho việc đưa lát cắt ngành mới vào lõi đường cơ sở. Ngân sách tách công sức làm sạch dữ liệu và tạo kiến thức ngành khỏi công sức sửa kiến trúc; chi phí thấp không được bù chất lượng kém.
+_Không dùng_: ước lượng sau khi hoàn thành, tổng thời gian không phân loại
+
+**Lần đánh giá cổng**:
+Bản ghi bất biến về phiên bản lõi, gói ngành, bộ tình huống, ngưỡng đăng ký trước, kết quả từng chiều và nguyên nhân chưa đạt hoặc chưa đủ bằng chứng. Mọi lần chạy lại tạo bản ghi mới; kết quả cũ không bị sửa theo ngưỡng mới.
+_Không dùng_: chạy lại ghi đè, miễn trừ sau khi thấy kết quả
+
+**Phê duyệt tách vai trò**:
+Cơ chế trong đó người quản lý lõi, chuyên gia từng ngành, người phụ trách bằng chứng, người đánh giá độc lập và người chịu trách nhiệm sản phẩm xác nhận đúng phần trách nhiệm của mình. Người tạo không được là người duy nhất phê duyệt; không vai trò nào được miễn trừ cổng bắt buộc.
+_Không dùng_: một người duyệt toàn bộ, biểu quyết bù lỗi bắt buộc
+
+**Thay đổi hợp đồng lõi**:
+Thay đổi cấu trúc, ý nghĩa, quyền, vòng đời hoặc hành vi công bố của lõi dùng chung, bất kể số dòng mã bị sửa. Sửa lỗi hoặc tối ưu không đổi hợp đồng vẫn tạo bản dựng mới và phải kiểm thử hồi quy, nhưng không tự được tính là thay đổi ngữ pháp.
+_Không dùng_: mọi thay đổi tệp lõi, đánh giá tùy trường hợp sau khi thấy kết quả
+
+**Bằng chứng tổng quát hóa có phạm vi**:
+Kết luận rằng một phiên bản lõi đã dùng lại được trên các lát cắt ngành, gói, dữ liệu, ngưỡng và tình huống được ghi trong lần đánh giá cổng. Kết luận là bằng chứng ban đầu và hết hiệu lực khi hợp đồng lõi hoặc điều kiện đánh giá thay đổi đáng kể.
+_Không dùng_: chứng minh dùng cho mọi ngành, tổng quát hóa vĩnh viễn
