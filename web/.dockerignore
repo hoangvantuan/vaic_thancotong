@@ -1,0 +1,13 @@
+# Build context = thư mục web/ → docs/raw (PII) vốn đã nằm ngoài context.
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+npm-debug.log*
+*.md
+.DS_Store
+Dockerfile
+docker-compose.yml

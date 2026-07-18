@@ -1,0 +1,33 @@
+# Trợ lý tư vấn sản phẩm Điện Máy Xanh — chạy một lệnh khi cần, tắt là xong.
+#
+#   docker compose up          # build (lần đầu) rồi chạy, Ctrl+C để dừng
+#   docker compose up --build  # ép build lại sau khi sửa code
+#   docker compose down        # dọn container
+#
+# KHÔNG dùng `-d`: để chạy ở foreground thì Ctrl+C là tắt hẳn, không có gì ngầm lại.
+
+name: tuvan-dmx
+
+services:
+  app:
+    build:
+      context: .
+    image: tuvan-dmx:1.0.0
+    container_name: tuvan-dmx
+    ports:
+      - "3000:3000"
+
+    # Không set cũng chạy được: app tự vào "chế độ cơ bản" khi không thấy LLM
+    # (vẫn hỏi ngược, vẫn gợi ý sản phẩm thật). Đặt trong file .env để ghi đè.
+    environment:
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-ollama}
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:7b}
+
+    # Giúp container gọi được Ollama chạy trên máy thật. Dòng này cần cho
+    # Colima/Linux — nếu thiếu thì host.docker.internal không phân giải được.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    # Không tự bật lại khi khởi động máy — đúng ý "lúc nào cần mới chạy".
+    restart: "no"
