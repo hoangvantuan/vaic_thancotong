@@ -10,6 +10,12 @@ import {
 import type { ChatMessage } from "@/lib/chat-types";
 import { getModel, probeLLM } from "@/lib/llm";
 import { orchestrate } from "@/lib/agents/orchestrator";
+import {
+  categoryChoices,
+  createSearchAgent,
+  type SearchAgentState,
+} from "@/lib/agents/search-agent";
+import { extract } from "@/lib/search/extract";
 
 // Self-host FIRST: chạy trên Node runtime, không dùng edge/Vercel-only.
 export const runtime = "nodejs";
@@ -57,6 +63,55 @@ export async function POST(req: Request) {
   const llmReady = await probeLLM();
   const model = llmReady ? getModel() : null;
 
+  // CÓ LLM → agent AI tìm kiếm: LLM tự quyết hỏi thêm hay tìm, qua tool tất định.
+  // Chip chọn ngành vẫn là luồng tĩnh: chưa dò ra ngành thì mời khách bấm chip,
+  // khỏi tốn một vòng LLM chỉ để hỏi "anh/chị cần gì".
+  if (model) {
+    const need = extract(userText, { hintCategory });
+    if (!need.category) {
+      const stream = createUIMessageStream<ChatMessage>({
+        execute: async ({ writer }) => {
+          writeStaticText(
+            writer,
+            "Dạ em chào anh/chị 👋 Em là trợ lý tư vấn của Điện Máy Xanh. " +
+              "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?"
+          );
+          writer.write({ type: "data-categories", data: categoryChoices() });
+        },
+      });
+      return createUIMessageStreamResponse({ stream });
+    }
+
+    const state: SearchAgentState = {
+      userText,
+      hintCategory,
+      need: null,
+      results: null,
+      products: [],
+    };
+    const agent = createSearchAgent(model, state);
+
+    const stream = createUIMessageStream<ChatMessage>({
+      onError: (err) => {
+        console.error("[chat] agent stream error:", err);
+        return "Dạ hệ thống đang bận, anh/chị thử lại giúp em sau ít phút nhé ạ.";
+      },
+      execute: async ({ writer }) => {
+        // Thẻ sản phẩm đẩy vào stream NGAY khi tool tìm xong — không đợi LLM nói hết.
+        state.onProducts = (products) =>
+          writer.write({ type: "data-products", data: products });
+        const result = await agent.stream({
+          messages: await convertToModelMessages(messages),
+        });
+        writer.merge(
+          toUIMessageStream<ToolSet, ChatMessage>({ stream: result.fullStream })
+        );
+      },
+    });
+    return createUIMessageStreamResponse({ stream });
+  }
+
+  // KHÔNG có LLM → giữ nguyên luồng deterministic cũ (vẫn ra sản phẩm thật).
   const plan = await orchestrate(userText, { model, hintCategory });
 
   const stream = createUIMessageStream<ChatMessage>({
