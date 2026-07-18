@@ -9,12 +9,7 @@
 import { createCoreServices } from "@/lib/core/composition";
 import { newTurnId, parseSessionId, parseTurnId } from "@/lib/core/contracts/ids";
 import { coreError } from "@/lib/core/contracts/status";
-import {
-  checkAccessCode,
-  errorResponse,
-  isCoreError,
-  readSessionSecret,
-} from "@/lib/core/http";
+import { errorResponse, isCoreError, readSessionSecret } from "@/lib/core/http";
 import { runTurn } from "@/lib/core/pipeline/run-turn";
 import { DEMO_TURN_RULES } from "@/lib/core/rules";
 import type { TurnInput } from "@/lib/core/contracts/turn";
@@ -23,9 +18,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const denied = checkAccessCode(req);
-  if (denied) return errorResponse(denied);
-
   const secret = readSessionSecret(req);
   if (isCoreError(secret)) return errorResponse(secret);
 

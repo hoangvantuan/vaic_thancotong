@@ -1,18 +1,17 @@
 "use client";
 
-// Bộ máy trạng thái của trợ lý — nói chuyện với hợp đồng #24 qua ba tuyến:
-//   POST /api/session   → mở phiên, nhận mã bí mật phiên (chỉ một lần, dạng rõ)
-//   POST /api/turn      → chạy một lượt, trả đúng một trong ba loại kết quả
-//   GET  /api/decision  → đọc lại ảnh chụp quyết định cho màn "lý do"
-//   DELETE /api/session → khách tự xoá phiên của mình
+// Bộ máy trạng thái của trợ lý — nói chuyện với hợp đồng #24 qua bốn tuyến:
+//   POST   /api/session   → mở phiên, nhận mã bí mật phiên (chỉ một lần, dạng rõ)
+//   POST   /api/turn      → chạy một lượt, trả đúng một trong ba loại kết quả
+//   GET    /api/decision  → đọc lại ảnh chụp quyết định cho màn "lý do"
+//   DELETE /api/session   → khách tự xoá phiên của mình
 //
-// Quy tắc sở hữu (#24 mục 9): mọi thao tác chạm phiên gửi CẢ mã truy cập chung LẪN
-// mã bí mật phiên qua header. Mã bí mật lưu trong localStorage của trình duyệt, và
-// TUYỆT ĐỐI không đưa vào đường dẫn, không ghi ra console.
+// KHÔNG có mã truy cập chung: bản trình diễn mở, bấm là chat ngay.
 //
-// "Bỏ cổng" cho demo: nếu đặt NEXT_PUBLIC_DEMO_ACCESS_CODE thì trợ lý TỰ mở phiên
-// bằng mã đó — bấm launcher là vào chat ngay, khỏi màn nhập mã. Không đặt biến này
-// thì màn nhập mã (AccessGate) trở lại làm cổng như #28 yêu cầu.
+// VẪN giữ MÃ BÍ MẬT PHIÊN (#24 mục 9): nó không phải cổng đăng nhập mà là thứ
+// chứng minh "phiên này của tôi" — thiếu nó thì chỉ cần biết số phiên là đọc/xoá
+// được hội thoại của người khác. Mã lưu trong localStorage, TUYỆT ĐỐI không đưa
+// vào đường dẫn và không ghi ra console.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
@@ -24,15 +23,13 @@ import type {
 
 const SID_KEY = "dmx.demo.sessionId";
 const SECRET_KEY = "dmx.demo.sessionSecret";
-const AC_KEY = "dmx.demo.accessCode";
 
-const ACCESS_CODE_HEADER = "x-demo-access-code";
 const SESSION_SECRET_HEADER = "x-session-secret";
 
 /** Lỗi tạm — thử lại được. Còn lại là lỗi không thể tiếp tục an toàn. */
 const RETRYABLE = new Set(["data_source_failure", "model_failure", "storage_failure", "network"]);
 
-type Phase = "loading" | "locked" | "ready";
+type Phase = "loading" | "ready" | "error";
 type Status = "idle" | "sending";
 
 interface TurnResponse {
@@ -58,7 +55,8 @@ export interface Assistant {
   messages: ConversationItem[];
   error: AssistantError | null;
   canRetry: boolean;
-  unlock: (accessCode: string) => Promise<void>;
+  /** Mở phiên mới — dùng khi lần mở đầu thất bại. */
+  startSession: () => Promise<void>;
   send: (text: string) => Promise<void>;
   retry: () => Promise<void>;
   fetchDecision: (turnId: string) => Promise<DecisionRecordData>;
@@ -76,75 +74,59 @@ export function useAssistant(): Assistant {
 
   // Giữ ngoài render: mã bí mật (không cho lọt vào cây React/log) và text lần gửi lỗi.
   const secretRef = useRef<string | null>(null);
-  const accessRef = useRef<string | null>(null);
   const lastTextRef = useRef<string | null>(null);
-  const autoTried = useRef(false);
-
-  const demoCode = process.env.NEXT_PUBLIC_DEMO_ACCESS_CODE?.trim() || null;
+  const startedRef = useRef(false);
 
   const authHeaders = useCallback((): HeadersInit => {
     return {
       "content-type": "application/json",
-      [ACCESS_CODE_HEADER]: accessRef.current ?? "",
       [SESSION_SECRET_HEADER]: secretRef.current ?? "",
     };
   }, []);
 
-  const resetToLocked = useCallback((message: string) => {
-    try {
-      localStorage.removeItem(SID_KEY);
-      localStorage.removeItem(SECRET_KEY);
-      sessionStorage.removeItem(AC_KEY);
-    } catch {
-      /* bỏ qua */
-    }
-    secretRef.current = null;
-    accessRef.current = null;
-    autoTried.current = false; // cho phép tự mở lại phiên (chế độ bỏ cổng)
-    setSessionId(null);
-    setMessages([]);
-    setCanRetry(false);
-    setPhase("locked");
-    setError(message ? classify("forbidden", message) : null);
-  }, []);
-
-  const unlock = useCallback(async (accessCode: string) => {
+  const startSession = useCallback(async () => {
     setError(null);
-    const code = accessCode.trim();
-    if (!code) {
-      setPhase("locked");
-      setError(classify("invalid_input", "Mời nhập mã truy cập."));
-      return;
-    }
+    setPhase("loading");
     try {
       const res = await fetch("/api/session", {
         method: "POST",
-        headers: { "content-type": "application/json", [ACCESS_CODE_HEADER]: code },
+        headers: { "content-type": "application/json" },
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as WireError;
-        setPhase("locked");
-        setError(classify(body.error?.kind ?? "forbidden", body.error?.message ?? "Mã truy cập không hợp lệ."));
+        setPhase("error");
+        setError(classify(body.error?.kind ?? "storage_failure", body.error?.message ?? "Không mở được phiên tư vấn."));
         return;
       }
       const data = (await res.json()) as { sessionId: string; sessionSecret: string };
       secretRef.current = data.sessionSecret;
-      accessRef.current = code;
       try {
         localStorage.setItem(SID_KEY, data.sessionId);
         localStorage.setItem(SECRET_KEY, data.sessionSecret);
-        sessionStorage.setItem(AC_KEY, code);
       } catch {
         /* storage bị chặn — phiên vẫn dùng được trong tab này */
       }
       setSessionId(data.sessionId);
       setMessages([]);
-      setError(null);
       setPhase("ready");
     } catch {
-      setPhase("locked");
-      setError(classify("network", "Không kết nối được máy chủ. Thử lại giúp em nhé."));
+      setPhase("error");
+      setError(classify("network", "Không kết nối được máy chủ."));
     }
+  }, []);
+
+  const resetSession = useCallback(() => {
+    try {
+      localStorage.removeItem(SID_KEY);
+      localStorage.removeItem(SECRET_KEY);
+    } catch {
+      /* bỏ qua */
+    }
+    secretRef.current = null;
+    setSessionId(null);
+    setMessages([]);
+    setCanRetry(false);
+    setError(null);
   }, []);
 
   const runTurn = useCallback(
@@ -162,8 +144,10 @@ export function useAssistant(): Assistant {
           const body = (await res.json().catch(() => ({}))) as WireError;
           const kind = body.error?.kind ?? "storage_failure";
           const message = body.error?.message ?? "Có lỗi khi xử lý lượt này.";
+          // Phiên hỏng (vd máy chủ khởi động lại) → mở phiên mới, khách không phải làm gì.
           if (kind === "forbidden") {
-            resetToLocked("Phiên không còn hợp lệ. Đang mở phiên mới…");
+            resetSession();
+            await startSession();
             return;
           }
           setError(classify(kind, message));
@@ -186,7 +170,7 @@ export function useAssistant(): Assistant {
         setStatus("idle");
       }
     },
-    [sessionId, authHeaders, resetToLocked]
+    [sessionId, authHeaders, resetSession, startSession]
   );
 
   const send = useCallback(
@@ -230,21 +214,23 @@ export function useAssistant(): Assistant {
     } catch {
       /* dù mạng lỗi vẫn xoá phía client để không giữ lại dấu vết phiên */
     }
-    resetToLocked(""); // chế độ bỏ cổng: sẽ tự mở phiên mới ngay
-  }, [sessionId, authHeaders, resetToLocked]);
+    resetSession();
+    await startSession(); // mở ngay phiên mới để khách chat tiếp
+  }, [sessionId, authHeaders, resetSession, startSession]);
 
   const dismissError = useCallback(() => setError(null), []);
 
-  // Nạp lại phiên đã lưu; nếu chưa có thì (chế độ bỏ cổng) tự mở phiên, hoặc hiện gate.
+  // Khôi phục phiên đã lưu; chưa có thì mở phiên mới ngay — không hỏi mã gì cả.
   useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    // localStorage chỉ đọc được sau mount, nên đặt trạng thái trong effect là đúng chỗ.
     /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const sid = localStorage.getItem(SID_KEY);
       const secret = localStorage.getItem(SECRET_KEY);
-      const ac = sessionStorage.getItem(AC_KEY);
-      if (sid && secret && ac) {
+      if (sid && secret) {
         secretRef.current = secret;
-        accessRef.current = ac;
         setSessionId(sid);
         setPhase("ready");
         return;
@@ -252,24 +238,10 @@ export function useAssistant(): Assistant {
     } catch {
       /* storage bị chặn — coi như chưa có phiên */
     }
-    if (demoCode) {
-      autoTried.current = true;
-      void unlock(demoCode); // giữ phase "loading" tới khi mở xong → không chớp gate
-      return;
-    }
-    setPhase("locked");
+    void startSession();
     /* eslint-enable react-hooks/set-state-in-effect */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Tự mở lại phiên sau khi xoá/hết hạn (chỉ khi bật chế độ bỏ cổng).
-  useEffect(() => {
-    if (phase === "locked" && demoCode && !autoTried.current) {
-      autoTried.current = true;
-      setPhase("loading");
-      void unlock(demoCode);
-    }
-  }, [phase, demoCode, unlock]);
 
   return {
     phase,
@@ -278,7 +250,7 @@ export function useAssistant(): Assistant {
     messages,
     error,
     canRetry,
-    unlock,
+    startSession,
     send,
     retry,
     fetchDecision,

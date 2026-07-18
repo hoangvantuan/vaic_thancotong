@@ -9,7 +9,6 @@ import { ClipboardList, RefreshCw, Send, ShieldCheck, Trash2, X } from "lucide-r
 import { useAssistant } from "@/lib/assistant/use-assistant";
 import type { ConversationItem } from "@/lib/assistant/types";
 import { cn } from "@/lib/utils";
-import { AccessGate } from "./access-gate";
 import { AssistantAvatar } from "./assistant-avatar";
 import { ResultView } from "./result-view";
 
@@ -174,8 +173,18 @@ export function Assistant() {
           {/* Thân */}
           {a.phase === "loading" ? (
             <div className="flex flex-1 items-center justify-center text-sm text-muted">Đang tải…</div>
-          ) : a.phase === "locked" ? (
-            <AccessGate onSubmit={a.unlock} error={a.error} />
+          ) : a.phase === "error" ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
+              <p className="text-[0.9rem] font-semibold text-price">Không mở được phiên tư vấn</p>
+              {a.error && <p className="text-[0.8rem] text-muted">{a.error.message}</p>}
+              <button
+                type="button"
+                onClick={() => void a.startSession()}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark"
+              >
+                <RefreshCw className="h-4 w-4" aria-hidden /> Thử lại
+              </button>
+            </div>
           ) : (
             <>
               <div ref={scrollRef} className="scroll-soft flex-1 space-y-3 overflow-y-auto px-3 py-4">
