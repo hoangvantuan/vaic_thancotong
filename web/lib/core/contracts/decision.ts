@@ -50,6 +50,8 @@ export interface AppliedRuleVersions {
   readonly ranker: string;
   /** Null khi bộ luật không có tầng đủ-thông-tin (vd EMPTY_RULES của khung #24). */
   readonly sufficiency: string | null;
+  /** Luật gợi-ý-gần-nhất khi 0 sản phẩm qua lọc (7b). Null khi bộ luật không có. */
+  readonly relax?: string | null;
 }
 
 export interface DecisionRecordData {

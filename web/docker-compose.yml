@@ -23,6 +23,7 @@ services:
       LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
       LLM_API_KEY: ${LLM_API_KEY:-ollama}
       LLM_MODEL: ${LLM_MODEL:-qwen2.5:7b}
+      RELEASE_VERSION: ${RELEASE_VERSION:-demo@v0}
 
     # Giúp container gọi được Ollama chạy trên máy thật. Dòng này cần cho
     # Colima/Linux — nếu thiếu thì host.docker.internal không phân giải được.

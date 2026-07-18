@@ -8,6 +8,7 @@ import {
   DEMO_HARD_RULES,
   DEMO_SOFT_CRITERIA,
   PRODUCT_CODE_TIE_BREAKER,
+  goiYGanNhat,
 } from "./catalog-rules";
 import { buildRecommendation } from "./recommendation";
 import { demoSufficiency } from "./sufficiency";
@@ -20,8 +21,14 @@ export const DEMO_TURN_RULES: TurnRules = {
   rankerVersion: "ranker@v1",
   sufficiency: demoSufficiency,
   recommend: buildRecommendation,
+  relax: goiYGanNhat,
 };
 
-export { DEMO_HARD_RULES, DEMO_SOFT_CRITERIA, PRODUCT_CODE_TIE_BREAKER } from "./catalog-rules";
+export {
+  DEMO_HARD_RULES,
+  DEMO_SOFT_CRITERIA,
+  PRODUCT_CODE_TIE_BREAKER,
+  goiYGanNhat,
+} from "./catalog-rules";
 export { buildRecommendation } from "./recommendation";
 export { demoSufficiency } from "./sufficiency";

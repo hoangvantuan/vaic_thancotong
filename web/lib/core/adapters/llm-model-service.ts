@@ -144,19 +144,26 @@ export class LlmModelService implements ModelService {
     }
   }
 
-  /** Diễn đạt MỘT câu hỏi làm rõ. Không có LLM → câu tất định. */
+  /**
+   * Diễn đạt MỘT câu hỏi làm rõ. Không có LLM/lỗi → trả RỖNG để pipeline dùng câu
+   * tất định của luật (câu ấy đã đúng và đủ — vd đã liệt kê sẵn ngành hàng thật);
+   * tự chế câu từ `gap` ở đây sẽ đè mất câu của luật vì nơi gọi chỉ rơi về khi rỗng.
+   */
   async phraseQuestion(gap: string, context: string): Promise<Result<string>> {
-    const fallback = `Cho em hỏi thêm về ${gap} với ạ?`;
+    const fallback = "";
     if (!(await this.isReady())) return ok(fallback);
     try {
       const { text } = await generateText({
         model: getModel(),
         system: [
           "Bạn là tư vấn viên điện máy người Việt, thân thiện; xưng 'em', gọi khách 'anh/chị'.",
-          "Hỏi ĐÚNG MỘT câu ngắn (dưới 25 từ) để lấy đúng thông tin còn thiếu được nêu.",
+          "Hỏi ĐÚNG MỘT câu ngắn (dưới 30 từ) để lấy đúng thông tin còn thiếu được nêu.",
           "TUYỆT ĐỐI không hỏi lại thứ khách đã nói trong hội thoại.",
-          "Nếu khách vừa trả lời mơ hồ, đưa 2–3 lựa chọn cụ thể để khách chọn nhanh.",
-          "Không gợi ý, không nhắc tên sản phẩm. Không chào hỏi dài.",
+          "Nếu 'thông tin còn thiếu' có kèm danh sách lựa chọn cho phép, câu hỏi PHẢI nêu",
+          "đầy đủ các lựa chọn ấy và CHỈ các lựa chọn ấy — tuyệt đối không bịa thêm",
+          "nhóm hàng, ngành hàng hay lựa chọn nào ngoài danh sách.",
+          "Khách hỏi bên mình có những gì thì trả lời bằng chính danh sách đó.",
+          "Không nhắc tên sản phẩm cụ thể. Không chào hỏi dài.",
           "Chỉ trả về đúng câu hỏi, không thêm gì khác.",
         ].join(" "),
         prompt: `Thông tin còn thiếu: ${gap}\n\nHội thoại đã có (mỗi dòng một lượt khách nói):\n${context}`,

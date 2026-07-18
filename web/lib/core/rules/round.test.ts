@@ -95,6 +95,77 @@ describe("ranh giới ba kết cục", () => {
   });
 });
 
+describe("gợi ý gần nhất khi diện tích vượt mọi mẫu (goi_y_gan_nhat@v1)", () => {
+  const bigRoomCatalog = [
+    makeProduct("ml-s", {
+      areaMinM2: observed(10),
+      areaMaxM2: observed(15),
+      priceVnd: observed(8_000_000),
+    }),
+    makeProduct("ml-m", {
+      areaMinM2: observed(15),
+      areaMaxM2: observed(20),
+      priceVnd: observed(10_000_000),
+    }),
+    makeProduct("ml-l", {
+      areaMinM2: observed(20),
+      areaMaxM2: observed(30),
+      priceVnd: observed(14_000_000),
+    }),
+    makeProduct("ml-xl", {
+      areaMinM2: observed(25),
+      areaMaxM2: observed(45),
+      priceVnd: observed(20_000_000),
+    }),
+  ];
+
+  it("1000m² → recommend 3 mẫu công suất lớn nhất, caveat nói rõ giới hạn, có tradeoff", async () => {
+    const { record } = await runRound(bigRoomCatalog, "máy lạnh cho xưởng 1000m2");
+    expect(record.result.kind).toBe("recommend");
+    if (record.result.kind !== "recommend") return;
+
+    // Gần 1000m² nhất = areaMaxM2 lớn nhất, giảm dần.
+    expect(record.result.recommendations.map((r) => r.productId)).toEqual([
+      "ml-xl",
+      "ml-l",
+      "ml-m",
+    ]);
+    expect(record.result.caveats.some((c) => c.includes("1000m²") && c.includes("45m²"))).toBe(
+      true
+    );
+    for (const rec of record.result.recommendations) {
+      expect(rec.reasons.length).toBeGreaterThan(0);
+      expect(rec.tradeoffs.some((t) => t.claim.includes("1000m²"))).toBe(true);
+      for (const claim of [...rec.reasons, ...rec.tradeoffs]) {
+        expect(validateProvenance(claim.provenance)).toEqual([]);
+      }
+    }
+
+    // Báo cáo lọc vẫn là ảnh chụp GỐC: mọi sản phẩm bị loại kèm lý do.
+    expect(record.eligibility!.rows.every((r) => r.verdict !== "eligible")).toBe(true);
+  });
+
+  it("kẹt vì NGÂN SÁCH (không phải diện tích) → vẫn từ chối, không gợi ý lạc đề", async () => {
+    const { record } = await runRound(
+      [validProduct("ml-over", 25_000_000)],
+      "máy lạnh phòng 18m2 ngân sách 15 triệu"
+    );
+    expect(record.result.kind).toBe("decline");
+  });
+
+  it("khách nêu ngân sách → mẫu gợi ý ưu tiên nằm trong ngân sách", async () => {
+    const { record } = await runRound(bigRoomCatalog, "máy lạnh cho xưởng 1000m2, ngân sách 15 triệu");
+    expect(record.result.kind).toBe("recommend");
+    if (record.result.kind !== "recommend") return;
+    // ml-xl (20tr) vượt ngân sách nên nhường chỗ: còn ml-l, ml-m, ml-s.
+    expect(record.result.recommendations.map((r) => r.productId)).toEqual([
+      "ml-l",
+      "ml-m",
+      "ml-s",
+    ]);
+  });
+});
+
 describe("số lượng khuyến nghị: 0/1/2/3/3+ sản phẩm hợp lệ", () => {
   const counts: Array<[number, number]> = [
     [1, 1],
@@ -213,6 +284,7 @@ describe("lý do, nguồn, và tính tự chứa của bản ghi", () => {
       ruleset: "may-lanh@v1",
       ranker: "ranker@v1",
       sufficiency: "sufficiency@v1",
+      relax: "goi_y_gan_nhat@v1",
     });
   });
 

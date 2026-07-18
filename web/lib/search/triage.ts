@@ -141,8 +141,12 @@ function categoryMentions(original: string, folded: string): Array<Mention<Categ
   return [...seen.values()];
 }
 
+// Hỏi ngành PHẢI kèm danh sách ngành thật từ registry — hỏi trống thì khách không
+// biết doanh nghiệp bán gì và tầng diễn đạt dễ bịa ngành không tồn tại.
+const CATEGORY_LABELS = CATEGORIES.map((c) => c.label).join(", ");
+
 const QUESTIONS: Record<string, string> = {
-  nganh_hang: "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?",
+  nganh_hang: `Dạ bên em hiện tư vấn các nhóm: ${CATEGORY_LABELS}. Anh/chị đang quan tâm nhóm nào ạ?`,
   ngan_sach: "Anh/chị dự tính ngân sách khoảng bao nhiêu để em lọc đúng tầm giá ạ?",
 };
 
@@ -197,7 +201,7 @@ function pickQuestion(
   if (missing.includes("nganh_hang")) {
     return {
       question: QUESTIONS.nganh_hang,
-      targetGap: "ngành hàng đang tư vấn",
+      targetGap: `ngành hàng đang tư vấn — bên em CHỈ có các nhóm: ${CATEGORY_LABELS}`,
       whyImpactful: "Chưa có ngành thì chưa có không gian lựa chọn nào để lọc hay xếp hạng.",
     };
   }

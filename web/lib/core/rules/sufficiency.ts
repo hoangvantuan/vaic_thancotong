@@ -10,7 +10,7 @@
 // Tầng trích tất định dùng lại lib/search (regex + lexicon, không LLM) — cùng câu
 // nói luôn ra cùng nhu cầu, đúng bất biến tái lập của phiếu #26.
 
-import { getCategory } from "@/lib/data/category-config";
+import { CATEGORIES, getCategory } from "@/lib/data/category-config";
 import { extract } from "@/lib/search/extract";
 import { fitValueOf } from "@/lib/search/clarify";
 import type { SufficiencyPolicy } from "../pipeline/run-turn";
@@ -19,7 +19,13 @@ import type { SufficiencyPolicy } from "../pipeline/run-turn";
 // luật ở đây chỉ là một bản hiện thực cắm vào, cùng chiều với HardRule/SoftCriterion.
 export type { SufficiencyAssessment, SufficiencyPolicy } from "../pipeline/run-turn";
 
-const CATEGORY_QUESTION = "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?";
+// Câu hỏi ngành PHẢI liệt kê ngành thật từ registry — hỏi trống ("nhóm sản phẩm nào?")
+// thì khách không biết doanh nghiệp bán gì, còn tầng diễn đạt LLM sẽ tự bịa ngành
+// không tồn tại ("điện lạnh", "viễn thông"…) và hội thoại kẹt vòng lặp hỏi ngành.
+const CATEGORY_LABELS = CATEGORIES.map((c) => c.label).join(", ");
+const CATEGORY_QUESTION = `Dạ bên em hiện tư vấn các nhóm: ${CATEGORY_LABELS}. Anh/chị đang quan tâm nhóm nào ạ?`;
+// targetGap mang theo danh sách ngành cho phép — tầng diễn đạt chỉ được chọn trong này.
+const CATEGORY_GAP = `ngành hàng đang tư vấn — bên em CHỈ có các nhóm: ${CATEGORY_LABELS}`;
 
 /** Ưu tiên trích tất định từ lời khách; ứng viên mô hình chỉ để đối chiếu. */
 export const demoSufficiency: SufficiencyPolicy = {
@@ -32,7 +38,7 @@ export const demoSufficiency: SufficiencyPolicy = {
     // Ngành: khách chọn trên giao diện → trích tất định. Mô hình không tự đặt ngành.
     const category = input.category ?? det.category;
     if (!category) {
-      return { kind: "ask", question: CATEGORY_QUESTION, targetGap: "ngành hàng đang tư vấn" };
+      return { kind: "ask", question: CATEGORY_QUESTION, targetGap: CATEGORY_GAP };
     }
 
     const cfg = getCategory(category);
