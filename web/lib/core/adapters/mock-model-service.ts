@@ -1,0 +1,58 @@
+// BỘ KẾT NỐI GIẢ — dịch vụ mô hình.
+//
+// Trả kết quả CỐ ĐỊNH và TẤT ĐỊNH: cùng đầu vào luôn ra cùng đầu ra. Nhờ vậy kiểm
+// thử không phụ thuộc việc có chạy Ollama hay không, và không tốn lượt gọi mô hình.
+//
+// Bản này cũng là tài liệu sống về ranh giới vai trò: mô hình chỉ TRÍCH XUẤT và
+// DIỄN ĐẠT, không quyết định sản phẩm nào hợp lệ.
+
+import { ok, type Result } from "../contracts/status";
+import type { ExtractedNeeds, ModelService } from "../ports/model-service";
+import type { SourcedProduct } from "../ports/product-source";
+
+/** Trích số đầu tiên khớp một mẫu, hoặc null. Cố tình thô — đây là bản giả. */
+function firstNumber(text: string, pattern: RegExp): number | null {
+  const match = text.match(pattern);
+  return match ? Number(match[1].replace(/[.,]/g, "")) : null;
+}
+
+export class MockModelService implements ModelService {
+  readonly name = "mock";
+
+  /** Đổi thành false để kiểm thử luồng "không có mô hình". */
+  constructor(private readonly ready = true) {}
+
+  async isReady(): Promise<boolean> {
+    return this.ready;
+  }
+
+  async extractNeeds(userText: string): Promise<Result<ExtractedNeeds>> {
+    const area = firstNumber(userText, /(\d+)\s*m2|(\d+)\s*m²/i);
+    const budgetTrieu = firstNumber(userText, /(\d+)\s*triệu/i);
+
+    const quotedSpans: string[] = [];
+    if (area !== null) quotedSpans.push(`${area}m2`);
+    if (budgetTrieu !== null) quotedSpans.push(`${budgetTrieu} triệu`);
+
+    return ok({
+      category: /máy lạnh|may lanh|điều hoà|dieu hoa/i.test(userText) ? "may_lanh" : null,
+      fitValue: area,
+      budgetVnd: budgetTrieu === null ? null : budgetTrieu * 1_000_000,
+      priorities: /ồn|on|yên tĩnh/i.test(userText) ? ["quiet"] : [],
+      quotedSpans,
+    });
+  }
+
+  async phraseQuestion(gap: string, context: string): Promise<Result<string>> {
+    return ok(`Cho em hỏi thêm về ${gap} với ạ (bối cảnh: ${context})?`);
+  }
+
+  async composeExplanation(
+    products: readonly SourcedProduct[],
+    needs: ExtractedNeeds
+  ): Promise<Result<string>> {
+    const names = products.map((p) => p.displayName).join(", ");
+    const fit = needs.fitValue === null ? "phòng của mình" : `phòng ${needs.fitValue}m2`;
+    return ok(`Với ${fit}, em gợi ý: ${names}.`);
+  }
+}
