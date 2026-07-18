@@ -42,7 +42,7 @@ Ngoài phạm vi:
 
 ## Bằng chứng từ dữ liệu đang có
 
-[Tệp danh mục máy lạnh](../spec_cate_gia/json/may-lanh.json) là nguồn sơ cấp trong kho mã. Kiểm tra trực tiếp tệp cho thấy:
+Dữ liệu máy lạnh (nguồn gốc [`docs/raw/Spec_cate_gia.xlsx`](../raw/Spec_cate_gia.xlsx) sheet *Máy lạnh*, nay đã gom vào [catalog](../dataset/catalog/catalog.jsonl) — lọc `category.name == "Máy lạnh"`) là nguồn sơ cấp trong kho mã. Kiểm tra trực tiếp cho thấy:
 
 | Quan sát | Kết quả | Hệ quả kiến trúc |
 |---|---:|---|
