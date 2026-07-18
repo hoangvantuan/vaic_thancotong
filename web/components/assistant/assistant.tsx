@@ -37,19 +37,15 @@ export function Assistant() {
 
   const busy = status === "submitted" || status === "streaming";
 
-  // Đang chờ mà CHƯA có gì nhìn thấy được từ bot thì giữ dấu "…" — stream thường
-  // mở đầu bằng reasoning/tool-call (không render), nếu chỉ dựa vào status thì
-  // "…" tắt sớm và khung chat trống trơn vài giây trước khi text đầu tiên hiện.
+  // Chỉ báo "đang làm việc": stream của agent xen kẽ reasoning → tool → text,
+  // các đoạn reasoning/tool không render nên nếu chỉ dựa vào status thì khung
+  // chat đứng im hàng giây (đầu lượt LẪN giữa lượt, khi tool tìm sản phẩm chạy).
+  // Quy tắc: đang bận mà text không thực sự chảy → hiện chỉ báo chờ.
   const last = messages.at(-1);
-  const lastHasVisibleContent =
-    last?.role === "assistant" &&
-    last.parts.some(
-      (p) =>
-        (p.type === "text" && p.text.trim()) ||
-        p.type === "data-products" ||
-        p.type === "data-categories"
-    );
-  const showTyping = busy && !lastHasVisibleContent;
+  const lastPart = last?.role === "assistant" ? last.parts.at(-1) : undefined;
+  const textFlowing =
+    lastPart?.type === "text" && lastPart.state === "streaming" && !!lastPart.text.trim();
+  const showTyping = busy && !textFlowing;
 
   // Funnel từ storefront: mở panel + mồi câu hỏi.
   useEffect(() => {
@@ -211,10 +207,13 @@ export function Assistant() {
 
             {showTyping && (
               <div className="msg-in flex justify-start">
-                <div className="dots rounded-2xl rounded-bl-md border border-border bg-surface-2 px-4 py-3 text-muted">
-                  <span />
-                  <span />
-                  <span />
+                <div className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-border bg-surface-2 px-4 py-3 text-muted">
+                  <span className="text-[0.78rem]">Anh/chị chờ em chút!</span>
+                  <span className="dots">
+                    <span />
+                    <span />
+                    <span />
+                  </span>
                 </div>
               </div>
             )}
