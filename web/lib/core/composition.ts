@@ -13,6 +13,8 @@ import type { SessionStore } from "./ports/session-store";
 import { MockProductSource } from "./adapters/mock-product-source";
 import { MockModelService } from "./adapters/mock-model-service";
 import { MemorySessionStore } from "./adapters/memory-session-store";
+import { AirconCatalogSource } from "./adapters/aircon-catalog-source";
+import { LlmModelService } from "./adapters/llm-model-service";
 
 export interface CoreServices {
   products: ProductSource;
@@ -36,8 +38,10 @@ function getStore(): SessionStore {
 /** Bộ dịch vụ cho môi trường chạy thật. */
 export function createCoreServices(): CoreServices {
   return {
-    products: new MockProductSource(),
-    model: new MockModelService(),
+    // Dữ liệu máy lạnh THẬT đã nạp kèm nguồn chứng minh (#25), không còn bản giả.
+    products: new AirconCatalogSource(),
+    // Hiểu câu bằng bộ trích xuất tất định + LLM (#27). Không có LLM vẫn chạy.
+    model: new LlmModelService(),
     store: getStore(),
     releaseVersion: process.env.RELEASE_VERSION ?? "demo@v0",
   };
