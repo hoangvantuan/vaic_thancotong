@@ -1,0 +1,104 @@
+{
+  "tool": "web/scripts/ingest-catalog.mjs",
+  "commits": {
+    "repo": "457a30a7735200573f0b520d3083b4b1fe60b9cf",
+    "dataFile": "2f4a41be6fe1c08654dc5dbbf97cf19f9288df6f",
+    "dataFileCommittedAt": "2026-07-18T12:07:03+07:00"
+  },
+  "sources": [
+    {
+      "path": "docs/dataset/catalog/catalog.jsonl",
+      "format": "jsonl",
+      "recordsFound": 21166,
+      "role": "kho sạch dùng chung — nguồn bản ghi duy nhất của lần nạp này"
+    },
+    {
+      "path": "docs/dataset/catalog/catalog.index.json",
+      "format": "json",
+      "recordsFound": 0,
+      "role": "siêu dữ liệu của kho (không chứa bản ghi sản phẩm)"
+    },
+    {
+      "path": "docs/raw/products_detail.json",
+      "format": "json",
+      "recordsFound": null,
+      "role": "nguồn thượng nguồn — đã hợp nhất vào catalog.jsonl bởi scripts/build_catalog.py, không quét lại ở phiếu này"
+    },
+    {
+      "path": "docs/raw/Spec_cate_gia.xlsx",
+      "format": "xlsx",
+      "recordsFound": null,
+      "role": "nguồn thượng nguồn — đã hợp nhất vào catalog.jsonl bởi scripts/build_catalog.py, không quét lại ở phiếu này"
+    }
+  ],
+  "policies": {
+    "observedAt": "observedAt = crawled_at (giờ Việt Nam, +07:00); bản ghi không có crawled_at dùng thời điểm commit của tệp dữ liệu",
+    "duplicates": "no_merge@v1 — chỉ phát hiện và báo; không gộp vì chưa có quy tắc gộp được ghi nhận và cùng product_id chưa chắc cùng sản phẩm",
+    "airconClassification": "category_aircon@v1 — NFC + trim + lowercase tên nhóm hàng, so với {\"máy lạnh\",\"điều hòa\",\"điều hoà\"}",
+    "displayEligibility": "display_eligibility@v1 — cần đủ tên/mã nhận biết + đường dẫn nguồn (url) + thời điểm ghi nhận (crawled_at)",
+    "priceLabel": "giá là GIÁ ĐÃ QUAN SÁT kèm observedAt — không phải giá hiện tại",
+    "areaArbitration": "parse_area_m2@v2 — hai trường diện tích cùng nghĩa: một trường có mặt thì dùng trường đó; cả hai cùng giá trị thì dùng; khác giá trị thì giữ CẢ HAI dạng conflicting, không chọn hộ"
+  },
+  "statusTotals": {
+    "success": 21166,
+    "quarantined": 0,
+    "error": 0,
+    "total": 21166
+  },
+  "duplicates": {
+    "wholeCatalog": {
+      "groupCount": 1325,
+      "recordCount": 3600
+    },
+    "aircon": {
+      "groupCount": 1,
+      "recordCount": 3,
+      "groups": [
+        {
+          "key": "product_id:9999",
+          "productId": "9999",
+          "lines": [
+            15693,
+            15694,
+            15695
+          ]
+        }
+      ]
+    }
+  },
+  "aircon": {
+    "totalProducts": 21166,
+    "airconRecords": 1116,
+    "airconDisplayEligible": 228,
+    "airconWithObservedPrice": 226
+  },
+  "referenceComparison": [
+    {
+      "metric": "totalProducts",
+      "reference": 21166,
+      "actual": 21166,
+      "delta": 0
+    },
+    {
+      "metric": "airconRecords",
+      "reference": 1116,
+      "actual": 1116,
+      "delta": 0
+    },
+    {
+      "metric": "airconDisplayEligible",
+      "reference": 228,
+      "actual": 228,
+      "delta": 0
+    },
+    {
+      "metric": "airconWithObservedPrice",
+      "reference": 226,
+      "actual": 226,
+      "delta": 0
+    }
+  ],
+  "quarantined": [],
+  "errors": [],
+  "errorCount": 0
+}
