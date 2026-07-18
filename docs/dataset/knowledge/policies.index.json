@@ -1,0 +1,54 @@
+{
+  "count": 7,
+  "policies": [
+    {
+      "file": "docs/raw/chat_luong_phuc_vu.md",
+      "slug": "chat_luong_phuc_vu",
+      "title": "Chính sách nâng cao chất lượng phục vụ khách hàng online",
+      "summary": "Kính chào quý khách, với cam kết đặt khách hàng làm trung tâm trong mọi suy nghĩ và hành động của mình, dienmayxanh.com đã có một số thay đổi dịch vụ Online để chất lượng phục vụ ngày càng tốt hơn:",
+      "chars": 1990
+    },
+    {
+      "file": "docs/raw/chinh_sach_bao_hanh_doi_tra.md",
+      "slug": "chinh_sach_bao_hanh_doi_tra",
+      "title": "1. NHÓM SẢN PHẨM TGDĐ/ĐMX KINH DOANH TRỪ NHÓM GIA DỤNG KHÔNG ĐIỆN, PHỤ KIỆN KHÔNG ĐIỆN, HÀNG TRƯNG BÀY ĐIỆN TỬ ĐIỆN LẠNH",
+      "summary": "Khách hàng muốn đổi trả sản phẩm chọn 1 trong các phương thức bên dưới:",
+      "chars": 12181
+    },
+    {
+      "file": "docs/raw/chinh_sach_giao_hang_lap_dat.md",
+      "slug": "chinh_sach_giao_hang_lap_dat",
+      "title": "Chính sách và bảng giá Dịch vụ - Vật tư - Vận chuyển tại Điện máy XANH",
+      "summary": "Đóng góp bởi Phạm Thị Ngọc Hà Cập nhật ngày 09/05/2026, lúc 00:00 994.610 lượt xem",
+      "chars": 14831
+    },
+    {
+      "file": "docs/raw/chinh_sach_khui_hop_apple.md",
+      "slug": "chinh_sach_khui_hop_apple",
+      "title": "CHÍNH SÁCH KHUI (MỞ) HỘP CÁC SẢN PHẨM APPLE (iPHONE, iPAD, MACBOOK, APPLE WATCH)",
+      "summary": "Áp dụng từ: 15/08/2019",
+      "chars": 1532
+    },
+    {
+      "file": "docs/raw/chinh_sach_xu_ly_du_lieu_ca_nhan.md",
+      "slug": "chinh_sach_xu_ly_du_lieu_ca_nhan",
+      "title": "CHÍNH SÁCH XỬ LÝ DỮ LIỆU CÁ NHÂN",
+      "summary": "(Cập nhật và áp dụng từ ngày 01/01/2026)",
+      "chars": 13668
+    },
+    {
+      "file": "docs/raw/dieu-khoang-su-dung.md",
+      "slug": "dieu-khoang-su-dung",
+      "title": "QUY CHẾ HOẠT ĐỘNG WEBSITE CUNG CẤP DỊCH VỤ TMĐT DIENMAYXANH.COM",
+      "summary": "*Áp dụng từ: 11/07/2023",
+      "chars": 21410
+    },
+    {
+      "file": "docs/raw/noi_quy_cua_hang.md",
+      "slug": "noi_quy_cua_hang",
+      "title": "Công Ty Cổ Phần Thế Giới Di Động",
+      "summary": "Số: 01.06 - 2014 /KD.TGDD",
+      "chars": 4137
+    }
+  ]
+}
