@@ -339,3 +339,63 @@ _Không dùng_: môi trường tự học trực tiếp, luồng dùng cấu hì
 **Đường cải tiến**:
 Luồng tách biệt đọc ảnh chụp quyết định và kết quả quan sát để phân tích lỗi, tạo hồ sơ đề xuất, bản dự tuyển và bằng chứng kiểm thử. Luồng này không có quyền sửa bản phát hành đang hoạt động; thay đổi chỉ tới đường phục vụ sau kiểm thử và phê duyệt tách vai trò.
 _Không dùng_: tự cập nhật hành vi trực tiếp, ghi đè cấu hình đang phục vụ
+
+**Tín hiệu cải tiến**:
+Quan sát bất biến về một lỗi, khoảng trống, biến động chất lượng hoặc kết quả có thể liên quan tới hệ thống trong phạm vi và thời gian xác định. Tín hiệu chỉ mở khả năng điều tra, không tự chứng minh nguyên nhân hoặc thay đổi cần làm.
+_Không dùng_: bằng chứng đã đủ, đề xuất thay đổi
+
+**Luồng tín hiệu cải tiến**:
+Phân loại tín hiệu thành sự cố bắt buộc, mẫu lỗi chất lượng hoặc giả thuyết từ kết quả để áp dụng yêu cầu bằng chứng và quyền phản ứng riêng. Các luồng không được cộng thành một điểm chung hoặc cho tín hiệu kinh doanh tự cấp quyền thay đổi.
+_Không dùng_: hàng chờ tín hiệu đồng nhất, điểm bất thường tổng hợp
+
+**Ứng viên vấn đề**:
+Hồ sơ có phiên bản gom các tín hiệu liên quan thành một vấn đề cần điều tra, kèm phạm vi ảnh hưởng, nguyên nhân thay thế, yếu tố gây nhiễu và khoảng trống bằng chứng. Ứng viên có thể được gộp, tách hoặc đóng mà không tạo đề xuất cải tiến.
+_Không dùng_: nguyên nhân gốc đã xác nhận, bản nháp đề xuất
+
+**Hồ sơ đề xuất cải tiến**:
+Gói có phiên bản mô tả thay đổi có thể kiểm thử, nối tới ứng viên vấn đề, bằng chứng thuận và chống, tác động, rủi ro, kiểm thử hồi quy, điều kiện dừng và cách quay lui. Hồ sơ không có quyền ảnh hưởng đường phục vụ cho tới khi vượt kiểm thử và phê duyệt.
+_Không dùng_: cấu hình đang hoạt động, thay đổi tự áp dụng
+
+**Cổng thăng cấp tín hiệu**:
+Tập điều kiện không bù trừ theo từng luồng, quyết định một tín hiệu được giữ để theo dõi hay được nâng thành ứng viên vấn đề. Sự cố bắt buộc, mẫu lỗi chất lượng và giả thuyết từ kết quả không dùng chung số đếm hoặc điểm tổng.
+_Không dùng_: ngưỡng sự kiện duy nhất, điểm bất thường chung
+
+**Mẫu thất bại kiểm chứng được**:
+Nhóm biểu hiện cùng phạm vi và điểm quyết định, có thể được xác nhận hoặc bác bỏ bằng một phép thử chung. Tín hiệu cần phép thử hoặc mô-đun khác phải nằm trong ứng viên vấn đề khác.
+_Không dùng_: nhóm câu chữ giống nhau, phân khúc khách hàng
+
+**Đề xuất cải tiến nguyên tử**:
+Hồ sơ đề xuất chỉ có một giả thuyết thay đổi chính và một tập thay đổi không thể tách rời để kiểm tra tác động cùng quay lui. Các cách sửa cạnh tranh cho cùng ứng viên vấn đề phải thành đề xuất riêng.
+_Không dùng_: gói tối ưu nhiều nguyên nhân, bản phát hành gom đề xuất
+
+**Bản dự tuyển**:
+Bản bất biến được tạo từ đúng một bản phát hành nền và một đề xuất cải tiến nguyên tử để kiểm thử. Bản dự tuyển không có quyền phục vụ ngoài phạm vi thử nghiệm đã được phê duyệt.
+_Không dùng_: cấu hình mới nhất, bản đang hoạt động
+
+**Cổng đủ điều kiện xem xét**:
+Cổng xác nhận hồ sơ đề xuất đã đủ vấn đề, bằng chứng hai phía, phạm vi, rủi ro, phép đo, hồi quy, điều kiện dừng và cách quay lui để chuyên gia ra quyết định. Vượt cổng chỉ cho phép xem xét, không đồng nghĩa được thử nghiệm.
+_Không dùng_: điểm ưu tiên, phê duyệt tự động
+
+**Hồ sơ thử nghiệm hạn chế**:
+Hợp đồng đã duyệt khóa bản dự tuyển, bản đối chứng, phạm vi phơi bày, cách phân bổ, phép đo, thời hạn, điều kiện dừng và bản an toàn chỉ định. Mở rộng bất kỳ phần nào phải tạo quyết định phê duyệt mới.
+_Không dùng_: bật thử cấu hình, kế hoạch thử không có giới hạn
+
+**Điều kiện dừng đã đăng ký**:
+Sự kiện hoặc ngưỡng được khóa trước thử nghiệm, buộc hệ thống tạm dừng hoặc quay lui khi xảy ra. Điều kiện không được sửa sau khi đã thấy kết quả để giữ một thử nghiệm đang bất lợi tiếp tục chạy.
+_Không dùng_: cảnh báo tham khảo, ngưỡng chỉnh trong lúc thử
+
+**Bản an toàn chỉ định**:
+Bản phát hành đã được duyệt trước và ghi đích danh trong hồ sơ thử nghiệm để hệ thống có thể tự quay về khi chạm điều kiện dừng. Hệ thống không được tự chọn một bản khác dù bản đó mới hơn.
+_Không dùng_: bản tốt gần nhất, phiên bản do hệ thống tự chọn
+
+**Phê duyệt hai lần**:
+Hai quyết định độc lập, lần đầu cho phép thử nghiệm hạn chế và lần sau cho phép mở rộng hoặc đưa bản dự tuyển vào sử dụng. Im lặng, hết thời hạn hoặc duyệt lần đầu không thay thế lần phê duyệt thứ hai.
+_Không dùng_: một lần duyệt cho toàn vòng đời, mặc định đồng ý
+
+**Dấu vết cải tiến**:
+Chuỗi bất biến nối tín hiệu, ứng viên vấn đề, đề xuất, bản dự tuyển, kiểm thử, phê duyệt, mức phơi bày, kết quả và quyết định quay lui hoặc phát hành. Mỗi lần gộp, tách, sửa hoặc chạy lại tạo bản ghi mới thay vì viết lại lịch sử.
+_Không dùng_: trạng thái đề xuất hiện tại, nhật ký rời rạc
+
+**Ngân sách xem xét chuyên gia**:
+Giới hạn năng lực đánh giá trong một kỳ, dùng để ưu tiên vấn đề theo mức bắt buộc, độ sẵn sàng bằng chứng, phạm vi ảnh hưởng và khả năng quay lui. Doanh thu dự kiến không được tự mình đưa một đề xuất lên trước lỗi an toàn hoặc suy giảm nghiêm trọng.
+_Không dùng_: chỉ tiêu phải duyệt đủ, xếp hạng theo doanh thu
