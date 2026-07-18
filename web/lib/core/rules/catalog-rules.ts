@@ -9,9 +9,11 @@
 import type { SourcedClaim } from "../contracts/provenance";
 import { numberOrNull } from "../contracts/status";
 import type { EligibilityFinding } from "../contracts/eligibility";
+import type { Recommendation } from "../contracts/turn";
 import type { SourcedProduct } from "../ports/product-source";
 import type { HardRule } from "../pipeline/screening";
 import type { SoftCriterion, TieBreaker } from "../pipeline/ranking";
+import type { RelaxPolicy } from "../pipeline/run-turn";
 
 const vnd = (n: number) => `${n.toLocaleString("vi-VN")}₫`;
 
@@ -236,6 +238,93 @@ const doOnThap: SoftCriterion = {
 };
 
 export const DEMO_SOFT_CRITERIA: readonly SoftCriterion[] = [vuaDienTich, duNganSach, doOnThap];
+
+// ---------------------------------------------------------------------------
+// Mục 7b — Gợi ý gần nhất khi diện tích khách nêu vượt phạm vi mọi mẫu
+// ---------------------------------------------------------------------------
+
+/** Một sản phẩm kèm các số đọc được, dùng cho việc chọn mẫu gần nhất. */
+interface ReadableRange {
+  p: SourcedProduct;
+  min: number;
+  max: number;
+  price: number | null;
+}
+
+/**
+ * `goi_y_gan_nhat@v1` — 0 sản phẩm qua lọc CHỈ VÌ diện tích quá lớn thì không từ
+ * chối khô: trả tối đa 3 mẫu công suất lớn nhất (gần diện tích khách nêu nhất) kèm
+ * caveat nói rõ giới hạn. Kẹt vì ngân sách hay thiếu dữ liệu phạm vi → null, giữ
+ * nguyên từ chối với hướng dẫn nới tiêu chí (bảng quy tắc, mục 7b).
+ */
+export const goiYGanNhat: RelaxPolicy = {
+  id: "goi_y_gan_nhat@v1",
+
+  suggest(needs, products) {
+    const area = needs.fitValue;
+    if (area == null) return null;
+
+    const readable: ReadableRange[] = [];
+    for (const p of products) {
+      const min = attrNumber(p, "areaMinM2");
+      const max = attrNumber(p, "areaMaxM2");
+      if (min !== null && max !== null) {
+        readable.push({ p, min, max, price: attrNumber(p, "priceVnd") });
+      }
+    }
+    if (readable.length === 0) return null;
+
+    // Chỉ nhận trường hợp kẹt VÌ diện tích: mẫu lớn nhất vẫn quá yếu so với area
+    // (cùng biên +5 với luật `pham_vi_dien_tich@v1` — dưới biên đó luật kia đã cho qua).
+    const biggest = Math.max(...readable.map((x) => x.max));
+    if (biggest + 5 >= area) return null;
+
+    // Ưu tiên mẫu trong ngân sách nếu khách đã nêu; CẢ NHÓM vượt ngân sách thì vẫn
+    // gợi ý nhóm lớn nhất — điểm đánh đổi về giá nằm ngay trong lý do có nguồn.
+    const budget = needs.budgetVnd;
+    const inBudget =
+      budget == null ? readable : readable.filter((x) => x.price !== null && x.price <= budget);
+    const pool = inBudget.length > 0 ? inBudget : readable;
+
+    // Gần area nhất = areaMaxM2 lớn nhất; hoà thì giá rẻ hơn trước, rồi mã sản phẩm
+    // (cùng tinh thần `ma_san_pham@v1`) — thứ tự tất định, chạy lại y hệt.
+    const top = [...pool]
+      .sort(
+        (a, b) =>
+          b.max - a.max ||
+          (a.price ?? Number.MAX_SAFE_INTEGER) - (b.price ?? Number.MAX_SAFE_INTEGER) ||
+          (a.p.id < b.p.id ? -1 : 1)
+      )
+      .slice(0, 3);
+
+    const recommendations: Recommendation[] = [];
+    for (const { p, min, max, price } of top) {
+      const reasons = [
+        ...claimFrom(p, "areaMaxM2", `Phạm vi ${min}–${max}m² — thuộc nhóm công suất lớn nhất bên em`),
+        ...(price !== null ? claimFrom(p, "priceVnd", `Giá ${vnd(price)}`) : []),
+      ];
+      if (reasons.length === 0) continue; // không có lý do có nguồn thì không khen suông
+      recommendations.push({
+        productId: p.id,
+        displayName: p.displayName,
+        reasons,
+        tradeoffs: claimFrom(
+          p,
+          "areaMaxM2",
+          `Chỉ đáp ứng tới ${max}m², thấp hơn nhiều so với ${area}m² anh/chị nêu — không gian này thường cần lắp nhiều máy`
+        ),
+      });
+    }
+    if (recommendations.length === 0) return null;
+
+    return {
+      recommendations,
+      caveat:
+        `Với diện tích ${area}m² anh/chị nêu, bên em chưa có mẫu nào đáp ứng trọn (mẫu lớn nhất tới ${biggest}m²). ` +
+        `Anh/chị cân nhắc các mẫu công suất lớn nhất dưới đây nhé — không gian lớn thế này thường cần lắp nhiều máy hoặc giải pháp điều hoà công nghiệp ạ.`,
+    };
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Mục 5 — Ngang hạng: thứ tự ổn định theo mã sản phẩm, không hàm ý chất lượng

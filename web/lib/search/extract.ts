@@ -135,7 +135,10 @@ export function extract(
   let m = f.match(RE_AREA);
   if (m) {
     const a = num(m[1]);
-    if (a >= 3 && a <= 500) n.areaM2 = a; // ngoài khoảng này là số rác
+    // Ngưỡng CHỈ chặn số rác, không phải chính sách ngành: "kho 1000m2" là câu nói
+    // thật và phải được HIỂU — chuyện không có máy nào phù hợp do luật lọc quyết
+    // (và luật gợi-ý-gần-nhất trả lời), không phải do vứt số ngay từ tầng trích.
+    if (a >= 3 && a <= 2000) n.areaM2 = a;
   }
 
   m = f.match(RE_PEOPLE) ?? f.match(RE_FAMILY);

@@ -10,7 +10,8 @@
   "appliedRuleVersions": {
     "ruleset": "may-lanh@v1",
     "ranker": "ranker@v1",
-    "sufficiency": "sufficiency@v1"
+    "sufficiency": "sufficiency@v1",
+    "relax": "goi_y_gan_nhat@v1"
   },
   "eligibility": {
     "rows": [

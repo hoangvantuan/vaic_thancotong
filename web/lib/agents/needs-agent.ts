@@ -27,7 +27,8 @@ const BRANDS = [
 function parseFitValue(text: string, unit: string): number | undefined {
   let m: RegExpMatchArray | null = null;
   if (unit === "m²") {
-    m = text.match(/(\d{1,3})\s*(?:m²|m2|m\^2|mét vuông|met vuong)(?!\d)/iu);
+    // 4 chữ số để hiểu cả nhà xưởng/kho ("1000m2") — hợp hay không do tầng lọc quyết.
+    m = text.match(/(\d{1,4})\s*(?:m²|m2|m\^2|mét vuông|met vuong)(?!\d)/iu);
   } else if (unit === "người") {
     m =
       text.match(/(\d{1,2})\s*người/iu) ??

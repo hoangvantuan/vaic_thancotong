@@ -45,6 +45,21 @@ export type RecommendationBuilder = (
   needs: ExtractedNeeds
 ) => Recommendation | null;
 
+/**
+ * Luật gợi-ý-gần-nhất: khi 0 sản phẩm qua lọc, luật ĐƯỢC PHÉP đề xuất phương án
+ * gần nhu cầu nhất kèm caveat nói rõ vì sao — thay vì từ chối khô. Trả null =
+ * không có gì đáng gợi ý, giữ nguyên từ chối. Khuyến nghị luật dựng vẫn phải có
+ * lý do CÓ NGUỒN và vẫn đi qua cổng công bố như mọi kết quả khác.
+ */
+export interface RelaxPolicy {
+  /** Mã có phiên bản, vd "goi_y_gan_nhat@v1" — đối chiếu với bảng quy tắc. */
+  id: string;
+  suggest(
+    needs: ExtractedNeeds,
+    products: readonly SourcedProduct[]
+  ): { recommendations: readonly Recommendation[]; caveat: string } | null;
+}
+
 export interface TurnRules {
   hard: readonly HardRule[];
   soft: readonly SoftCriterion[];
@@ -55,6 +70,8 @@ export interface TurnRules {
   sufficiency?: SufficiencyPolicy | null;
   /** Cách dựng khuyến nghị từ dòng xếp hạng. Vắng mặt = bản tối thiểu của khung. */
   recommend?: RecommendationBuilder | null;
+  /** Gợi ý gần nhất khi 0 sản phẩm qua lọc. Vắng mặt = từ chối như khung #24. */
+  relax?: RelaxPolicy | null;
 }
 
 /**
@@ -214,6 +231,20 @@ export async function runTurn(
   );
 
   if (ranking.rows.length === 0) {
+    // Gợi ý gần nhất (7b): 0 sản phẩm qua lọc chưa chắc là ngõ cụt — luật (nếu có)
+    // được đề xuất phương án gần nhu cầu nhất kèm caveat. Báo cáo lọc/xếp hạng lưu
+    // vẫn là ảnh chụp GỐC (mọi sản phẩm bị loại + lý do), không phải bản nới.
+    const alt = rules.relax?.suggest(needs, listed.data) ?? null;
+    if (alt) {
+      const nearest = toOneToThree([...alt.recommendations]);
+      if (nearest) {
+        return save(
+          { kind: "recommend", recommendations: nearest, caveats: [alt.caveat, ...caveats] },
+          eligibility,
+          ranking
+        );
+      }
+    }
     return save(
       declineTurn("no_eligible_product", "Chưa có sản phẩm nào thoả hết ràng buộc, mình nới ngân sách hoặc đổi tiêu chí nhé ạ"),
       eligibility,
@@ -287,6 +318,7 @@ export async function runTurn(
         ruleset: rules.rulesetVersion,
         ranker: rules.rankerVersion,
         sufficiency: rules.sufficiency?.id ?? null,
+        relax: rules.relax?.id ?? null,
       },
       eligibility,
       ranking,

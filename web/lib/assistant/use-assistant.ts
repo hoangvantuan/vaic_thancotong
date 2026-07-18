@@ -129,27 +129,66 @@ export function useAssistant(): Assistant {
     setError(null);
   }, []);
 
+  /**
+   * Mở phiên mới THAY cho phiên hỏng — giữ nguyên hội thoại đang hiển thị.
+   * Trả mã phiên mới, hoặc null nếu không mở được.
+   */
+  const recoverSession = useCallback(async (): Promise<string | null> => {
+    try {
+      const res = await fetch("/api/session", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+      });
+      if (!res.ok) return null;
+      const data = (await res.json()) as { sessionId: string; sessionSecret: string };
+      secretRef.current = data.sessionSecret;
+      try {
+        localStorage.setItem(SID_KEY, data.sessionId);
+        localStorage.setItem(SECRET_KEY, data.sessionSecret);
+      } catch {
+        /* storage bị chặn — phiên vẫn dùng được trong tab này */
+      }
+      setSessionId(data.sessionId);
+      return data.sessionId;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  /**
+   * Gửi một lượt; nếu phiên hỏng (vd máy chủ khởi động lại làm mất phiên trong
+   * RAM) thì mở phiên mới rồi gửi lại đúng một lần — khách không phải làm gì.
+   */
+  const postTurnWithRecovery = useCallback(
+    async (sid: string, text: string): Promise<Response> => {
+      const post = (s: string) =>
+        fetch("/api/turn", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({ sessionId: s, userText: text }),
+        });
+      const res = await post(sid);
+      if (res.ok) return res;
+      const peek = (await res.clone().json().catch(() => ({}))) as WireError;
+      if (peek.error?.kind !== "forbidden") return res;
+      const newSid = await recoverSession();
+      if (!newSid) return res;
+      return post(newSid);
+    },
+    [authHeaders, recoverSession]
+  );
+
   const runTurn = useCallback(
     async (text: string) => {
       if (!sessionId) return;
       setStatus("sending");
       setError(null);
       try {
-        const res = await fetch("/api/turn", {
-          method: "POST",
-          headers: authHeaders(),
-          body: JSON.stringify({ sessionId, userText: text }),
-        });
+        const res = await postTurnWithRecovery(sessionId, text);
         if (!res.ok) {
           const body = (await res.json().catch(() => ({}))) as WireError;
           const kind = body.error?.kind ?? "storage_failure";
           const message = body.error?.message ?? "Có lỗi khi xử lý lượt này.";
-          // Phiên hỏng (vd máy chủ khởi động lại) → mở phiên mới, khách không phải làm gì.
-          if (kind === "forbidden") {
-            resetSession();
-            await startSession();
-            return;
-          }
           setError(classify(kind, message));
           setCanRetry(RETRYABLE.has(kind));
           lastTextRef.current = RETRYABLE.has(kind) ? text : null;
@@ -170,7 +209,7 @@ export function useAssistant(): Assistant {
         setStatus("idle");
       }
     },
-    [sessionId, authHeaders, resetSession, startSession]
+    [sessionId, postTurnWithRecovery]
   );
 
   const send = useCallback(
