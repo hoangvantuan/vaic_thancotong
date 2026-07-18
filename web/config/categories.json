@@ -23,119 +23,261 @@
       "slug": "may_lanh",
       "label": "Máy lạnh",
       "emoji": "❄️",
-      "sourceCategoryNames": ["Máy lạnh"],
-      "keywords": ["máy lạnh", "điều hòa", "điều hoà", "máy điều hòa", "aircon", "air conditioner"],
-      "banned": ["Điện năng tiêu thụ"],
+      "sourceCategoryNames": [
+        "Máy lạnh"
+      ],
+      "keywords": [
+        "máy lạnh",
+        "điều hòa",
+        "điều hoà",
+        "máy điều hòa",
+        "aircon",
+        "air conditioner"
+      ],
+      "banned": [
+        "Điện năng tiêu thụ"
+      ],
       "fit": {
         "slot": "roomAreaM2",
         "unit": "m²",
         "parser": "roomAreaRange",
         "match": "covers",
-        "fields": ["Phạm vi sử dụng", "Phạm vi làm lạnh hiệu quả"],
+        "fields": [
+          "Phạm vi sử dụng",
+          "Phạm vi làm lạnh hiệu quả"
+        ],
         "question": "Phòng mình rộng khoảng bao nhiêu m² ạ, để em chọn đúng công suất?"
       },
       "highlights": [
-        { "label": "Công suất", "format": "raw", "fields": ["Công suất làm lạnh"] },
+        {
+          "label": "Công suất",
+          "format": "raw",
+          "fields": [
+            "Công suất làm lạnh"
+          ]
+        },
         {
           "label": "Nhãn năng lượng",
           "format": "stars",
-          "fields": ["Nhãn năng lượng"],
+          "fields": [
+            "Nhãn năng lượng"
+          ],
           "plain": {
             "reader": "stars",
             "scale": [
-              { "max": 3, "say": "có dán nhãn năng lượng ở mức trung bình", "weak": true },
-              { "max": 4, "say": "đạt 4 sao nhãn năng lượng, tiết kiệm điện khá tốt" },
-              { "max": 5, "say": "đạt 5 sao nhãn năng lượng — mức tiết kiệm điện cao nhất" }
+              {
+                "max": 3,
+                "say": "có dán nhãn năng lượng ở mức trung bình",
+                "weak": true
+              },
+              {
+                "max": 4,
+                "say": "đạt 4 sao nhãn năng lượng, tiết kiệm điện khá tốt"
+              },
+              {
+                "max": 5,
+                "say": "đạt 5 sao nhãn năng lượng — mức tiết kiệm điện cao nhất"
+              }
             ]
           }
         },
         {
           "label": "Độ ồn",
           "format": "db",
-          "fields": ["Độ ồn", "Độ ồn trung bình (được đo trong phòng thí nghiệm)"],
+          "fields": [
+            "Độ ồn",
+            "Độ ồn trung bình (được đo trong phòng thí nghiệm)"
+          ],
           "plain": {
             "reader": "minDb",
             "note": "Số nhà sản xuất công bố đo trong phòng thí nghiệm — cách nói phải quy về nguồn, không hứa mức êm thực tế.",
             "scale": [
-              { "max": 25, "say": "nhà sản xuất công bố rất êm ở mức quạt thấp nhất, đặt phòng ngủ thoải mái" },
-              { "max": 33, "say": "chạy êm ở mức thấp nhất, cỡ tiếng thì thầm trong phòng" },
-              { "max": 42, "say": "chạy khá êm, cỡ tiếng quạt để số nhỏ" },
-              { "max": 999, "say": "nghe rõ tiếng máy hơn, để phòng khách hợp hơn phòng ngủ", "weak": true }
+              {
+                "max": 25,
+                "say": "nhà sản xuất công bố rất êm ở mức quạt thấp nhất, đặt phòng ngủ thoải mái"
+              },
+              {
+                "max": 33,
+                "say": "chạy êm ở mức thấp nhất, cỡ tiếng thì thầm trong phòng"
+              },
+              {
+                "max": 42,
+                "say": "chạy khá êm, cỡ tiếng quạt để số nhỏ"
+              },
+              {
+                "max": 999,
+                "say": "nghe rõ tiếng máy hơn, để phòng khách hợp hơn phòng ngủ",
+                "weak": true
+              }
             ]
           }
         }
-      ]
+      ],
+      "search": {
+        "fields": [
+          "Tiện ích",
+          "Công nghệ tiết kiệm điện",
+          "Loại Inverter",
+          "Inverter"
+        ]
+      }
     },
     {
       "slug": "tu_lanh",
       "label": "Tủ lạnh",
       "emoji": "🧊",
-      "sourceCategoryNames": ["Tủ lạnh", "Tủ Lạnh"],
-      "keywords": ["tủ lạnh", "tu lanh", "refrigerator", "side by side"],
+      "sourceCategoryNames": [
+        "Tủ lạnh",
+        "Tủ Lạnh"
+      ],
+      "keywords": [
+        "tủ lạnh",
+        "tu lanh",
+        "refrigerator",
+        "side by side"
+      ],
       "banned": [],
       "fit": {
         "slot": "people",
         "unit": "người",
         "parser": "peopleRange",
         "match": "covers",
-        "fields": ["Dung tích sử dụng"],
+        "fields": [
+          "Dung tích sử dụng"
+        ],
         "question": "Nhà mình khoảng mấy người dùng ạ, để em chọn dung tích vừa đủ?"
       },
       "highlights": [
-        { "label": "Dung tích", "format": "raw", "fields": ["Dung tích sử dụng"] },
+        {
+          "label": "Dung tích",
+          "format": "raw",
+          "fields": [
+            "Dung tích sử dụng"
+          ]
+        },
         {
           "label": "Kiểu tủ",
           "format": "raw",
-          "fields": ["Kiểu tủ"],
+          "fields": [
+            "Kiểu tủ"
+          ],
           "plain": {
             "match": [
-              { "contains": "Side by Side", "say": "hai cánh mở sang hai bên, để vừa đồ to nhưng cần chỗ đặt rộng" },
-              { "contains": "Multi Door", "say": "nhiều ngăn riêng, chia thực phẩm gọn gàng, hợp nhà đông người" },
-              { "contains": "Ngăn đá trên", "say": "kiểu quen thuộc, lấy đồ đông tiện, giá thường dễ chịu hơn" },
-              { "contains": "Ngăn đá dưới", "say": "ngăn mát nằm trên tầm tay, đỡ phải cúi khi lấy đồ dùng hằng ngày" },
-              { "contains": "Mini", "say": "cỡ nhỏ gọn, hợp phòng trọ hoặc để phòng riêng" }
+              {
+                "contains": "Side by Side",
+                "say": "hai cánh mở sang hai bên, để vừa đồ to nhưng cần chỗ đặt rộng"
+              },
+              {
+                "contains": "Multi Door",
+                "say": "nhiều ngăn riêng, chia thực phẩm gọn gàng, hợp nhà đông người"
+              },
+              {
+                "contains": "Ngăn đá trên",
+                "say": "kiểu quen thuộc, lấy đồ đông tiện, giá thường dễ chịu hơn"
+              },
+              {
+                "contains": "Ngăn đá dưới",
+                "say": "ngăn mát nằm trên tầm tay, đỡ phải cúi khi lấy đồ dùng hằng ngày"
+              },
+              {
+                "contains": "Mini",
+                "say": "cỡ nhỏ gọn, hợp phòng trọ hoặc để phòng riêng"
+              }
             ]
           }
         },
         {
           "label": "Tiết kiệm điện",
           "format": "raw",
-          "fields": ["Công nghệ tiết kiệm điện"],
+          "fields": [
+            "Công nghệ tiết kiệm điện"
+          ],
           "plain": {
             "match": [
-              { "contains": "Inverter", "say": "có Inverter nên chạy đều ở mức thấp, dùng lâu dài đỡ tốn điện hơn loại thường" }
+              {
+                "contains": "Inverter",
+                "say": "có Inverter nên chạy đều ở mức thấp, dùng lâu dài đỡ tốn điện hơn loại thường"
+              }
             ]
           }
         }
-      ]
+      ],
+      "search": {
+        "fields": [
+          "Tiện ích",
+          "Công nghệ tiết kiệm điện"
+        ]
+      }
     },
     {
       "slug": "may_giat",
       "label": "Máy giặt",
       "emoji": "🫧",
-      "sourceCategoryNames": ["Máy giặt"],
-      "keywords": ["máy giặt", "may giat", "giặt sấy", "washing machine"],
+      "sourceCategoryNames": [
+        "Máy giặt"
+      ],
+      "keywords": [
+        "máy giặt",
+        "may giat",
+        "giặt sấy",
+        "washing machine"
+      ],
       "banned": [],
       "fit": {
         "slot": "people",
         "unit": "người",
         "parser": "peopleRange",
         "match": "covers",
-        "fields": ["Số người sử dụng"],
+        "fields": [
+          "Số người sử dụng"
+        ],
         "question": "Nhà mình khoảng mấy người ạ, để em chọn khối lượng giặt phù hợp?"
       },
       "highlights": [
-        { "label": "Loại máy", "format": "raw", "fields": ["Loại máy giặt"] },
-        { "label": "Phù hợp", "format": "raw", "fields": ["Số người sử dụng"] },
-        { "label": "Tốc độ vắt", "format": "raw", "fields": ["Tốc độ quay vắt tối đa"] }
-      ]
+        {
+          "label": "Loại máy",
+          "format": "raw",
+          "fields": [
+            "Loại máy giặt"
+          ]
+        },
+        {
+          "label": "Phù hợp",
+          "format": "raw",
+          "fields": [
+            "Số người sử dụng"
+          ]
+        },
+        {
+          "label": "Tốc độ vắt",
+          "format": "raw",
+          "fields": [
+            "Tốc độ quay vắt tối đa"
+          ]
+        }
+      ],
+      "search": {
+        "fields": [
+          "Tiện ích",
+          "Loại Inverter"
+        ]
+      }
     },
     {
       "slug": "tivi",
       "label": "Tivi",
       "emoji": "📺",
-      "sourceCategoryNames": ["Tivi"],
-      "keywords": ["tivi", "tv", "ti vi", "smart tivi", "television", "màn hình lớn"],
+      "sourceCategoryNames": [
+        "Tivi"
+      ],
+      "keywords": [
+        "tivi",
+        "tv",
+        "ti vi",
+        "smart tivi",
+        "television",
+        "màn hình lớn"
+      ],
       "banned": [],
       "fit": {
         "slot": "screenInch",
@@ -143,44 +285,145 @@
         "parser": "inches",
         "match": "near",
         "tolerance": 7,
-        "fields": ["Kích cỡ màn hình"],
+        "fields": [
+          "Kích cỡ màn hình"
+        ],
         "question": "Anh/chị muốn tivi khoảng bao nhiêu inch ạ?"
       },
       "highlights": [
-        { "label": "Màn hình", "format": "raw", "fields": ["Kích cỡ màn hình"] },
-        { "label": "Độ phân giải", "format": "raw", "fields": ["Độ phân giải"] },
-        { "label": "Hệ điều hành", "format": "raw", "fields": ["Hệ điều hành"] }
-      ]
+        {
+          "label": "Màn hình",
+          "format": "raw",
+          "fields": [
+            "Kích cỡ màn hình"
+          ]
+        },
+        {
+          "label": "Độ phân giải",
+          "format": "raw",
+          "fields": [
+            "Độ phân giải"
+          ]
+        },
+        {
+          "label": "Hệ điều hành",
+          "format": "raw",
+          "fields": [
+            "Hệ điều hành"
+          ]
+        }
+      ],
+      "search": {
+        "fields": [
+          "Tiện ích thông minh khác"
+        ]
+      }
     },
     {
       "slug": "dien_thoai",
       "label": "Điện thoại",
       "emoji": "📱",
-      "sourceCategoryNames": ["Điện thoại"],
-      "keywords": ["điện thoại", "dien thoai", "smartphone", "iphone", "samsung galaxy", "máy để chụp ảnh"],
+      "sourceCategoryNames": [
+        "Điện thoại"
+      ],
+      "keywords": [
+        "điện thoại",
+        "dien thoai",
+        "smartphone",
+        "iphone",
+        "samsung galaxy",
+        "máy để chụp ảnh"
+      ],
       "banned": [],
       "fit": null,
       "highlights": [
-        { "label": "Bộ nhớ", "format": "raw", "fields": ["Dung lượng lưu trữ"] },
-        { "label": "Pin", "format": "raw", "fields": ["Dung lượng pin"] },
-        { "label": "Màn hình", "format": "raw", "fields": ["Màn hình rộng"] },
-        { "label": "Mạng", "format": "raw", "fields": ["Mạng di động"] }
-      ]
+        {
+          "label": "Bộ nhớ",
+          "format": "raw",
+          "fields": [
+            "Dung lượng lưu trữ"
+          ]
+        },
+        {
+          "label": "Pin",
+          "format": "raw",
+          "fields": [
+            "Dung lượng pin"
+          ]
+        },
+        {
+          "label": "Màn hình",
+          "format": "raw",
+          "fields": [
+            "Màn hình rộng"
+          ]
+        },
+        {
+          "label": "Mạng",
+          "format": "raw",
+          "fields": [
+            "Mạng di động"
+          ]
+        }
+      ],
+      "search": {
+        "fields": [
+          "Tính năng đặc biệt"
+        ]
+      }
     },
     {
       "slug": "laptop",
       "label": "Laptop",
       "emoji": "💻",
-      "sourceCategoryNames": ["Laptop"],
-      "keywords": ["laptop", "máy tính xách tay", "notebook", "macbook", "máy tính để học", "làm việc văn phòng"],
+      "sourceCategoryNames": [
+        "Laptop"
+      ],
+      "keywords": [
+        "laptop",
+        "máy tính xách tay",
+        "notebook",
+        "macbook",
+        "máy tính để học",
+        "làm việc văn phòng"
+      ],
       "banned": [],
       "fit": null,
       "highlights": [
-        { "label": "CPU", "format": "raw", "fields": ["Công nghệ CPU"] },
-        { "label": "RAM", "format": "raw", "fields": ["RAM"] },
-        { "label": "Ổ cứng", "format": "raw", "fields": ["Ổ cứng"] },
-        { "label": "Màn hình", "format": "raw", "fields": ["Kích thước màn hình"] }
-      ]
+        {
+          "label": "CPU",
+          "format": "raw",
+          "fields": [
+            "Công nghệ CPU"
+          ]
+        },
+        {
+          "label": "RAM",
+          "format": "raw",
+          "fields": [
+            "RAM"
+          ]
+        },
+        {
+          "label": "Ổ cứng",
+          "format": "raw",
+          "fields": [
+            "Ổ cứng"
+          ]
+        },
+        {
+          "label": "Màn hình",
+          "format": "raw",
+          "fields": [
+            "Kích thước màn hình"
+          ]
+        }
+      ],
+      "search": {
+        "fields": [
+          "Tính năng khác"
+        ]
+      }
     }
   ]
 }
