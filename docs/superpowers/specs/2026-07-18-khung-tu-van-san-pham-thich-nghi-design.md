@@ -18,7 +18,7 @@ Bản mẫu 48 giờ dùng máy lạnh để kiểm chứng chiều sâu. Lõi d
 
 ## 2. Quyết định đã chốt
 
-oke| Chủ đề                                | Quyết định                                                                                                                                                                                                                                   |
+| Chủ đề                                | Quyết định                                                                                                                                                                                                                                   |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Hình dạng nhận định giúp hiểu nhu cầu | Hồ sơ giả thuyết có bằng chứng, độ tin cậy, mâu thuẫn và câu hỏi kiểm chứng                                                                                                                                                                  |
 | Phân tích sản phẩm                    | Chuỗi nhân quả từ thông số đến yếu tố quyết định, có điều kiện áp dụng và điểm đánh đổi                                                                                                                                                      |
