@@ -67,3 +67,91 @@ _Không dùng_: câu hỏi tạo tức thời không lưu dấu, trường câu 
 **Dấu vết quyết định**:
 Chuỗi liên kết các phiên bản giả thuyết, câu hỏi, thao tác lọc và xếp hạng, cách giải thích, dữ liệu thương mại tại thời điểm tư vấn cùng kết quả quan sát được. Dấu vết giữ cả cách giải thích thay thế để giao dịch không bị coi là bằng chứng trực tiếp rằng tư vấn đã đúng.
 _Không dùng_: nhãn mua là đúng, kết quả giao dịch đơn lẻ
+
+**Nút sản phẩm**:
+Đơn vị có kiểu trong đồ thị sản phẩm, đại diện cho dữ liệu nguồn, thuộc tính chuẩn hóa, năng lực, kết quả sử dụng, lợi ích, bất lợi, điều kiện, điểm đánh đổi hoặc yếu tố quyết định. Nội dung riêng của ngành hàng không làm thay đổi vỏ chung của nút.
+_Không dùng_: trường thông số tự do, nút không xác định loại
+
+**Quan hệ sản phẩm**:
+Một nhận định có phiên bản nối các nút sản phẩm, tách riêng ba trục: ý nghĩa, điều kiện hoặc hình dạng và trạng thái kiểm chứng. Quan hệ có bằng chứng, phạm vi riêng và được phép phân nhánh, hội tụ hoặc tham gia tương tác thay vì bị ép thành chuỗi tuyến tính.
+_Không dùng_: mũi tên ảnh hưởng chung, liên kết không có bằng chứng
+
+**Đồ thị giá trị sản phẩm**:
+Đồ thị có kiểu nối dữ liệu sản phẩm với thuộc tính, năng lực, kết quả sử dụng, lợi ích, bất lợi, điểm đánh đổi và yếu tố quyết định. Đồ thị có thể chứa quan hệ nhân quả đã kiểm chứng, nhưng không mặc nhiên coi mọi mũi tên là nhân quả.
+_Không dùng_: đồ thị nhân quả sản phẩm, chuỗi thông số tới quyết định
+
+**Đối tượng nguồn sản phẩm**:
+Một loại quan sát gốc lưu bất biến nội dung do nhà sản xuất, hệ thống danh mục, phép đo hoặc nguồn có thẩm quyền cung cấp, kèm thời điểm, phạm vi và quyền sử dụng. Đối tượng nguồn không tự mang ý nghĩa đã chuẩn hóa.
+_Không dùng_: thuộc tính chuẩn hóa, giá trị đã diễn giải
+
+**Quan hệ dẫn xuất**:
+Liên kết truy nguyên từ đối tượng nguồn sản phẩm tới thuộc tính chuẩn hóa, ghi rõ quy tắc biến đổi, tác nhân thực hiện, thời điểm, phiên bản và kết quả kiểm tra.
+_Không dùng_: sao chép giá trị, chuyển đổi không lưu dấu
+
+**Phiên bản sản phẩm**:
+Biến thể kỹ thuật và thương mại chính xác của một sản phẩm trong thị trường và thời gian xác định. Mọi thuộc tính phải gắn với đúng phiên bản thay vì suy rộng cho cả dòng sản phẩm.
+_Không dùng_: tên dòng sản phẩm chung, sản phẩm không có phiên bản
+
+**Thuộc tính chuẩn hóa**:
+Đặc điểm hoặc giá trị đo của một phiên bản sản phẩm đã được đưa về khái niệm, đơn vị và phạm vi dùng chung thông qua quan hệ dẫn xuất có kiểm tra.
+_Không dùng_: giá trị nguồn chưa xử lý, nội dung quảng cáo
+
+**Năng lực sản phẩm**:
+Khả năng mà cấu hình sản phẩm cho phép, duy trì hoặc giới hạn trong điều kiện xác định. Năng lực không đồng nhất với kết quả người dùng thực sự nhận được.
+_Không dùng_: lợi ích khách hàng, kết quả sử dụng
+
+**Kết quả sử dụng**:
+Thay đổi hoặc trạng thái có thể quan sát khi một năng lực sản phẩm hoạt động trong hoàn cảnh cụ thể. Kết quả chưa mặc nhiên là lợi ích hoặc bất lợi.
+_Không dùng_: năng lực, lời hứa giá trị
+
+**Lợi ích hoặc bất lợi theo hoàn cảnh**:
+Ý nghĩa tích cực hoặc tiêu cực của một kết quả sử dụng đối với mục tiêu của một chủ thể trong hoàn cảnh xác định. Ý nghĩa này không phải thuộc tính cố định của sản phẩm.
+_Không dùng_: lợi ích chung cho mọi khách hàng, chất lượng tuyệt đối
+
+**Điều kiện áp dụng**:
+Đối tượng có cấu trúc và phiên bản, xác định ranh giới về sản phẩm, môi trường, tải, cách sử dụng, chủ thể hoặc thời gian mà một quan hệ còn hiệu lực. Điều kiện có thể kết hợp bằng “và”, “hoặc”, “không”; trạng thái chưa biết không đồng nghĩa với sai.
+_Không dùng_: ghi chú tùy chọn, ngoại lệ không có cấu trúc
+
+**Điểm đánh đổi sản phẩm**:
+Phần chi phí, bất tiện, suy giảm hoặc rủi ro có thể đi cùng một cấu hình hay kết quả sử dụng trong hoàn cảnh cụ thể. Điểm đánh đổi không tự nói khách hàng có chấp nhận hay không.
+_Không dùng_: điểm trừ cố định, sở thích khách hàng
+
+**Yếu tố quyết định**:
+Tiêu chí có khả năng làm thay đổi việc lọc hoặc thứ hạng sản phẩm khi được nối với nhu cầu, ràng buộc hoặc ưu tiên có đủ căn cứ của khách hàng.
+_Không dùng_: thuộc tính sản phẩm quan trọng mặc định, trọng số chuyên gia
+
+**Quan hệ nhiều thành phần**:
+Quan hệ sản phẩm có nhiều nguồn tham gia với vai trò rõ ràng để biểu diễn hiệp lực, đối kháng, dư thừa hoặc nút thắt mà các quan hệ từng cặp không diễn đạt đúng. Tương tác có bằng chứng và trạng thái kiểm chứng riêng, không được suy ra từ tác động riêng lẻ của từng thành phần.
+_Không dùng_: tập mũi tên từng cặp giả tương tác, nút tổ hợp mặc định
+
+**Mức bằng chứng sản phẩm**:
+Cổng B0 đến B3 gắn với từng quan hệ sản phẩm, từ chưa có căn cứ, giả thuyết có nguồn, quan hệ được hỗ trợ tới nhân quả hoặc sở thích đã kiểm chứng. Mức bằng chứng quy định quyền sử dụng nhưng không thay thế các đánh giá riêng về độ trực tiếp, thiết kế, phạm vi, khả năng lặp lại, độ mới và phản chứng.
+_Không dùng_: mức bằng chứng của cả tài liệu, điểm tin cậy duy nhất
+
+**Sổ đăng ký quan hệ sản phẩm**:
+Danh mục có phiên bản định nghĩa các quan hệ dùng chung từ dẫn xuất dữ liệu tới quyết định, cùng loại nút hợp lệ, hướng, số thành phần, điều kiện, mức bằng chứng, quyền sử dụng và suy luận bị cấm. Gói ngành hàng không được tạo từ đồng nghĩa cho quan hệ lõi đã có.
+_Không dùng_: nhãn quan hệ tự do, quan hệ ảnh hưởng duy nhất
+
+**Bản phát hành đồ thị**:
+Tập bất biến khóa chính xác phiên bản sổ đăng ký, gói ngành hàng, nút, quan hệ, chính sách bằng chứng và bộ kiểm thử được phép dùng trong một phạm vi tư vấn. Giá, tồn kho và khuyến mãi theo thời điểm không thuộc bản phát hành này.
+_Không dùng_: đồ thị được sửa trực tiếp, bản sao đồ thị theo từng phiên
+
+**Đối tượng ghép quyết định**:
+Liên kết theo phiên giữa phiên bản giả thuyết khách hàng và yếu tố quyết định trong bản phát hành đồ thị, kèm hoàn cảnh, bằng chứng hai phía và quyền ảnh hưởng. Phép ghép bị giới hạn bởi phía có bằng chứng yếu hơn và không sao chép dữ liệu giữa hai khung.
+_Không dùng_: nút dùng chung giữa hai khung, trọng số ghép mặc định
+
+**Ứng viên quan hệ sản phẩm**:
+Quan hệ mới do hệ thống đề xuất từ khoảng trống giải thích hoặc mẫu kết quả, kèm bằng chứng thuận và chống, điều kiện, yếu tố gây nhiễu, tác động dự kiến, kiểm thử và cách quay lui. Ứng viên không được tự nâng mức bằng chứng hoặc đi vào bản phát hành đang dùng.
+_Không dùng_: quan hệ tự học đã có hiệu lực, tương quan được tự động coi là cơ chế
+
+**Quy trình lọc cứng và xếp hạng mềm**:
+Cách ra quyết định loại trước các sản phẩm vi phạm an toàn, tương thích, quy định hoặc ràng buộc không bù trừ, rồi mới so sánh sản phẩm hợp lệ theo ưu tiên có căn cứ và phân tích độ nhạy. Tổng điểm không được bù vi phạm bắt buộc.
+_Không dùng_: tổng điểm duy nhất, điểm phạt cho ràng buộc cứng
+
+**Trạng thái chưa biết**:
+Trạng thái khi dữ liệu hiện có chưa đủ để xác nhận một điều kiện là đúng hoặc sai. Chưa biết không được tự đổi thành giá trị ước lượng, vi phạm hoặc điểm yếu; cách xử lý phụ thuộc dữ kiện liên quan an toàn, ràng buộc cứng hay ưu tiên mềm.
+_Không dùng_: giá trị mặc định, dữ liệu sai
+
+**Đặc điểm cốt lõi theo hoàn cảnh**:
+Kết luận rằng một thuộc tính hoặc tổ hợp thuộc tính có đường giá trị đủ bằng chứng và có thể làm thay đổi việc lọc hoặc thứ hạng trong hoàn cảnh cụ thể. Đây là kết quả đánh giá theo phiên, không phải nhãn quan trọng cố định của thông số.
+_Không dùng_: thông số cốt lõi toàn ngành, đặc điểm nổi bật nhất
