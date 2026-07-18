@@ -11,20 +11,12 @@
 import { createCoreServices } from "@/lib/core/composition";
 import { parseTurnId } from "@/lib/core/contracts/ids";
 import { coreError } from "@/lib/core/contracts/status";
-import {
-  checkAccessCode,
-  errorResponse,
-  isCoreError,
-  readSessionSecret,
-} from "@/lib/core/http";
+import { errorResponse, isCoreError, readSessionSecret } from "@/lib/core/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const denied = checkAccessCode(req);
-  if (denied) return errorResponse(denied);
-
   const secret = readSessionSecret(req);
   if (isCoreError(secret)) return errorResponse(secret);
 

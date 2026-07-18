@@ -1,15 +1,14 @@
 // Quy tắc bí mật (#24 mục 9).
 //
-// Ba bí mật KHÁC NHAU, không cái nào thay được cái nào:
+// Bản trình diễn MỞ: không còn mã truy cập chung, ai vào cũng chat được ngay.
+// Còn lại HAI bí mật, không cái nào thay được cái nào:
 //
-//   DEMO_ACCESS_CODE  — mã truy cập chung, ai vào môi trường trình diễn cũng dùng.
-//                       Chứng minh "được phép vào", KHÔNG chứng minh "là ai".
 //   SessionSecret     — mã bí mật riêng từng phiên, máy chủ sinh lúc tạo phiên.
 //                       Chứng minh "sở hữu đúng phiên này".
 //   DEMO_ADMIN_SECRET — mã quản trị, chỉ dùng để xoá toàn bộ dữ liệu trình diễn.
 //
-// Đọc hoặc xoá một phiên đòi CẢ mã truy cập chung LẪN mã bí mật phiên. Chỉ biết
-// mã phiên là chưa đủ — đó là lý do mã phiên được phép công khai.
+// Đọc hoặc xoá một phiên vẫn đòi ĐÚNG mã bí mật của phiên đó. Chỉ biết mã phiên là
+// chưa đủ — đó là lý do mã phiên được phép công khai.
 //
 // Không giá trị nào trong tệp này được hardcode; tất cả đọc từ biến môi trường.
 
@@ -42,29 +41,12 @@ export function sessionSecretMatches(secret: SessionSecret, storedHash: string):
   return secretsMatch(hashSecret(secret), storedHash);
 }
 
-/** Đọc mã truy cập chung từ môi trường. Chưa cấu hình thì trả null. */
-export function configuredAccessCode(): string | null {
-  return process.env.DEMO_ACCESS_CODE?.trim() || null;
-}
-
 /** Đọc mã quản trị từ môi trường. Chưa cấu hình thì trả null. */
 export function configuredAdminSecret(): string | null {
   return process.env.DEMO_ADMIN_SECRET?.trim() || null;
 }
 
-/**
- * Kiểm tra mã truy cập chung do client gửi.
- *
- * Chưa cấu hình `DEMO_ACCESS_CODE` thì TỪ CHỐI tất cả, thay vì mở cửa. Cấu hình
- * thiếu là lỗi triển khai, không phải lý do để bỏ qua cổng.
- */
-export function accessCodeValid(provided: string | null): boolean {
-  const expected = configuredAccessCode();
-  if (expected === null || provided === null) return false;
-  return secretsMatch(provided, expected);
-}
-
-/** Kiểm tra mã quản trị. Cũng đóng an toàn khi chưa cấu hình. */
+/** Kiểm tra mã quản trị. Đóng an toàn khi chưa cấu hình. */
 export function adminSecretValid(provided: string | null): boolean {
   const expected = configuredAdminSecret();
   if (expected === null || provided === null) return false;

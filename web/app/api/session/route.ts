@@ -9,21 +9,13 @@
 
 import { createCoreServices } from "@/lib/core/composition";
 import { parseSessionId } from "@/lib/core/contracts/ids";
-import {
-  checkAccessCode,
-  errorResponse,
-  isCoreError,
-  readSessionSecret,
-} from "@/lib/core/http";
+import { errorResponse, isCoreError, readSessionSecret } from "@/lib/core/http";
 import { coreError } from "@/lib/core/contracts/status";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
-  const denied = checkAccessCode(req);
-  if (denied) return errorResponse(denied);
-
+export async function POST() {
   const { store } = createCoreServices();
   const created = await store.createSession();
   if (!created.ok) return errorResponse(created.error);
@@ -40,9 +32,6 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const denied = checkAccessCode(req);
-  if (denied) return errorResponse(denied);
-
   const secret = readSessionSecret(req);
   if (isCoreError(secret)) return errorResponse(secret);
 

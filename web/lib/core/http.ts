@@ -4,11 +4,9 @@
 // phiên" nằm ở một chỗ thay vì lặp lại ở từng tuyến và lệch nhau.
 
 import { parseSessionSecret, type SessionSecret } from "./contracts/ids";
-import { accessCodeValid } from "./auth/secrets";
 import type { CoreError } from "./contracts/status";
 import { coreError } from "./contracts/status";
 
-export const ACCESS_CODE_HEADER = "x-demo-access-code";
 export const SESSION_SECRET_HEADER = "x-session-secret";
 export const ADMIN_SECRET_HEADER = "x-demo-admin-secret";
 
@@ -35,15 +33,13 @@ export function errorResponse(error: CoreError): Response {
   );
 }
 
-/** Cổng 1: mã truy cập chung. Sai hoặc thiếu là dừng ngay. */
-export function checkAccessCode(req: Request): CoreError | null {
-  const provided = req.headers.get(ACCESS_CODE_HEADER);
-  return accessCodeValid(provided)
-    ? null
-    : coreError("forbidden", "Mã truy cập không hợp lệ", "http");
-}
-
-/** Cổng 2: mã bí mật phiên. Chỉ gọi SAU khi cổng 1 đã qua. */
+/**
+ * Cổng sở hữu phiên: mã bí mật riêng của phiên (#24 mục 9).
+ *
+ * Bản trình diễn KHÔNG còn mã truy cập chung — ai vào cũng chat được ngay. Nhưng
+ * mã bí mật phiên vẫn bắt buộc, vì nó là thứ duy nhất chặn người khác đọc hoặc xoá
+ * hội thoại của mình khi chỉ biết số phiên.
+ */
 export function readSessionSecret(req: Request): SessionSecret | CoreError {
   const raw = req.headers.get(SESSION_SECRET_HEADER);
   if (!raw) {
