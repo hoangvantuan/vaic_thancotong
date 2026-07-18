@@ -44,6 +44,30 @@ _Không dùng_: liên kết tự do, mũi tên nhân quả mặc định
 Nội dung hoặc sự kiện được ghi nhận trực tiếp từ khách hàng, sản phẩm hay hệ thống nguồn, kèm chủ thể, thời điểm và hoàn cảnh. Quan sát gốc được lưu một lần và không bị sửa theo cách diễn giải về sau.
 _Không dùng_: nhận định, kết luận, bằng chứng mặc định
 
+**Sổ cái bằng chứng**:
+Lịch sử bất biến nối quan sát gốc, nguồn, thời điểm, quyền sử dụng, các bước biến đổi và những nhận định đã dùng chúng. Sổ cái cho phép kiểm tra lại một kết luận được tạo từ đâu; bản thân nó không tự kết luận điều gì là đúng.
+_Không dùng_: kho tài liệu, bộ nhớ hội thoại, danh sách trích dẫn
+
+**Hợp đồng sự thật**:
+Bộ quy tắc dùng chung phân biệt quan sát, dữ kiện sản phẩm, giả thuyết hành vi, quan hệ sản phẩm và đề xuất cải tiến, đồng thời quy định nguồn, phạm vi, trạng thái và quyền sử dụng của từng loại. Hợp đồng không dùng một điểm tin cậy duy nhất để thay thế những khác biệt này.
+_Không dùng_: lời nhắc chống bịa, điểm đúng sai tổng hợp
+
+**Nhận định nguyên tử**:
+Một mệnh đề chỉ chứa một điều có thể kiểm tra độc lập trong phạm vi và thời gian xác định. Mỗi lý do, điểm đánh đổi, con số hoặc điều kiện công bố cho khách hàng phải tách thành nhận định nguyên tử để nguồn có thể hỗ trợ hoặc phản bác chính xác.
+_Không dùng_: cả câu trả lời là một nhận định, đoạn văn có một nguồn chung
+
+**Trạng thái giá trị nguồn**:
+Nhãn giữ nguyên tình trạng của một giá trị tại nguồn, gồm đã quan sát, thiếu, không áp dụng, không công bố, chờ cập nhật, không hợp lệ, hết hiệu lực hoặc mâu thuẫn. Các trạng thái này không được gộp thành một giá trị rỗng hay tự đổi thành đúng hoặc sai.
+_Không dùng_: giá trị mặc định, trạng thái chưa biết duy nhất
+
+**Quy tắc phân xử nguồn**:
+Chính sách có phiên bản xác định nguồn nào có thẩm quyền cho từng loại nhận định, trong thị trường, phạm vi và thời gian nào, cùng cách xử lý khi các nguồn xung đột. Nếu chính sách không phân xử được, kết quả phải giữ ở trạng thái mâu thuẫn chưa giải quyết.
+_Không dùng_: nguồn mới nhất luôn đúng, lấy trung bình các nguồn
+
+**Từ chối có phạm vi**:
+Cách hệ thống không đưa ra đúng phần kết luận thiếu căn cứ hoặc không an toàn, đồng thời vẫn trả lời những phần độc lập đã đủ bằng chứng và nói rõ điều cần bổ sung. Từ chối có phạm vi không biến thiếu dữ liệu thành phủ định.
+_Không dùng_: từ chối toàn bộ mặc định, trả lời đoán có cảnh báo
+
 **Liên kết bằng chứng**:
 Bản ghi giải thích một quan sát gốc hỗ trợ hoặc phản bác giả thuyết nào, trong phạm vi nào và với mức liên quan ra sao. Một quan sát chỉ trở thành bằng chứng cho giả thuyết thông qua liên kết này.
 _Không dùng_: bản sao quan sát, trích dẫn không có lập luận
