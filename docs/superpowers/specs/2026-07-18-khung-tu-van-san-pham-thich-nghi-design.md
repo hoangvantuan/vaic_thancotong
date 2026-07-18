@@ -27,6 +27,15 @@ Bản mẫu 48 giờ dùng máy lạnh để kiểm chứng chiều sâu. Lõi d
 | Quyền tự chủ | Hệ thống tự phân tích và tạo đề xuất; chuyên gia duyệt trước khi áp dụng |
 | Phạm vi bản mẫu | Lõi dùng chung, một gói máy lạnh và một tập sản phẩm đủ bằng chứng |
 | Chứng minh tổng quát | Thêm ngành hàng thứ hai mà không sửa ngữ pháp lõi |
+| Nền tâm lý hành vi | Thư viện lăng kính phân tầng tạo giả thuyết có thể bác bỏ về hành vi trong hoàn cảnh, không gán bản chất con người |
+| Ánh xạ giá trị sản phẩm | Ghép chuỗi phương tiện và mục đích, triển khai chức năng chất lượng rút gọn (QFD), mô hình nhiều tiêu chí, đồ thị nhân quả và nguồn gốc dữ liệu (PROV) theo đúng vai trò bằng chứng |
+| Giới hạn dữ liệu hiện có | Chỉ dùng có điều kiện để kiểm tra trích xuất dữ kiện và chọn câu hỏi làm rõ, chưa dùng để học nhãn tâm lý hoặc hiệu quả sau tư vấn |
+
+### 2.1. Căn cứ nghiên cứu
+
+- [Nền tảng khoa học cho khung tâm lý hành vi mua hàng thích nghi](../../research/nen-tang-khoa-hoc-khung-tam-ly-hanh-vi.md).
+- [Phương pháp ánh xạ cấu hình sản phẩm thành giá trị và quyết định](../../research/phuong-phap-anh-xa-cau-hinh-thanh-gia-tri.md).
+- [Kiểm định tín hiệu hành vi trong dữ liệu hội thoại và giao dịch hiện có](../../research/kiem-dinh-tin-hieu-hanh-vi-hoi-thoai.md).
 
 ## 3. Nguyên tắc thiết kế
 
@@ -393,10 +402,10 @@ Khung chỉ được coi là tổng quát khi thêm ngành hàng thứ hai mà:
 
 Thiết kế này cố định ranh giới và cơ chế tổng quát. Các quyết định chi tiết tiếp tục được xử lý trên bản đồ tìm đường:
 
-- Nền tảng khoa học và lăng kính hành vi nào được dùng làm thư viện khởi đầu.
+- Tập con tối thiểu nào từ thư viện lăng kính hành vi được dùng trong bản mẫu 48 giờ.
 - Lược đồ chính xác của hồ sơ giả thuyết và đồ thị sản phẩm.
-- Tiêu chuẩn bằng chứng cho từng loại quan hệ nhân quả.
-- Bộ tín hiệu hiện có đủ để học và kiểm chứng những gì.
+- Ngưỡng bằng chứng nào cho phép một giả thuyết chỉ chọn câu hỏi, tham gia lọc, đổi thứ hạng hoặc xuất hiện trong lời giải thích.
+- Tập đánh giá mới nào phải thu để bù khoảng trống nhãn tâm lý và kết quả sau tư vấn.
 - Ngưỡng đánh giá, quy trình chuyên gia và quyền truy cập dữ liệu.
 - Lát cắt máy lạnh nhỏ nhất cho bản mẫu 48 giờ.
 
