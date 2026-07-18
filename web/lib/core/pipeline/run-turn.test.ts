@@ -215,10 +215,14 @@ describe("dựng lý do khuyến nghị", () => {
       }
     }
 
-    // mock-ml-002 thiếu giá và độ ồn → chỉ còn công suất làm lý do.
+    // mock-ml-002 thiếu giá và độ ồn → hai trường đó không bao giờ thành lý do;
+    // chỉ các thuộc tính ĐÃ quan sát (công suất, phạm vi m²) được dùng.
     const standard = result.data.result.recommendations.find(
       (r) => r.productId === "mock-ml-002"
     );
-    expect(standard?.reasons.length).toBe(1);
+    const cited = standard!.reasons.map((r) => r.provenance.recordLocation).join(" ");
+    expect(cited).not.toContain("/gia");
+    expect(cited).not.toContain("/do_on");
+    expect(standard!.reasons.length).toBeGreaterThan(0);
   });
 });

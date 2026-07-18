@@ -15,7 +15,13 @@ trước, tăng phiên bản, rồi mới sửa mã.
 | Luật phá hoà | `ma_san_pham@v1` |
 
 Cùng (đầu vào, dữ liệu, các phiên bản trên) ⇒ cùng quyết định. Mọi ảnh chụp quyết định
-ghi lại các mã phiên bản này để tái hiện về sau.
+ghi lại các mã phiên bản này (trường `appliedRuleVersions`) để tái hiện về sau — kể cả
+lượt chỉ hỏi lại.
+
+**Đóng băng phiên bản:** một mã phiên bản chỉ bị đóng băng kể từ khi có bản ghi quyết
+định đầu tiên trích dẫn nó. Trước thời điểm đó (chưa ai trích dẫn), chỉnh bảng không
+phải tăng phiên bản; sau thời điểm đó, quy trình bắt buộc là đổi bảng → tăng phiên
+bản → sửa mã.
 
 ## 1. Tiêu chí đủ thông tin để chọn sản phẩm (sufficiency)
 
@@ -67,7 +73,7 @@ thứ tự ưu tiên và nằm ngay trong bảng:
 
 | Ưu tiên | Mã tiêu chí | Trường | Trọng số | Cách chấm |
 |---|---|---|---|---|
-| 1 | `vua_dien_tich@v1` | `areaMinM2..areaMaxM2` | ×1.0 | Trong khoảng → 1. Dư công suất (S < min): 1 − (min − S)/10. Không có dữ liệu → 0 (không thưởng, không phạt). |
+| 1 | `vua_dien_tich@v1` | `areaMinM2..areaMaxM2` | ×1.0 | Trong khoảng → 1. Dư công suất (S < min): 1 − (min − S)/10. Đuối nhẹ trong biên (max < S ≤ max + 5): 1 − (S − max)/5. Không có dữ liệu → 0 (không thưởng, không phạt). |
 | 2 | `du_ngan_sach@v1` | `priceVnd` | ×0.7 | Trong ngân sách: 0.6 + tiền_dư/ngân_sách (chặn 1). Không có ngân sách/giá → 0. |
 | 3 | `do_on_thap@v1` | `noiseDb` | ×0.5; ×0.75 khi khách ưu tiên "quiet" | (45 − dB)/20, chặn [-1, 1]. Không có số đo → 0. |
 

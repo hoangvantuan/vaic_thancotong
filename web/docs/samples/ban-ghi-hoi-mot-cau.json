@@ -1,0 +1,30 @@
+{
+  "turnId": "turn_00000000000000000000000000000000",
+  "sessionId": "ses_00000000000000000000000000000000",
+  "input": {
+    "sessionId": "ses_00000000000000000000000000000000",
+    "turnId": "turn_00000000000000000000000000000000",
+    "userText": "chào em, tư vấn giúp anh với",
+    "receivedAt": "2026-07-18T02:00:00.000Z"
+  },
+  "appliedRuleVersions": {
+    "ruleset": "may-lanh@v1",
+    "ranker": "ranker@v1",
+    "sufficiency": "sufficiency@v1"
+  },
+  "eligibility": null,
+  "ranking": null,
+  "modelTraces": [],
+  "publicationCheck": {
+    "passed": true,
+    "checkedClaims": [],
+    "repairAttempted": false
+  },
+  "result": {
+    "kind": "ask_one_question",
+    "question": "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?",
+    "targetGap": "ngành hàng đang tư vấn"
+  },
+  "releaseVersion": "test@v0",
+  "createdAt": "2026-07-18T02:00:00.000Z"
+}

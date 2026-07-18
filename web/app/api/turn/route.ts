@@ -15,7 +15,8 @@ import {
   isCoreError,
   readSessionSecret,
 } from "@/lib/core/http";
-import { EMPTY_RULES, runTurn } from "@/lib/core/pipeline/run-turn";
+import { runTurn } from "@/lib/core/pipeline/run-turn";
+import { DEMO_TURN_RULES } from "@/lib/core/rules";
 import type { TurnInput } from "@/lib/core/contracts/turn";
 
 export const runtime = "nodejs";
@@ -60,8 +61,8 @@ export async function POST(req: Request) {
   };
 
   const services = createCoreServices();
-  // #24 không sở hữu luật chọn sản phẩm — phiếu #26 thay EMPTY_RULES bằng bộ luật thật.
-  const result = await runTurn(input, secret, services, EMPTY_RULES);
+  // Bộ luật thật của #26 (bảng quy tắc docs/quy-tac-quyet-dinh.md, may-lanh@v1).
+  const result = await runTurn(input, secret, services, DEMO_TURN_RULES);
   if (!result.ok) return errorResponse(result.error);
 
   return Response.json({

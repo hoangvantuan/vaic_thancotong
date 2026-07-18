@@ -39,10 +39,24 @@ export interface PublicationCheck {
  * `eligibility` và `ranking` có thể null khi lượt đó không đi tới bước ấy — ví dụ
  * lượt chỉ hỏi lại một câu thì chưa lọc sản phẩm nào.
  */
+/**
+ * Mã phiên bản các bộ luật đã áp dụng cho lượt — ghi vào MỌI bản ghi, kể cả lượt
+ * chỉ hỏi lại (khi đó eligibility/ranking null nhưng luật chọn câu hỏi vẫn có
+ * phiên bản). Thiếu phần này thì không tái hiện được "cùng phiên bản ⇒ cùng
+ * quyết định" cho các lượt ask (#26).
+ */
+export interface AppliedRuleVersions {
+  readonly ruleset: string;
+  readonly ranker: string;
+  /** Null khi bộ luật không có tầng đủ-thông-tin (vd EMPTY_RULES của khung #24). */
+  readonly sufficiency: string | null;
+}
+
 export interface DecisionRecordData {
   readonly turnId: TurnId;
   readonly sessionId: SessionId;
   readonly input: TurnInput;
+  readonly appliedRuleVersions: AppliedRuleVersions;
   readonly eligibility: EligibilityReport | null;
   readonly ranking: RankingReport | null;
   readonly modelTraces: readonly ModelTrace[];
