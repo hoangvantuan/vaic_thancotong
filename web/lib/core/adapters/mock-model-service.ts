@@ -43,8 +43,13 @@ export class MockModelService implements ModelService {
     });
   }
 
-  async phraseQuestion(gap: string, context: string): Promise<Result<string>> {
-    return ok(`Cho em hỏi thêm về ${gap} với ạ (bối cảnh: ${context})?`);
+  /**
+   * Bản giả KHÔNG diễn đạt lại — trả chuỗi rỗng để nơi gọi giữ nguyên câu hỏi tất
+   * định của bộ luật. Nhờ vậy luồng không-có-mô-hình vẫn dùng câu chữ đã soạn kỹ,
+   * và ảnh chụp quyết định mẫu không lẫn văn bản gỡ rối của bản giả.
+   */
+  async phraseQuestion(): Promise<Result<string>> {
+    return ok("");
   }
 
   async composeExplanation(
