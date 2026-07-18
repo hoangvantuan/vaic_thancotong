@@ -13,6 +13,7 @@ import type { SavedDecisionRecord } from "../contracts/decision";
 import type { RankedRow } from "../contracts/ranking";
 import type { Recommendation, TurnInput, TurnResult } from "../contracts/turn";
 import { toOneToThree } from "../contracts/turn";
+import type { CategorySlug } from "@/lib/types";
 import { coreError, err, ok, type Result } from "../contracts/status";
 import type { CoreServices } from "../composition";
 import type { ExtractedNeeds } from "../ports/model-service";
@@ -72,6 +73,24 @@ export interface TurnRules {
   recommend?: RecommendationBuilder | null;
   /** Gợi ý gần nhất khi 0 sản phẩm qua lọc. Vắng mặt = từ chối như khung #24. */
   relax?: RelaxPolicy | null;
+}
+
+/**
+ * Bộ luật THEO NGÀNH: máy lạnh dùng luật riêng (giàu độ ồn/tiết kiệm điện), các
+ * ngành khác dùng bộ generic đọc fit từ registry. Nhận cả `TurnRules` đơn lẻ để
+ * mọi nơi gọi cũ (và toàn bộ kiểm thử) không phải sửa.
+ */
+export interface TurnRulesRegistry {
+  byCategory: Readonly<Record<string, TurnRules>>;
+  default: TurnRules;
+}
+
+export type TurnRulesInput = TurnRules | TurnRulesRegistry;
+
+/** Chọn bộ luật cho ngành; đầu vào là `TurnRules` đơn lẻ thì dùng luôn. */
+export function pickRules(input: TurnRulesInput, category?: string | null): TurnRules {
+  if ("hard" in input) return input;
+  return (category && input.byCategory[category]) || input.default;
 }
 
 /**
@@ -143,7 +162,7 @@ export async function runTurn(
   input: TurnInput,
   secret: SessionSecret,
   services: CoreServices,
-  rules: TurnRules
+  rulesInput: TurnRulesInput
 ): Promise<Result<SavedDecisionRecord>> {
   const { products, model, store, releaseVersion } = services;
 
@@ -170,6 +189,81 @@ export async function runTurn(
   let needs = extracted.data;
   let caveats: readonly string[] = [];
 
+  // 2a. HIỂU Ý & BẮT SÓNG — chỉ khi CHƯA biết ngành (fast-path câu rõ ràng đi thẳng
+  // tới sufficiency, không đổi). Tầng này CHỈ phân loại ý định + đoán ngành; nó KHÔNG
+  // chạm số liệu — grounding (lọc/xếp hạng/công bố) giữ nguyên bất biến. Không có LLM
+  // → reply rỗng → bỏ qua, rơi xuống luật tất định như cũ.
+  // TRẠNG THÁI HỘI THOẠI: ngành đã chốt ở lượt trước (đọc từ ảnh chụp quyết định) —
+  // để KHÔNG hỏi lại ngành đã biết (dialogue-state tracking). Ưu tiên: chip UI trên
+  // giao diện > ngành đã chốt trong phiên. Chỉ là NGÀNH, số liệu vẫn kiểm chứng lại.
+  const priorCategory = latestEstablishedCategory(priorTurns.ok ? priorTurns.data : []);
+  let resolvedCategory: CategorySlug | undefined = input.category ?? priorCategory ?? undefined;
+  // Ngành để GHI vào ảnh chụp lượt này (lượt sau đọc lại). Cập nhật dần khi biết thêm.
+  let establishedForRecord: CategorySlug | null = resolvedCategory ?? null;
+
+  // BỘ LUẬT THEO NGÀNH — chọn sớm (mọi nhánh trả lời sớm đều cần ghi phiên bản luật),
+  // rồi chốt lại bên dưới khi đã biết chắc ngành. Máy lạnh → `may-lanh@v1`, ngành
+  // khác → `generic@v1` (đọc fit/đơn vị từ registry).
+  let rules = pickRules(rulesInput, resolvedCategory ?? needs.category);
+
+  // Ý ĐỊNH CHÍNH SÁCH — nhận diện ĐỘC LẬP với việc đã biết ngành hay chưa (bảo hành/
+  // đổi trả/giao lắp/trả góp… KỂ CẢ khi câu có tên ngành như "máy lạnh bảo hành mấy
+  // năm"). Trả lời từ tài liệu, KHÔNG lảng sang hỏi mua. answerPolicy tự route tất
+  // định + trả rỗng nếu không khớp tài liệu (khi đó rơi xuống luồng tư vấn như thường).
+  if (looksLikePolicy(input.userText)) {
+    const answered = await model.answerPolicy(conversation);
+    if (answered.ok && answered.data.trim()) {
+      return save({
+        kind: "ask_one_question",
+        question: answered.data.trim(),
+        targetGap: "policy:answer",
+      });
+    }
+  }
+
+  // SCOPE-GUARD — câu HIỆN TẠI nhắc ngành NGOÀI hỗ trợ (quạt/tủ lạnh/tivi…) phải
+  // THẮNG ngành đã chốt (khách đổi ý), từ chối khéo thay vì âm thầm tư vấn máy lạnh.
+  const outOfScope = outOfScopeMention(input.userText);
+  if (outOfScope) {
+    return save(
+      declineTurn(
+        "out_of_serving_scope",
+        `Dạ ${outOfScope} hiện bên em chưa có sẵn dữ liệu để tư vấn ạ. Bản demo này em đang hỗ trợ tư vấn MÁY LẠNH — anh/chị cần em tư vấn máy lạnh không ạ?`
+      )
+    );
+  }
+
+  const categoryKnown = (resolvedCategory ?? needs.category) != null;
+  if (!categoryKnown) {
+    const intentRead = await model.readIntent(conversation);
+    if (intentRead.ok) {
+      const intent = intentRead.data;
+      if (intent.suggestedCategory && isDeferral(input.userText)) {
+        // Khách ỦY THÁC ("không biết, cứ tư vấn giúp") + đã đoán được ngành → CHỐT
+        // ngành và ĐI TIẾP (hỏi slot kế: diện tích/số người…), KHÔNG hỏi lại xác nhận
+        // — chống kẹt vòng lặp. Chỉ chốt NGÀNH; số liệu vẫn kiểm chứng ở bước sau, và
+        // nếu đoán sai ngành khách chỉ cần nói một câu để đổi.
+        resolvedCategory = intent.suggestedCategory as CategorySlug;
+      } else if (
+        intent.reply.trim() &&
+        (intent.intent !== "mua" || intent.suggestedCategory != null)
+      ) {
+        return save({
+          kind: "ask_one_question",
+          question: intent.reply.trim(),
+          targetGap: `intent:${intent.intent}`,
+        });
+      }
+      // intent=mua, không đoán được ngành, không ủy thác → rơi xuống sufficiency (hỏi ngành).
+    }
+  }
+
+  // Ngành lượt này thực sự làm việc với → GHI vào ảnh chụp để lượt sau nhớ, khỏi hỏi lại.
+  establishedForRecord = resolvedCategory ?? needs.category ?? priorCategory ?? null;
+
+  // Chốt lại bộ luật khi đã biết chắc ngành của lượt này.
+  rules = pickRules(rulesInput, establishedForRecord);
+
   // 2b. Kiểm chứng & đủ-thông-tin (#26): số liệu phải trích lại được từ nguyên văn
   // lời khách; thiếu slot bắt buộc thì hỏi ĐÚNG MỘT câu — vẫn lưu ảnh chụp.
   if (rules.sufficiency) {
@@ -178,7 +272,7 @@ export async function runTurn(
       // không truy được về nguyên văn, nên nếu chỉ đưa câu cuối thì dữ kiện đã nêu
       // ở lượt trước (vd "điều hoà") bị coi là phỏng đoán và bị vứt → hỏi lại vòng vo.
       userText: conversation,
-      category: input.category,
+      category: resolvedCategory,
     });
     if (assessment.kind === "ask") {
       // LUẬT (#26) quyết định HỎI GÌ — `targetGap` không nhường cho mô hình.
@@ -198,7 +292,7 @@ export async function runTurn(
     caveats = assessment.caveats;
   }
 
-  const category = input.category ?? needs.category;
+  const category = resolvedCategory ?? needs.category;
   if (!category) {
     return save(declineTurn("insufficient_evidence", "Cho em biết mình đang tìm loại sản phẩm nào ạ"));
   }
@@ -325,12 +419,111 @@ export async function runTurn(
       modelTraces: [],
       publicationCheck,
       result: verified,
+      establishedCategory: establishedForRecord,
       releaseVersion,
       // Lấy từ thời điểm máy chủ NHẬN lượt, không phải giờ máy lúc chạy — cùng đầu
       // vào (kể cả receivedAt) phải tạo bản ghi giống hệt từng byte (#26).
       createdAt: input.receivedAt,
     };
   }
+}
+
+/**
+ * Ngành đã chốt gần nhất trong phiên (đọc từ ảnh chụp các lượt trước). Nền tảng
+ * dialogue-state: một khi ngành đã xác lập, lượt sau không hỏi lại — bot đi tiếp.
+ */
+function latestEstablishedCategory(
+  records: readonly { establishedCategory?: CategorySlug | null }[]
+): CategorySlug | undefined {
+  for (let i = records.length - 1; i >= 0; i--) {
+    const c = records[i].establishedCategory;
+    if (c) return c;
+  }
+  return undefined;
+}
+
+/**
+ * Khách có đang ỦY THÁC quyết định cho tư vấn viên không ("không biết", "tùy em",
+ * "cứ tư vấn giúp"…). Tất định (không LLM) để hành vi ổn định và tái lập được.
+ *
+ * Dùng để thoát vòng lặp "hỏi xác nhận ngành" khi khách đã nói không tự chốt được:
+ * lúc đó chốt ngành đoán được rồi đi tiếp, thay vì hỏi lại y câu cũ.
+ */
+export function isDeferral(text: string): boolean {
+  const t = text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d");
+  const cues = [
+    "khong biet",
+    "ko biet",
+    "k biet",
+    "hong biet",
+    "hok biet",
+    "chua biet",
+    "khong ranh",
+    "ko ranh",
+    "khong ro",
+    "tuy em",
+    "tuy ban",
+    "tuy anh",
+    "tuy",
+    "ban chon",
+    "em chon",
+    "chon giup",
+    "chon ho",
+    "chon gium",
+    "goi y giup",
+    "goi y di",
+    "cu tu van",
+    "tu van giup",
+    "tu van cho",
+    "tu van di",
+    "sao cung duoc",
+    "the nao cung duoc",
+    "gi cung duoc",
+    "nao cung duoc",
+  ];
+  return cues.some((c) => t.includes(c));
+}
+
+/**
+ * Câu HIỆN TẠI nhắc RÕ một ngành NGOÀI phạm vi hỗ trợ (bản demo chỉ máy lạnh có
+ * dữ liệu+luật)? Trả tên ngành để từ chối khéo; null nếu không, hoặc đang nói máy lạnh.
+ * Chặn "quạt điều hòa" bị nhận nhầm máy lạnh + khách đổi sang ngành chưa hỗ trợ.
+ */
+function outOfScopeMention(text: string): string | null {
+  const t = text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d");
+  if (/\bmay lanh\b/.test(t)) return null; // có nhắc máy lạnh → trong phạm vi
+  // CHỈ liệt ngành KHÔNG có trong registry (không có dữ liệu để tư vấn). Các ngành
+  // đã khai trong config/categories.json (máy lạnh, tủ lạnh, máy giặt, tivi, điện
+  // thoại, laptop) đi luồng tư vấn bình thường — KHÔNG chặn ở đây.
+  const map: [RegExp, string][] = [
+    [/\bquat\b/, "quạt (quạt điều hòa/quạt hơi nước)"],
+    [/\bloa\b|\btai nghe\b/, "loa/tai nghe"],
+    [/\bmay nuoc nong\b|\bnong lanh\b/, "máy nước nóng"],
+    [/\bmay loc\b/, "máy lọc"],
+    [/\bmay rua chen\b/, "máy rửa chén"],
+    [/\bmay say\b/, "máy sấy"],
+    [/\bnoi com\b|\bbep tu\b|\bbep dien\b/, "đồ bếp"],
+  ];
+  for (const [re, label] of map) if (re.test(t)) return label;
+  return null;
+}
+
+/**
+ * Câu HIỆN TẠI có tín hiệu hỏi CHÍNH SÁCH không (bảo hành/đổi trả/giao lắp/trả góp…).
+ * Tất định + chỉ soi câu cuối (không soi cả hội thoại) để không kích hoạt lại vì một
+ * lượt cũ. Chỉ là CỬA GÁC rẻ; answerPolicy mới route + trả lời chính thức.
+ */
+export function looksLikePolicy(text: string): boolean {
+  const t = text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d");
+  return /(bao hanh|doi tra|tra hang|hoan tien|tra gop|giao hang|giao lap|lap dat|van chuyen|ship|phi giao|bao lau.*(giao|nhan|toi)|(giao|nhan).*bao lau|khui hop|mo hop|chinh sach)/.test(t);
 }
 
 /** Bộ luật rỗng — dùng khi nơi gọi chưa có luật thật (#26 sẽ thay). */

@@ -26,6 +26,7 @@
     "question": "Dạ bên em hiện tư vấn các nhóm: Máy lạnh, Tủ lạnh, Máy giặt, Tivi, Điện thoại, Laptop. Anh/chị đang quan tâm nhóm nào ạ?",
     "targetGap": "ngành hàng đang tư vấn — bên em CHỈ có các nhóm: Máy lạnh, Tủ lạnh, Máy giặt, Tivi, Điện thoại, Laptop"
   },
+  "establishedCategory": null,
   "releaseVersion": "test@v0",
   "createdAt": "2026-07-18T02:00:00.000Z"
 }

@@ -46,7 +46,10 @@
           "Phạm vi sử dụng",
           "Phạm vi làm lạnh hiệu quả"
         ],
-        "question": "Phòng mình rộng khoảng bao nhiêu m² ạ, để em chọn đúng công suất?"
+        "question": "Phòng mình rộng khoảng bao nhiêu m² ạ, để em chọn đúng công suất?",
+        "subject": "phòng",
+        "slack": 5,
+        "spread": 10
       },
       "highlights": [
         {
@@ -145,7 +148,10 @@
         "fields": [
           "Dung tích sử dụng"
         ],
-        "question": "Nhà mình khoảng mấy người dùng ạ, để em chọn dung tích vừa đủ?"
+        "question": "Nhà mình khoảng mấy người dùng ạ, để em chọn dung tích vừa đủ?",
+        "subject": "nhà",
+        "slack": 0,
+        "spread": 2
       },
       "highlights": [
         {
@@ -231,7 +237,10 @@
         "fields": [
           "Số người sử dụng"
         ],
-        "question": "Nhà mình khoảng mấy người ạ, để em chọn khối lượng giặt phù hợp?"
+        "question": "Nhà mình khoảng mấy người ạ, để em chọn khối lượng giặt phù hợp?",
+        "subject": "nhà",
+        "slack": 0,
+        "spread": 2
       },
       "highlights": [
         {
@@ -288,7 +297,10 @@
         "fields": [
           "Kích cỡ màn hình"
         ],
-        "question": "Anh/chị muốn tivi khoảng bao nhiêu inch ạ?"
+        "question": "Anh/chị muốn tivi khoảng bao nhiêu inch ạ?",
+        "subject": "phòng",
+        "slack": 7,
+        "spread": 10
       },
       "highlights": [
         {

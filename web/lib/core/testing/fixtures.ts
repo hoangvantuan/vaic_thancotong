@@ -94,6 +94,7 @@ export function sampleDecision(
     modelTraces: [],
     publicationCheck: outcome.check,
     result: outcome.verified,
+    establishedCategory: null,
     releaseVersion: "demo@v0",
     createdAt: "2026-07-18T02:00:01.000Z",
   };

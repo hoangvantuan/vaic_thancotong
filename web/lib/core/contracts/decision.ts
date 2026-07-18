@@ -11,6 +11,7 @@ import type { EligibilityReport } from "./eligibility";
 import type { RankingReport } from "./ranking";
 import type { TurnInput } from "./turn";
 import type { VerifiedTurnResult } from "../pipeline/publication";
+import type { CategorySlug } from "@/lib/types";
 
 /** Kết quả thô từ mô hình, giữ lại để tái hiện và đối chiếu khi gỡ rối. */
 export interface ModelTrace {
@@ -68,6 +69,12 @@ export interface DecisionRecordData {
    * ra, nên KHÔNG THỂ lưu một kết quả chưa kiểm tra — ràng buộc ở mức biên dịch.
    */
   readonly result: VerifiedTurnResult;
+  /**
+   * TRẠNG THÁI HỘI THOẠI: ngành hàng đã chốt trong phiên tính đến lượt này (null nếu
+   * chưa xác lập). Lượt sau đọc lại để KHÔNG hỏi lại ngành đã biết — nền tảng cho
+   * dialogue-state tracking, tránh lặp câu. Chỉ mang NGÀNH, không mang số liệu.
+   */
+  readonly establishedCategory: CategorySlug | null;
   /** Bản phát hành tư vấn đang phục vụ, khoá toàn bộ cấu hình đã dùng. */
   readonly releaseVersion: string;
   readonly createdAt: string;

@@ -13,7 +13,7 @@ import { newTurnId } from "../contracts/ids";
 import { absent, conflicting, observed, ok } from "../contracts/status";
 import { validateProvenance } from "../contracts/provenance";
 import type { SavedDecisionRecord } from "../contracts/decision";
-import type { ExtractedNeeds, ModelService } from "../ports/model-service";
+import type { ExtractedNeeds, IntentRead, ModelService } from "../ports/model-service";
 import type { SourcedProduct } from "../ports/product-source";
 import { FixtureProductSource, makeProduct } from "../testing/rule-fixtures";
 
@@ -325,6 +325,19 @@ describe("đổi cách diễn đạt không đổi danh sách sản phẩm", () 
       async phraseQuestion() {
         return ok("một câu hỏi khác hẳn?");
       },
+      async readIntent() {
+        // Model "xấu" cũng cố bịa ở tầng bắt sóng — nhưng ngành đã biết (tu_lanh)
+        // nên run-turn bỏ qua tầng này; kết quả vẫn phải bất biến.
+        const it: IntentRead = {
+          intent: "mua",
+          suggestedCategory: "tu_lanh",
+          reply: "câu bắt sóng bịa đặt",
+        };
+        return ok(it);
+      },
+      async answerPolicy() {
+        return ok("");
+      },
       async composeExplanation() {
         return ok("một cách diễn đạt hoàn toàn khác");
       },
@@ -388,5 +401,197 @@ describe("tái lập bản ghi", () => {
     expect(first.createdAt).toBe(RECEIVED_AT);
     expect(first.eligibility!.screenedAt).toBe(RECEIVED_AT);
     expect(first.ranking!.rankedAt).toBe(RECEIVED_AT);
+  });
+});
+
+describe("tầng Hiểu ý & Bắt sóng (Intent + Empathy)", () => {
+  /** Model đọc được ý định từ câu đời thường; ngành luôn null (câu không nêu ngành). */
+  function empathyModel(over: Partial<IntentRead>, policyAnswer = ""): ModelService {
+    return {
+      name: "empathy-test",
+      async isReady() {
+        return true;
+      },
+      async extractNeeds() {
+        const n: ExtractedNeeds = {
+          category: null,
+          fitValue: null,
+          budgetVnd: null,
+          priorities: [],
+          quotedSpans: [],
+        };
+        return ok(n);
+      },
+      async readIntent() {
+        const it: IntentRead = {
+          intent: "mua",
+          suggestedCategory: "may_lanh",
+          reply: "Nóng thật ạ 😅 Mình tính lắp máy lạnh cho mát nhỉ?",
+          ...over,
+        };
+        return ok(it);
+      },
+      async answerPolicy() {
+        return ok(policyAnswer);
+      },
+      async phraseQuestion() {
+        return ok("");
+      },
+      async composeExplanation() {
+        return ok("x");
+      },
+    };
+  }
+
+  function runWith(model: ModelService, userText: string) {
+    const products = [validProduct("ml-a")];
+    return runRound(products, userText, {
+      services: createTestServices({
+        products: new FixtureProductSource(products),
+        model,
+      }),
+    });
+  }
+
+  it("câu đời thường chưa rõ ngành + model bắt được ý định → mở lời đồng cảm, CHƯA lọc SP", async () => {
+    const { record } = await runWith(empathyModel({}), "trời nóng quá, giúp tôi với");
+    expect(record.result.kind).toBe("ask_one_question");
+    if (record.result.kind !== "ask_one_question") return;
+    expect(record.result.question).toContain("Nóng thật");
+    expect(record.result.targetGap).toBe("intent:mua");
+    // Tầng bắt sóng KHÔNG chạm lọc/xếp hạng — grounding giữ nguyên.
+    expect(record.eligibility).toBeNull();
+    expect(record.ranking).toBeNull();
+  });
+
+  it("intent ngoài mua (sự cố) → đồng cảm hỗ trợ, không ép mua", async () => {
+    const model = empathyModel({
+      intent: "su_co",
+      suggestedCategory: null,
+      reply: "Ui để em hỗ trợ ngay ạ, mình đang lỗi sản phẩm nào để em tra bảo hành?",
+    });
+    const { record } = await runWith(model, "đang dùng bình thường thì lại không chạy, bực thật");
+    expect(record.result.kind).toBe("ask_one_question");
+    if (record.result.kind !== "ask_one_question") return;
+    expect(record.result.targetGap).toBe("intent:su_co");
+    expect(record.result.question).toContain("hỗ trợ");
+  });
+
+  it("model không đoán được (reply rỗng) → rơi xuống luật tất định hỏi ngành như cũ", async () => {
+    const model = empathyModel({ intent: "mua", suggestedCategory: null, reply: "" });
+    const { record } = await runWith(model, "alo em ơi");
+    expect(record.result.kind).toBe("ask_one_question");
+    if (record.result.kind !== "ask_one_question") return;
+    // Không phải tầng bắt sóng: targetGap do sufficiency đặt, không mang tiền tố intent:.
+    expect(record.result.targetGap).not.toContain("intent:");
+  });
+
+  it("khách ỦY THÁC sau khi được hỏi → CHỐT ngành, tiến tới hỏi slot kế (KHÔNG lặp câu cũ)", async () => {
+    // Tái hiện bug thật: lượt 1 hỏi máy lạnh/quạt; lượt 2 khách nói "không biết, tư vấn đi"
+    // → trước đây lặp y câu cũ. Giờ phải chốt ngành đoán được và hỏi sang diện tích.
+    const products = [validProduct("ml-a")];
+    const services = createTestServices({
+      products: new FixtureProductSource(products),
+      model: empathyModel({}),
+    });
+    const created = await services.store.createSession();
+    if (!created.ok) throw new Error("không tạo được phiên");
+    const { session, secret } = created.data;
+
+    const turn = (userText: string) =>
+      runTurn(
+        { sessionId: session.sessionId, turnId: newTurnId(), userText, receivedAt: RECEIVED_AT },
+        secret,
+        services,
+        DEMO_TURN_RULES
+      );
+
+    const t1 = await turn("trời nóng quá, cứu tôi");
+    if (!t1.ok) throw new Error(t1.error.message);
+    expect(t1.data.result.kind).toBe("ask_one_question");
+    const q1 = t1.data.result.kind === "ask_one_question" ? t1.data.result.question : "";
+    expect(q1).toContain("Nóng thật");
+
+    const t2 = await turn("tôi không biết nữa, tư vấn cho tôi đi");
+    if (!t2.ok) throw new Error(t2.error.message);
+    expect(t2.data.result.kind).toBe("ask_one_question");
+    if (t2.data.result.kind !== "ask_one_question") return;
+    // Đã TIẾN TRIỂN: không lặp câu cũ, chuyển sang hỏi diện tích của máy lạnh.
+    expect(t2.data.result.question).not.toBe(q1);
+    expect(t2.data.result.targetGap).not.toContain("intent:");
+    expect(t2.data.result.targetGap.toLowerCase()).toContain("diện tích");
+  });
+
+  it("NHỚ ngành đã chốt qua các lượt → không hỏi lại ngành, tư vấn khi đủ thông tin", async () => {
+    // Tái hiện bug ảnh lượt 3: sau khi đã chốt máy lạnh + trả lời diện tích, bot KHÔNG
+    // được quay lại hỏi 'máy lạnh hay quạt' nữa — phải đi tiếp (tư vấn/hỏi slot kế).
+    const products = [
+      makeProduct("ml-small", {
+        areaMinM2: observed(8),
+        areaMaxM2: observed(15),
+        priceVnd: observed(8_000_000),
+        noiseDb: observed(25),
+      }),
+    ];
+    const services = createTestServices({
+      products: new FixtureProductSource(products),
+      model: empathyModel({}),
+    });
+    const created = await services.store.createSession();
+    if (!created.ok) throw new Error("không tạo được phiên");
+    const { session, secret } = created.data;
+    const turn = (userText: string) =>
+      runTurn(
+        { sessionId: session.sessionId, turnId: newTurnId(), userText, receivedAt: RECEIVED_AT },
+        secret,
+        services,
+        DEMO_TURN_RULES
+      );
+
+    const t1 = await turn("trời nóng quá, cứu tôi"); // hỏi máy lạnh/quạt
+    const t2 = await turn("tôi không biết nữa, tư vấn cho tôi đi"); // chốt máy lạnh, hỏi diện tích
+    const t3 = await turn("phòng em 10m2"); // đủ ngành + diện tích
+    for (const t of [t1, t2, t3]) if (!t.ok) throw new Error(t.error.message);
+    if (!t3.ok) return;
+
+    // Ngành máy lạnh được GHI NHỚ trong ảnh chụp (dialogue state).
+    expect(t3.data.establishedCategory).toBe("may_lanh");
+    // KHÔNG quay lại hỏi ngành (tầng bắt sóng không chạy lại nhờ nhớ ngành)…
+    if (t3.data.result.kind === "ask_one_question") {
+      expect(t3.data.result.targetGap).not.toContain("intent:");
+    }
+    // …và đủ ngành + diện tích thì TƯ VẤN luôn, không kẹt.
+    expect(t3.data.result.kind).toBe("recommend");
+  });
+
+  it("câu hỏi CHÍNH SÁCH → trả lời CÓ NGUỒN từ tài liệu (không hỏi lại chung chung)", async () => {
+    const grounded =
+      "Dạ máy lạnh được bảo hành 24 tháng ạ.\n\n(Nguồn: chính sách ĐMX — Bảo hành đổi trả)";
+    const model = empathyModel(
+      { intent: "chinh_sach", suggestedCategory: null, reply: "để em kiểm tra chính sách nhé" },
+      grounded
+    );
+    const { record } = await runWith(model, "máy lạnh bảo hành mấy năm vậy em?");
+    expect(record.result.kind).toBe("ask_one_question");
+    if (record.result.kind !== "ask_one_question") return;
+    expect(record.result.question).toBe(grounded);
+    expect(record.result.targetGap).toBe("policy:answer");
+    // Trả lời chính sách không đi qua lọc/xếp hạng sản phẩm.
+    expect(record.eligibility).toBeNull();
+  });
+
+  it("hỏi chính sách nhưng không tra được tài liệu → hỏi lại cho rõ (KHÔNG bịa)", async () => {
+    const model = empathyModel(
+      {
+        intent: "chinh_sach",
+        suggestedCategory: null,
+        reply: "Dạ để em kiểm tra chính sách giúp mình, anh/chị hỏi về bảo hành hay giao lắp ạ?",
+      },
+      "" // answerPolicy rỗng: không match tài liệu
+    );
+    const { record } = await runWith(model, "chính sách của shop thế nào");
+    expect(record.result.kind).toBe("ask_one_question");
+    if (record.result.kind !== "ask_one_question") return;
+    expect(record.result.targetGap).toBe("intent:chinh_sach");
   });
 });
