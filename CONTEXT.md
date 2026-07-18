@@ -259,3 +259,43 @@ _Không dùng_: mọi thay đổi tệp lõi, đánh giá tùy trường hợp s
 **Bằng chứng tổng quát hóa có phạm vi**:
 Kết luận rằng một phiên bản lõi đã dùng lại được trên các lát cắt ngành, gói, dữ liệu, ngưỡng và tình huống được ghi trong lần đánh giá cổng. Kết luận là bằng chứng ban đầu và hết hiệu lực khi hợp đồng lõi hoặc điều kiện đánh giá thay đổi đáng kể.
 _Không dùng_: chứng minh dùng cho mọi ngành, tổng quát hóa vĩnh viễn
+
+**Bản phát hành tư vấn**:
+Tập bất biến khóa phiên bản lõi, các sổ đăng ký, gói ngành hàng, bản phát hành đồ thị, chính sách hỏi, lọc, xếp hạng, công bố, ánh xạ năng lực mô hình, bộ kiểm thử và quyết định phê duyệt được phép dùng cùng nhau. Giá, tồn kho và khuyến mãi hiện hành không nằm trong tập này; chúng được chụp riêng theo từng lượt tư vấn.
+_Không dùng_: cấu hình đang sửa, bản phát hành chỉ gồm mô hình ngôn ngữ
+
+**Mô-đun điều phối phiên tư vấn**:
+Điểm vào duy nhất nhận một lượt hội thoại, giữ thứ tự và phiên bản phiên, gọi các mô-đun miền theo đúng trình tự rồi ghi ảnh chụp quyết định trước khi trả kết quả. Mô-đun này không tự suy luận nhu cầu, lọc, xếp hạng hoặc tạo nhận định về sản phẩm.
+_Không dùng_: tác nhân toàn quyền, nơi chứa mọi quy tắc nghiệp vụ
+
+**Kế hoạch quyết định**:
+Kết quả bất biến theo lượt, nối các ràng buộc và ưu tiên đủ quyền với yếu tố quyết định, khoảng trống, hành động tiếp theo, báo cáo điều kiện hợp lệ, báo cáo xếp hạng và các nhận định được phép công bố. Kế hoạch chỉ giữ tham chiếu tới bằng chứng và phiên bản nguồn, không sao chép hoặc tự tạo dữ kiện mới.
+_Không dùng_: câu trả lời cho khách hàng, tổng điểm sản phẩm
+
+**Báo cáo điều kiện hợp lệ**:
+Bản giải trình theo từng phiên bản sản phẩm cho biết sản phẩm đủ điều kiện, bị loại hay chưa xác minh, cùng quy tắc, giá trị, trạng thái nguồn và bằng chứng đã dẫn tới kết quả đó. Chưa xác minh đối với an toàn, pháp luật hoặc tương thích kỹ thuật phải đóng an toàn; chưa biết ở tiêu chí mềm không tự trở thành điểm yếu.
+_Không dùng_: danh sách sản phẩm đã lọc không có lý do, điểm phạt cho dữ liệu thiếu
+
+**Báo cáo xếp hạng**:
+Bản giải trình thứ tự của riêng các sản phẩm đã đủ điều kiện, gồm đóng góp của từng tiêu chí, điểm đánh đổi, cách phá hòa và phân tích độ nhạy. Bộ xếp hạng lại nếu được dùng chỉ được đổi thứ tự tập đã khóa, không được thêm hoặc hồi sinh sản phẩm bị loại.
+_Không dùng_: điểm phù hợp duy nhất, thứ hạng không có phân tích độ nhạy
+
+**Cổng năng lực mô hình**:
+Giao diện nội bộ gọi mô hình theo năng lực có kiểu, như đề xuất cách trích xuất quan sát, diễn đạt câu hỏi hoặc soạn giải thích, thay vì gọi theo tên nhà cung cấp. Kết quả mô hình luôn là ứng viên chưa được tin cậy; chi tiết riêng của dịch vụ chỉ nằm trong bộ chuyển tiếp và không được trao quyền quyết định sự thật, lọc hoặc công bố.
+_Không dùng_: giao diện trò chuyện chung của nhà cung cấp, nguồn sự thật từ mô hình
+
+**Cổng công bố an toàn**:
+Cửa kiểm tra cuối có thẩm quyền xác nhận từng nhận định nguyên tử, sản phẩm, số liệu, điều kiện, nguồn và giới hạn trước khi nội dung được phép hiển thị. Nếu bản soạn không đạt, cổng chỉ cho sửa lại một lần theo lỗi cụ thể rồi dùng cách trình bày tất định hoặc từ chối có phạm vi.
+_Không dùng_: cảnh báo chung sau câu trả lời, bước kiểm tra có thể bỏ qua
+
+**Ảnh chụp quyết định**:
+Bản ghi bất biến của đúng một lượt, khóa bản phát hành tư vấn, phiên bản phiên, bằng chứng, dữ liệu thương mại theo thời điểm, kết quả mô hình, kế hoạch quyết định, kiểm tra công bố và phản hồi đã trả. Dấu vết quyết định nối nhiều ảnh chụp cùng sự kiện trước và sau tư vấn; ảnh chụp không gọi lại nguồn để viết lại quá khứ.
+_Không dùng_: ảnh màn hình, nhật ký kỹ thuật rời rạc
+
+**Đường phục vụ**:
+Luồng xử lý đang trả lời khách hàng, chỉ đọc bản phát hành tư vấn đã duyệt và dữ liệu thương mại có thẩm quyền theo thời điểm. Đường này không được đọc ứng viên cải tiến hoặc cấu hình đang thử ngoài phạm vi thử nghiệm đã phê duyệt.
+_Không dùng_: môi trường tự học trực tiếp, luồng dùng cấu hình mới nhất mặc định
+
+**Đường cải tiến**:
+Luồng tách biệt đọc ảnh chụp quyết định và kết quả quan sát để phân tích lỗi, tạo hồ sơ đề xuất, bản dự tuyển và bằng chứng kiểm thử. Luồng này không có quyền sửa bản phát hành đang hoạt động; thay đổi chỉ tới đường phục vụ sau kiểm thử và phê duyệt tách vai trò.
+_Không dùng_: tự cập nhật hành vi trực tiếp, ghi đè cấu hình đang phục vụ
