@@ -232,6 +232,22 @@ _Không dùng_: bản trình diễn một sản phẩm, toàn bộ ngành hàng
 Tập điều kiện đồng thời chứng minh một phiên bản lõi có thể tiếp nhận lát cắt ngành tương phản mà không sửa ngữ pháp, lách hợp đồng, suy giảm ngành cũ hoặc hạ chất lượng ngành mới. Một điều kiện bắt buộc không đạt làm toàn bộ cổng chưa đạt; ngành thứ hai chỉ cung cấp bằng chứng ban đầu, không chứng minh tính phổ quát.
 _Không dùng_: điểm tổng hợp đa ngành, chứng nhận lõi dùng cho mọi ngành
 
+**Giai đoạn thử nghiệm có cổng**:
+Khoảng vận hành có mục tiêu, phạm vi, khung thời gian và điều kiện ra rõ ràng. Hết thời gian không tự cho phép chuyển giai đoạn; nếu chưa vượt đủ cổng bằng chứng, người chịu trách nhiệm phải bổ sung bằng chứng, sửa hướng hoặc dừng.
+_Không dùng_: tháng lịch tự động, hoàn thành theo thời gian đã trôi
+
+**Mức phơi bày thử nghiệm**:
+Tỷ lệ phiên đủ điều kiện nhận bản dự tuyển thay vì quy trình đã được duyệt trước đó. Mức phơi bày là giới hạn rủi ro, chỉ được tăng sau khi vượt cổng của mức trước và có phê duyệt mới; nó không phải chỉ tiêu phải dùng hết.
+_Không dùng_: mục tiêu lưu lượng, quyền tự động mở rộng
+
+**Hội thoại đạt cổng**:
+Hội thoại hoàn tất đồng thời vượt cổng chất lượng và mức dịch vụ đã đăng ký. Phiên lỗi, hết hạn, bị hủy, thiếu dấu vết hoặc không vượt cổng công bố không được đưa vào mẫu số để làm chi phí và độ trễ trông tốt hơn; giao dịch không tự chứng minh hội thoại đạt cổng.
+_Không dùng_: hội thoại có phản hồi, hội thoại tạo giao dịch
+
+**Chi phí trên hội thoại đạt cổng**:
+Tổng chi phí trong kỳ chia cho số hội thoại đạt cổng, báo riêng chi phí kỹ thuật và công sức chuyên gia. Mọi so sánh phải dùng cùng phạm vi chất lượng, tải và thời gian; giá mỗi yêu cầu hoặc mỗi mã từ không đại diện cho toàn bộ chi phí phục vụ.
+_Không dùng_: giá gọi mô hình, chi phí trên mọi hội thoại
+
 **Bảng đánh giá đa ngành**:
 Bộ chiều đánh giá dùng cùng cách đo cho mọi ngành, gồm tính hợp lệ, độ phù hợp, độ trung thực, điểm đánh đổi, bất định, chất lượng câu hỏi, độ dễ hiểu và khả năng truy nguyên. Mỗi ngành có tình huống và ngưỡng riêng được đăng ký trước, cùng một phần giữ lại không dùng để điều chỉnh.
 _Không dùng_: so khớp một bộ ba duy nhất, tỷ lệ mua hàng làm nhãn đúng
