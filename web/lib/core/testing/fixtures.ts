@@ -88,6 +88,7 @@ export function sampleDecision(
     turnId,
     sessionId,
     input: sampleInput(sessionId, turnId),
+    appliedRuleVersions: { ruleset: "test@v1", ranker: "test@v1", sufficiency: null },
     eligibility: null,
     ranking: null,
     modelTraces: [],

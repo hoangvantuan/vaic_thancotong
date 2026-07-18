@@ -63,7 +63,9 @@ export function screenProducts(
   products: readonly SourcedProduct[],
   needs: ExtractedNeeds,
   rules: readonly HardRule[],
-  rulesetVersion: string
+  rulesetVersion: string,
+  /** Dấu thời gian ghi vào báo cáo. Truyền `receivedAt` của lượt để tái lập được. */
+  screenedAt: string = new Date().toISOString()
 ): EligibilityReport {
   const rows: EligibilityRow[] = products.map((product) => {
     const findings = rules.map((rule) => rule.evaluate(product, needs));
@@ -77,7 +79,7 @@ export function screenProducts(
   const data: EligibilityReportData = {
     rows,
     rulesetVersion,
-    screenedAt: new Date().toISOString(),
+    screenedAt,
   };
 
   return data as EligibilityReport;
