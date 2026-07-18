@@ -24,21 +24,9 @@
   --border-strong: #d3d9e0;
   --ring: var(--dmx-blue);
   --radius: 12px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f141a;
-    --surface: #171e26;
-    --surface-2: #1d2630;
-    --foreground: #e8edf3;
-    --muted: #97a3b1;
-    --border: #263039;
-    --border-strong: #33404c;
-    /* Giá đỏ trên nền tối cần sáng hơn để còn đọc được */
-    --dmx-red: #ff5a6a;
-    --dmx-blue: #3f8ee0;
-  }
+  /* Khóa giao diện SÁNG — bám nhận diện Điện Máy Xanh, nhất quán mọi máy chấm,
+     không đổi theo dark mode của hệ điều hành. */
+  color-scheme: light;
 }
 
 @theme inline {
@@ -121,4 +109,34 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .msg-in { animation: none; }
   .dots span { animation: none; opacity: 0.5; }
+}
+
+/* Launcher trợ lý — điểm chủ chốt, cần nổi bật */
+@keyframes bot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes bot-pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  70% { transform: scale(1.9); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes nudge-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+.bot-float { animation: bot-float 3.2s ease-in-out infinite; }
+.bot-pulse::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, var(--dmx-blue), transparent);
+  animation: bot-pulse 2.4s ease-out infinite;
+  z-index: -1;
+}
+.nudge-in { animation: nudge-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-float, .bot-pulse::before, .nudge-in { animation: none; }
 }

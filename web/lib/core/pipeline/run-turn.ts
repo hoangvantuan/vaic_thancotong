@@ -136,7 +136,19 @@ export async function runTurn(
   if (existing.data) return ok(existing.data);
 
   // 2. Trích nhu cầu. Kết quả mô hình là ỨNG VIÊN, chưa được tin.
-  const extracted = await model.extractNeeds(input.userText);
+  //
+  // Tư vấn là HỘI THOẠI: dữ kiện khách đã nêu ở lượt trước vẫn còn hiệu lực. Vì vậy
+  // "lời khách" xét ở đây là TOÀN BỘ các lượt khách đã nói trong phiên, không phải
+  // mỗi câu cuối — thiếu bước này thì lượt sau quên sạch lượt trước (khách nói
+  // "điều hoà" ở lượt 1, lượt 2 lại bị hỏi "đang quan tâm nhóm sản phẩm nào").
+  //
+  // Dùng cho cả bước kiểm chứng bên dưới: số liệu vẫn phải truy được về nguyên văn
+  // lời khách, chỉ khác là nguyên văn ấy trải trên nhiều lượt.
+  const priorTurns = await store.listDecisions(input.sessionId, secret);
+  const spokenSoFar = priorTurns.ok ? priorTurns.data.map((r) => r.input.userText) : [];
+  const conversation = [...spokenSoFar, input.userText].join("\n");
+
+  const extracted = await model.extractNeeds(conversation);
   if (!extracted.ok) return err(extracted.error);
   let needs = extracted.data;
   let caveats: readonly string[] = [];
@@ -145,13 +157,23 @@ export async function runTurn(
   // lời khách; thiếu slot bắt buộc thì hỏi ĐÚNG MỘT câu — vẫn lưu ảnh chụp.
   if (rules.sufficiency) {
     const assessment = rules.sufficiency.assess(needs, {
-      userText: input.userText,
+      // Kiểm chứng trên TOÀN BỘ lời khách trong phiên: luật #26 loại mọi dữ kiện
+      // không truy được về nguyên văn, nên nếu chỉ đưa câu cuối thì dữ kiện đã nêu
+      // ở lượt trước (vd "điều hoà") bị coi là phỏng đoán và bị vứt → hỏi lại vòng vo.
+      userText: conversation,
       category: input.category,
     });
     if (assessment.kind === "ask") {
+      // LUẬT (#26) quyết định HỎI GÌ — `targetGap` không nhường cho mô hình.
+      // Mô hình chỉ DIỄN ĐẠT lại cho tự nhiên và bám ngữ cảnh cả hội thoại (đúng
+      // "năng lực 2" của cổng mô hình). Mô hình hỏng/trả rỗng → giữ câu tất định
+      // của luật, nên hội thoại không bao giờ kẹt.
+      const phrased = await model.phraseQuestion(assessment.targetGap, conversation);
+      const question =
+        phrased.ok && phrased.data.trim() ? phrased.data.trim() : assessment.question;
       return save({
         kind: "ask_one_question",
-        question: assessment.question,
+        question,
         targetGap: assessment.targetGap,
       });
     }
