@@ -1,0 +1,228 @@
+{
+  "generated_from": [
+    "docs/raw/products_detail.json",
+    "docs/raw/Spec_cate_gia.xlsx"
+  ],
+  "total_products": 21166,
+  "from_products_detail": 13754,
+  "spec_only_added": 7412,
+  "enriched_with_deep_specs": 1115,
+  "deep_spec_fields_added": 17834,
+  "spec_source_rows": 8746,
+  "categories": {
+    "count": 126,
+    "top": [
+      [
+        "Đồng hồ thời trang",
+        3138
+      ],
+      [
+        "Tủ Lạnh",
+        1485
+      ],
+      [
+        "Máy tính bảng",
+        1411
+      ],
+      [
+        "Máy giặt",
+        1376
+      ],
+      [
+        "Đồng hồ thông minh",
+        1232
+      ],
+      [
+        "Máy lạnh",
+        1116
+      ],
+      [
+        "Ốp lưng, miếng dán",
+        1039
+      ],
+      [
+        "Phụ kiện nhà bếp",
+        830
+      ],
+      [
+        "Loa, Tai nghe",
+        641
+      ],
+      [
+        "Laptop",
+        468
+      ],
+      [
+        "Sạc, cáp",
+        445
+      ],
+      [
+        "Màn hình máy tính",
+        408
+      ],
+      [
+        "Chuột, bàn phím",
+        400
+      ],
+      [
+        "Quạt các loại",
+        373
+      ],
+      [
+        "Máy tính để bàn",
+        363
+      ],
+      [
+        "Máy nước nóng",
+        331
+      ],
+      [
+        "Làm đẹp, chăm sóc cá nhân",
+        307
+      ],
+      [
+        "Tivi",
+        307
+      ],
+      [
+        "Balo, túi chống sốc",
+        302
+      ],
+      [
+        "Tủ lạnh",
+        251
+      ],
+      [
+        "Máy hút bụi gia đình",
+        230
+      ],
+      [
+        "Pc, máy in",
+        229
+      ],
+      [
+        "Nồi cơm điện",
+        226
+      ],
+      [
+        "Thiết bị lọc nước",
+        224
+      ],
+      [
+        "Phần mềm",
+        184
+      ]
+    ]
+  },
+  "brands": {
+    "count": 501,
+    "top": [
+      [
+        "Samsung",
+        1132
+      ],
+      [
+        "LG",
+        762
+      ],
+      [
+        "Ipad (Apple)",
+        706
+      ],
+      [
+        "Panasonic",
+        667
+      ],
+      [
+        "Apple",
+        614
+      ],
+      [
+        "CITIZEN",
+        541
+      ],
+      [
+        "Sharp",
+        500
+      ],
+      [
+        "Toshiba",
+        497
+      ],
+      [
+        "ELIO",
+        493
+      ],
+      [
+        "SMILE KID",
+        462
+      ],
+      [
+        "Aqua",
+        439
+      ],
+      [
+        "CASIO",
+        417
+      ],
+      [
+        "Asus",
+        395
+      ],
+      [
+        "Electrolux",
+        362
+      ],
+      [
+        "Sunhouse",
+        335
+      ],
+      [
+        "Xiaomi",
+        303
+      ],
+      [
+        "Delites",
+        286
+      ],
+      [
+        "Lock&amp;Lock",
+        284
+      ],
+      [
+        "Hitachi",
+        260
+      ],
+      [
+        "MVW",
+        247
+      ],
+      [
+        "Kangaroo",
+        244
+      ],
+      [
+        "Garmin",
+        237
+      ],
+      [
+        "Philips",
+        233
+      ],
+      [
+        "AVA&#x2B;",
+        214
+      ],
+      [
+        "Sanyo",
+        207
+      ]
+    ]
+  },
+  "flags": {
+    "missing_price": 6535,
+    "missing_name": 7450,
+    "no_spec": 2560
+  },
+  "notes": "One unified dataset. Records with name=null are technical-reference products that exist only in Spec_cate_gia.xlsx (no commercial info) — filter on `name` for customer-facing products."
+}
