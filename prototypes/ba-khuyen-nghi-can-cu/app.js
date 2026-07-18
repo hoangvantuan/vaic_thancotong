@@ -238,7 +238,7 @@ function renderProductLead(product, index) {
     product.imageUrl +
     '" alt="' +
     product.shortName +
-    '" loading="lazy" />' +
+    '" />' +
     "</div>" +
     '<div class="product-summary">' +
     '<p class="choice-role">' +
@@ -281,16 +281,16 @@ function renderEvidenceNode(state, eyebrow, title, text) {
 function renderSourceNext(product) {
   return (
     '<div class="source-next">' +
-    '<div><p class="section-label">Nguồn và thời điểm</p><p>Trang sản phẩm, dữ liệu ghi nhận ngày ' +
-    product.capturedAt +
-    ".</p></div>" +
-    '<a class="source-link" href="' +
-    product.productUrl +
-    '" target="_blank" rel="noopener noreferrer">Xem nguồn sản phẩm ↗</a>' +
     '<div class="next-step"><p class="section-label">Bước tiếp theo</p><p>' +
     product.parts.sourceNext +
     "</p></div>" +
     '<a class="primary-action" href="#verification-gate">Xác minh giá, tồn kho và lắp đặt</a>' +
+    '<details class="evidence-details"><summary>Nguồn dữ kiện và thời điểm</summary>' +
+    '<div class="source-record"><p>Trang sản phẩm, dữ liệu ghi nhận ngày ' +
+    product.capturedAt +
+    '.</p><a class="source-link" href="' +
+    product.productUrl +
+    '" target="_blank" rel="noopener noreferrer">Xem nguồn sản phẩm ↗</a></div></details>' +
     "</div>"
   );
 }
@@ -366,9 +366,7 @@ function renderEvidenceDossier(product, index) {
         "</p></div>",
     ) +
     "</div>" +
-    '<details class="evidence-details"><summary>Kiểm tra căn cứ và việc cần làm</summary>' +
     requiredPart("source-next", renderSourceNext(product)) +
-    "</details>" +
     "</div>" +
     "</article>"
   );
@@ -472,7 +470,7 @@ function renderDecisionMatrix() {
         (index + 1) +
         '</span><img src="' +
         product.imageUrl +
-        '" alt="" loading="lazy" /><strong>' +
+        '" alt="" /><strong>' +
         product.shortName +
         '</strong><span class="matrix-role">' +
         product.role +
@@ -548,7 +546,7 @@ function renderChoiceRoute(product, index) {
     product.imageUrl +
     '" alt="' +
     product.shortName +
-    '" loading="lazy" /><div class="price-line"><span>Giá ghi nhận</span><strong>' +
+    '" /><div class="price-line"><span>Giá ghi nhận</span><strong>' +
     money(product.observedPrice) +
     "</strong><small>" +
     product.capturedAt +
