@@ -88,6 +88,14 @@ _Không dùng_: hồ sơ được ghi đè, lịch sử tóm tắt
 Đối tượng mô tả điều cần làm rõ, phương pháp kiểm chứng, cách hỏi trung lập, các kết quả có thể xảy ra và cách mỗi kết quả cập nhật giả thuyết. Mỗi lượt tư vấn chỉ thực hiện kế hoạch có giá trị thông tin cao nhất so với công sức và độ nhạy cảm đối với khách hàng.
 _Không dùng_: câu hỏi tạo tức thời không lưu dấu, trường câu hỏi duy nhất
 
+**Giai đoạn điều phối hội thoại**:
+Trạng thái vận hành cho biết hệ thống đang khám phá, giải quyết dữ kiện bắt buộc, kiểm chứng, xác minh trước trình bày hay trả kết quả. Giai đoạn này điều khiển hành động tiếp theo và có thể quay lại; nó không mô tả tâm lý hoặc mức sẵn sàng mua của khách hàng.
+_Không dùng_: phễu bán hàng, trạng thái quyết định của khách hàng
+
+**Ngân sách câu hỏi**:
+Giới hạn về số lượt và công sức hỏi được phép trong một phiên, dùng để chặn hội thoại kéo dài quá mức. Đây là trần an toàn; hệ thống phải dừng sớm hơn khi không còn câu hỏi có khả năng làm đổi quyết định đáng kể.
+_Không dùng_: chỉ tiêu phải hỏi đủ, số câu cố định cho mọi tình huống
+
 **Dấu vết quyết định**:
 Chuỗi liên kết các phiên bản giả thuyết, câu hỏi, thao tác lọc và xếp hạng, cách giải thích, dữ liệu thương mại tại thời điểm tư vấn cùng kết quả quan sát được. Dấu vết giữ cả cách giải thích thay thế để giao dịch không bị coi là bằng chứng trực tiếp rằng tư vấn đã đúng.
 _Không dùng_: nhãn mua là đúng, kết quả giao dịch đơn lẻ
