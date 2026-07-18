@@ -268,6 +268,26 @@ _Không dùng_: chạy lại ghi đè, miễn trừ sau khi thấy kết quả
 Cơ chế trong đó người quản lý lõi, chuyên gia từng ngành, người phụ trách bằng chứng, người đánh giá độc lập và người chịu trách nhiệm sản phẩm xác nhận đúng phần trách nhiệm của mình. Người tạo không được là người duy nhất phê duyệt; không vai trò nào được miễn trừ cổng bắt buộc.
 _Không dùng_: một người duyệt toàn bộ, biểu quyết bù lỗi bắt buộc
 
+**Chủ sở hữu hiện vật quản trị**:
+Vai trò duy nhất chịu trách nhiệm cuối cùng về ý nghĩa, chất lượng, quyền sử dụng và vòng đời của một hiện vật có phiên bản, như lõi, gói ngành hàng, nguồn dữ liệu hoặc bộ đánh giá. Chủ sở hữu được giao việc nhưng không chuyển trách nhiệm; người quản trị kho hoặc người sửa tệp gần nhất không tự trở thành chủ sở hữu.
+_Không dùng_: người làm mọi việc, chủ kho mã, người sửa cuối
+
+**Người quản lý kỹ thuật**:
+Vai trò triển khai, lưu trữ, vận hành hoặc chuyển giao một hiện vật theo hợp đồng đã duyệt. Người quản lý kỹ thuật không được tự thay đổi ý nghĩa nghiệp vụ, thẩm quyền nguồn, ngưỡng đánh giá hoặc quyền sử dụng chỉ vì họ có quyền sửa hệ thống.
+_Không dùng_: chủ sở hữu nội dung, người có toàn quyền quyết định
+
+**Gói bàn giao có kiểm chứng**:
+Tập bất biến gắn đúng phiên bản hiện vật với hợp đồng, nguồn, quyền sử dụng, kiểm thử, trạng thái cổng, giới hạn, chủ sở hữu, người rà soát và cách quay lui. Bên nhận chỉ chấp nhận bàn giao sau khi kiểm tra được gói; tin nhắn, cuộc họp hoặc đường dẫn tệp riêng lẻ không chứng minh bàn giao hoàn tất.
+_Không dùng_: thông báo đã xong, danh sách tệp, bàn giao miệng
+
+**Quy tắc bốn mắt**:
+Yêu cầu mỗi quyết định đưa thay đổi vào thử nghiệm hoặc sử dụng phải có ít nhất một người đủ quyền, độc lập với người tạo, kiểm tra và đồng ý. Một người có thể giữ nhiều vai trò tổ chức nhưng không được vừa tạo vừa là người duy nhất đánh giá và phê duyệt cùng một thay đổi.
+_Không dùng_: tự duyệt, rà soát hình thức
+
+**Quyền chặn theo phạm vi**:
+Quyền của chủ sở hữu hoặc người phê duyệt từ chối một thay đổi trong đúng phạm vi họ chịu trách nhiệm khi cổng chưa đạt. Quyền chặn không cho phép miễn trừ cổng bắt buộc, và bất đồng chưa giải quyết giữ thay đổi ngoài đường phục vụ.
+_Không dùng_: quyền phủ quyết toàn hệ thống, quyền bỏ qua cổng
+
 **Thay đổi hợp đồng lõi**:
 Thay đổi cấu trúc, ý nghĩa, quyền, vòng đời hoặc hành vi công bố của lõi dùng chung, bất kể số dòng mã bị sửa. Sửa lỗi hoặc tối ưu không đổi hợp đồng vẫn tạo bản dựng mới và phải kiểm thử hồi quy, nhưng không tự được tính là thay đổi ngữ pháp.
 _Không dùng_: mọi thay đổi tệp lõi, đánh giá tùy trường hợp sau khi thấy kết quả
