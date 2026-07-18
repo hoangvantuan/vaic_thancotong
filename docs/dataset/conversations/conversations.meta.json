@@ -1,0 +1,293 @@
+{
+  "description": "Metadata của quá trình làm sạch — KHÔNG phải dữ liệu. Dùng khi chia train/test (chống rò rỉ) và để soát PII. Bản ghi trong conversations.jsonl là dữ liệu thuần.",
+  "dedup": {
+    "note": "11 hội thoại buy_product trùng nội dung 11 hội thoại đầu 35sample; chia tập theo group để tránh rò rỉ (nguồn: nghiên cứu tín hiệu hành vi).",
+    "independent_groups": 34,
+    "groups": {
+      "grp-24": {
+        "canonical": "sample-1",
+        "members": [
+          "sample-1",
+          "buy-0"
+        ]
+      },
+      "grp-25": {
+        "canonical": "sample-2",
+        "members": [
+          "sample-2",
+          "buy-1"
+        ]
+      },
+      "grp-26": {
+        "canonical": "sample-3",
+        "members": [
+          "sample-3",
+          "buy-2"
+        ]
+      },
+      "grp-27": {
+        "canonical": "sample-4",
+        "members": [
+          "sample-4",
+          "buy-3"
+        ]
+      },
+      "grp-28": {
+        "canonical": "sample-5",
+        "members": [
+          "sample-5",
+          "buy-4"
+        ]
+      },
+      "grp-29": {
+        "canonical": "sample-6",
+        "members": [
+          "sample-6",
+          "buy-5"
+        ]
+      },
+      "grp-30": {
+        "canonical": "sample-7",
+        "members": [
+          "sample-7",
+          "buy-6"
+        ]
+      },
+      "grp-31": {
+        "canonical": "sample-8",
+        "members": [
+          "sample-8",
+          "buy-7"
+        ]
+      },
+      "grp-32": {
+        "canonical": "sample-9",
+        "members": [
+          "sample-9",
+          "buy-8"
+        ]
+      },
+      "grp-33": {
+        "canonical": "sample-10",
+        "members": [
+          "sample-10",
+          "buy-9"
+        ]
+      },
+      "grp-34": {
+        "canonical": "sample-11",
+        "members": [
+          "sample-11",
+          "buy-10"
+        ]
+      },
+      "grp-01": {
+        "canonical": "sample-12",
+        "members": [
+          "sample-12"
+        ]
+      },
+      "grp-02": {
+        "canonical": "sample-13",
+        "members": [
+          "sample-13"
+        ]
+      },
+      "grp-03": {
+        "canonical": "sample-14",
+        "members": [
+          "sample-14"
+        ]
+      },
+      "grp-04": {
+        "canonical": "sample-15",
+        "members": [
+          "sample-15"
+        ]
+      },
+      "grp-05": {
+        "canonical": "sample-16",
+        "members": [
+          "sample-16"
+        ]
+      },
+      "grp-06": {
+        "canonical": "sample-17",
+        "members": [
+          "sample-17"
+        ]
+      },
+      "grp-07": {
+        "canonical": "sample-18",
+        "members": [
+          "sample-18"
+        ]
+      },
+      "grp-08": {
+        "canonical": "sample-19",
+        "members": [
+          "sample-19"
+        ]
+      },
+      "grp-10": {
+        "canonical": "sample-20",
+        "members": [
+          "sample-20",
+          "sample-22"
+        ]
+      },
+      "grp-09": {
+        "canonical": "sample-21",
+        "members": [
+          "sample-21"
+        ]
+      },
+      "grp-11": {
+        "canonical": "sample-23",
+        "members": [
+          "sample-23"
+        ]
+      },
+      "grp-12": {
+        "canonical": "sample-24",
+        "members": [
+          "sample-24"
+        ]
+      },
+      "grp-13": {
+        "canonical": "sample-25",
+        "members": [
+          "sample-25"
+        ]
+      },
+      "grp-14": {
+        "canonical": "sample-26",
+        "members": [
+          "sample-26"
+        ]
+      },
+      "grp-15": {
+        "canonical": "sample-27",
+        "members": [
+          "sample-27"
+        ]
+      },
+      "grp-16": {
+        "canonical": "sample-28",
+        "members": [
+          "sample-28"
+        ]
+      },
+      "grp-17": {
+        "canonical": "sample-29",
+        "members": [
+          "sample-29"
+        ]
+      },
+      "grp-18": {
+        "canonical": "sample-30",
+        "members": [
+          "sample-30"
+        ]
+      },
+      "grp-19": {
+        "canonical": "sample-31",
+        "members": [
+          "sample-31"
+        ]
+      },
+      "grp-20": {
+        "canonical": "sample-32",
+        "members": [
+          "sample-32"
+        ]
+      },
+      "grp-21": {
+        "canonical": "sample-33",
+        "members": [
+          "sample-33"
+        ]
+      },
+      "grp-22": {
+        "canonical": "sample-34",
+        "members": [
+          "sample-34"
+        ]
+      },
+      "grp-23": {
+        "canonical": "sample-35",
+        "members": [
+          "sample-35"
+        ]
+      }
+    }
+  },
+  "id_to_group": {
+    "sample-1": "grp-24",
+    "sample-2": "grp-25",
+    "sample-3": "grp-26",
+    "sample-4": "grp-27",
+    "sample-5": "grp-28",
+    "sample-6": "grp-29",
+    "sample-7": "grp-30",
+    "sample-8": "grp-31",
+    "sample-9": "grp-32",
+    "sample-10": "grp-33",
+    "sample-11": "grp-34",
+    "sample-12": "grp-01",
+    "sample-13": "grp-02",
+    "sample-14": "grp-03",
+    "sample-15": "grp-04",
+    "sample-16": "grp-05",
+    "sample-17": "grp-06",
+    "sample-18": "grp-07",
+    "sample-19": "grp-08",
+    "sample-20": "grp-10",
+    "sample-21": "grp-09",
+    "sample-22": "grp-10",
+    "sample-23": "grp-11",
+    "sample-24": "grp-12",
+    "sample-25": "grp-13",
+    "sample-26": "grp-14",
+    "sample-27": "grp-15",
+    "sample-28": "grp-16",
+    "sample-29": "grp-17",
+    "sample-30": "grp-18",
+    "sample-31": "grp-19",
+    "sample-32": "grp-20",
+    "sample-33": "grp-21",
+    "sample-34": "grp-22",
+    "sample-35": "grp-23",
+    "buy-0": "grp-24",
+    "buy-1": "grp-25",
+    "buy-2": "grp-26",
+    "buy-3": "grp-27",
+    "buy-4": "grp-28",
+    "buy-5": "grp-29",
+    "buy-6": "grp-30",
+    "buy-7": "grp-31",
+    "buy-8": "grp-32",
+    "buy-9": "grp-33",
+    "buy-10": "grp-34"
+  },
+  "pii_review_needed": [
+    "buy-0",
+    "buy-4",
+    "buy-5",
+    "buy-7",
+    "buy-9",
+    "sample-1",
+    "sample-10",
+    "sample-12",
+    "sample-15",
+    "sample-16",
+    "sample-17",
+    "sample-26",
+    "sample-27",
+    "sample-33",
+    "sample-34",
+    "sample-5",
+    "sample-6",
+    "sample-8"
+  ]
+}
