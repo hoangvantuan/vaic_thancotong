@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- công cụ đánh giá nội bộ: đọc kết quả lượt ở dạng union rộng */
 // VÒNG TỰ CẢI TIẾN — chạy pipeline THẬT + LLM THẬT trên kịch bản đời thường, rồi
 // LLM-JUDGE tự chấm + rút BÀI HỌC (proposed) ghi vào kho. Đây là "nhân viên làm ca,
 // quản lý chấm, rút kinh nghiệm cho ca sau". KHÔNG chạy trong `npm run test` thường.

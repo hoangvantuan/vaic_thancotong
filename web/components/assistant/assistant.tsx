@@ -16,6 +16,7 @@ import { ProductCard } from "@/components/product-card";
 import type { ChatMessage } from "@/lib/chat-types";
 import { cn } from "@/lib/utils";
 import { AssistantAvatar } from "./assistant-avatar";
+import { isReturning, loadProfile, saveProfile, type CustomerProfile } from "@/lib/assistant/profile";
 
 const SUGGESTIONS = [
   "Máy lạnh phòng 18m² dưới 15 triệu, ít ồn",
@@ -32,6 +33,12 @@ export function Assistant() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // Hồ sơ cá nhân hoá chỉ đọc được sau khi mount (localStorage không có ở phía máy chủ).
+  const [profile, setProfile] = useState<CustomerProfile | null>(null);
+  // localStorage chỉ tồn tại ở client nên phải đọc SAU khi mount, nếu không kết xuất
+  // máy chủ và máy khách sẽ lệch nhau.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setProfile(loadProfile()), [open]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -188,6 +195,16 @@ export function Assistant() {
                   Em hỏi thêm nếu còn thiếu, rồi gợi ý kèm lý do.
                 </p>
                 <div className="mt-3 flex flex-col gap-1.5">
+                  {/* Khách QUAY LẠI: mời tiếp đúng ngành lần trước. Hồ sơ nằm ở máy
+                      khách (localStorage), máy chủ không lưu gì thêm. */}
+                  {isReturning(profile) && (
+                    <button
+                      onClick={() => submit(`Tư vấn ${(profile.lastCategoryLabel ?? "").toLowerCase()}`)}
+                      className="rounded-lg border border-brand bg-brand/5 px-3 py-2 text-left text-[0.8rem] font-medium text-brand transition hover:bg-brand/10"
+                    >
+                      ↩︎ Tiếp tục tư vấn {profile.lastCategoryLabel}
+                    </button>
+                  )}
                   {SUGGESTIONS.map((s) => (
                     <button
                       key={s}
@@ -330,7 +347,12 @@ function MessageItem({
               {part.data.map((c) => (
                 <button
                   key={c.slug}
-                  onClick={() => onQuickAsk(`Tư vấn ${c.label.toLowerCase()}`)}
+                  onClick={() => {
+                    // Ghi nhớ ngành khách quan tâm — CHỈ trên máy khách, để lần sau
+                    // mời tiếp cho đúng chỗ (xem lib/assistant/profile.ts).
+                    saveProfile({ lastCategory: c.slug, lastCategoryLabel: c.label, turns: 1 });
+                    onQuickAsk(`Tư vấn ${c.label.toLowerCase()}`);
+                  }}
                   className="rounded-xl border border-border-strong bg-surface px-3 py-2 text-[0.8rem] font-medium text-foreground transition hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span aria-hidden className="mr-1">{c.emoji}</span>
