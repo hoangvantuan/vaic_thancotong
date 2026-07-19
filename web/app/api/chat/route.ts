@@ -12,13 +12,6 @@ import { getModel, probeLLM } from "@/lib/llm";
 import { orchestrate } from "@/lib/agents/orchestrator";
 import { LlmModelService } from "@/lib/core/adapters/llm-model-service";
 import { isDeferral, looksLikePolicy } from "@/lib/core/pipeline/run-turn";
-import { lessonsHint } from "@/lib/core/learning/learning-store";
-import type { CategorySlug } from "@/lib/types";
-import {
-  categoryChoices,
-  createSearchAgent,
-  type SearchAgentState,
-} from "@/lib/agents/search-agent";
 import { extract } from "@/lib/search/extract";
 
 // Self-host FIRST: chạy trên Node runtime, không dùng edge/Vercel-only.
@@ -83,76 +76,39 @@ export async function POST(req: Request) {
   const llmReady = await probeLLM();
   const model = llmReady ? getModel() : null;
 
-  // CÓ LLM → agent AI tìm kiếm: LLM tự quyết hỏi thêm hay tìm, qua tool tất định.
-  // Chip chọn ngành vẫn là luồng tĩnh: chưa dò ra ngành thì mời khách bấm chip,
-  // khỏi tốn một vòng LLM chỉ để hỏi "anh/chị cần gì".
-  if (model) {
-    let need = extract(userText, { hintCategory });
+  // LUỒNG TẤT ĐỊNH cho MỌI lượt (kể cả khi có LLM). Trước đây có LLM thì đi qua
+  // ToolLoopAgent để LLM tự gọi tool — nhưng gpt-oss-120b qua FPT stream tool-call
+  // hỏng (finish_reason=tool_calls kèm tool_calls RỖNG, stop_reason 200012) khi có
+  // nhiều tool, khiến vòng lặp dừng ngay bước 1: "stream DONE mà bot không trả lời".
+  // Việc quyết định (phân tích nhu cầu, tìm sản phẩm) vốn TẤT ĐỊNH — không cần LLM cầm
+  // lái. Ta tự chạy bằng code (extract + search trong orchestrate) rồi CHỈ dùng LLM để
+  // DIỄN ĐẠT kết quả qua streamText (không function-calling) → hết phụ thuộc tool-call.
+  //
+  // KHÁCH ỦY THÁC ("không biết", "tùy em"): trước khi mời bấm chip, thử đoán ngành qua
+  // readIntent (generateText thuần, không tool) để không bắt khách chọn thủ công.
+  if (model && !extract(userText, { hintCategory }).category && isDeferral(userText)) {
+    const intent = await modelService.readIntent(userText);
+    const guess = intent.ok ? intent.data.suggestedCategory : null;
+    if (guess) hintCategory = guess;
+  }
 
-    // KHÁCH ỦY THÁC ("không biết", "tùy em", "cứ tư vấn giúp"): KHÔNG bắt bấm chip
-    // mới đi tiếp — người bán thật sẽ tự chọn hướng hợp hoàn cảnh rồi hỏi tiếp cho
-    // gọn. Đoán được ngành thì chốt tạm và đi tiếp; khách đổi ý chỉ cần nói một câu.
-    if (!need.category && isDeferral(userText)) {
-      const intent = await modelService.readIntent(userText);
-      const guess = intent.ok ? intent.data.suggestedCategory : null;
-      if (guess) {
-        hintCategory = guess;
-        need = extract(userText, { hintCategory: guess as CategorySlug });
-      }
-    }
+  const plan = await orchestrate(userText, { model, hintCategory });
 
-    if (!need.category) {
-      const stream = createUIMessageStream<ChatMessage>({
-        execute: async ({ writer }) => {
-          // BẮT SÓNG Ý ĐỊNH: khách than "trời nóng quá", "nhà đông người"… thì đáp
-          // đúng hoàn cảnh rồi mới mời chọn, thay vì câu chào vô cảm giống nhau mọi lượt.
-          // Không đọc được ý định → giữ câu chào tất định (hội thoại không bao giờ kẹt).
-          const intent = await modelService.readIntent(userText);
-          const opener =
-            intent.ok && intent.data.reply.trim()
-              ? intent.data.reply.trim()
-              : "Dạ em chào anh/chị 👋 Em là trợ lý tư vấn của Điện Máy Xanh. " +
-                "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?";
-          writeStaticText(writer, opener);
-          writer.write({ type: "data-categories", data: categoryChoices() });
-        },
-      });
-      return createUIMessageStreamResponse({ stream });
-    }
-
-    const state: SearchAgentState = {
-      userText,
-      hintCategory,
-      need: null,
-      results: null,
-      products: [],
-    };
-    // Nạp BÀI HỌC đã duyệt vào chỉ dẫn agent — vòng tự cải tiến: lỗi các lượt trước
-    // được rút thành bài học, lượt sau không mắc lại.
-    const agent = createSearchAgent(model, state, await lessonsHint("intent"));
-
+  // BẮT SÓNG Ý ĐỊNH khi chưa rõ ngành: đáp đúng hoàn cảnh khách kể rồi mới mời chọn,
+  // thay câu chào cứng. readIntent dùng generateText thuần (không tool) nên an toàn với
+  // gpt-oss. Không đọc được ý định → giữ câu chào tất định của plan (không bao giờ kẹt).
+  if (model && plan.mode === "pick_category") {
+    const intent = await modelService.readIntent(userText);
+    const opener =
+      intent.ok && intent.data.reply.trim() ? intent.data.reply.trim() : plan.text;
     const stream = createUIMessageStream<ChatMessage>({
-      onError: (err) => {
-        console.error("[chat] agent stream error:", err);
-        return "Dạ hệ thống đang bận, anh/chị thử lại giúp em sau ít phút nhé ạ.";
-      },
       execute: async ({ writer }) => {
-        // Thẻ sản phẩm đẩy vào stream NGAY khi tool tìm xong — không đợi LLM nói hết.
-        state.onProducts = (products) =>
-          writer.write({ type: "data-products", data: products });
-        const result = await agent.stream({
-          messages: await convertToModelMessages(messages),
-        });
-        writer.merge(
-          toUIMessageStream<ToolSet, ChatMessage>({ stream: result.fullStream })
-        );
+        writeStaticText(writer, opener);
+        writer.write({ type: "data-categories", data: plan.categories });
       },
     });
     return createUIMessageStreamResponse({ stream });
   }
-
-  // KHÔNG có LLM → giữ nguyên luồng deterministic cũ (vẫn ra sản phẩm thật).
-  const plan = await orchestrate(userText, { model, hintCategory });
 
   const stream = createUIMessageStream<ChatMessage>({
     onError: (err) => {

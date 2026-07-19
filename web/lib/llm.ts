@@ -136,18 +136,7 @@ const repairFetch: typeof fetch = async (input, init) => {
         if (payload && payload !== "[DONE]") {
           try {
             const obj = JSON.parse(payload);
-            if (process.env.DEBUG_LLM) {
-              const tc = (obj as { choices?: { delta?: { tool_calls?: unknown }; finish_reason?: unknown }[] })
-                .choices?.[0];
-              if (tc?.delta?.tool_calls || tc?.finish_reason) {
-                console.error("[llm.raw]", JSON.stringify(tc));
-              }
-            }
             normalizeToolCallDeltas(obj, fixState);
-            if (process.env.DEBUG_LLM) {
-              const tc = (obj as { choices?: { delta?: { tool_calls?: unknown } }[] }).choices?.[0];
-              if (tc?.delta?.tool_calls) console.error("[llm.fixed]", JSON.stringify(tc.delta.tool_calls));
-            }
             controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n`));
             continue;
           } catch {
