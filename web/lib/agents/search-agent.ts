@@ -130,7 +130,15 @@ QUY TẮC BẮT BUỘC:
  * Tạo agent cho MỘT lượt chat. `state.userText` là toàn bộ lời khách (server gộp),
  * nên Need tất định theo hội thoại — LLM không tiêm được dữ liệu vào tool.
  */
-export function createSearchAgent(model: LanguageModel, state: SearchAgentState) {
+export function createSearchAgent(
+  model: LanguageModel,
+  state: SearchAgentState,
+  /**
+   * Bài học đã tích luỹ từ kho `data/learnings.json` — nối vào cuối chỉ dẫn để agent
+   * không lặp lại lỗi các lượt trước. Rỗng khi chưa có bài học nào được duyệt.
+   */
+  lessons = ""
+) {
   const phanTichNhuCau = tool({
     description:
       "Trích nhu cầu có cấu trúc (ngành, ngân sách, diện tích/số người, hãng, tiện ích) " +
@@ -201,7 +209,7 @@ export function createSearchAgent(model: LanguageModel, state: SearchAgentState)
   return new ToolLoopAgent({
     id: "search-agent",
     model,
-    instructions: INSTRUCTIONS,
+    instructions: INSTRUCTIONS + lessons,
     tools: {
       phan_tich_nhu_cau: phanTichNhuCau,
       tim_san_pham: timSanPham,

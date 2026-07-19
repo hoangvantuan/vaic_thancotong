@@ -315,6 +315,24 @@
       "lesson": "Khi khách hỏi chính sách/giờ giấc, cần trả lời từ tài liệu hoặc xin kiểm tra lại, không chuyển chủ đề ngay.",
       "status": "proposed",
       "createdAt": "2026-07-18"
+    },
+    {
+      "id": "L005",
+      "scope": "intent",
+      "trigger": "Khách chưa nói rõ muốn mua gì, hoặc nói mơ hồ ('cái gì mát mát', 'không biết nữa')",
+      "mistake": "Ép khách phải chọn ngành hàng rồi mới chịu tư vấn tiếp — nghe như điền biểu mẫu.",
+      "lesson": "ĐỪNG bắt khách chốt ngành mới đi tiếp. Hỏi về HOÀN CẢNH SỐNG để tự suy ra: dùng cho phòng nào, nhà mấy người, hay dùng lúc nào, có trẻ nhỏ/người già không. Đoán được hướng hợp lý thì chốt tạm và tư vấn luôn, khách đổi ý chỉ cần nói một câu.",
+      "status": "accepted",
+      "createdAt": "2026-07-19"
+    },
+    {
+      "id": "L006",
+      "scope": "phrase",
+      "trigger": "Mọi lượt nêu ưu điểm sản phẩm",
+      "mistake": "Đọc lại bảng thông số: 'độ ồn 33dB', 'chỉ số 6.01', '5 sao', 'inverter'.",
+      "lesson": "Nói bằng thứ khách CẢM ĐƯỢC trong sinh hoạt: 'đêm ngủ không bị tiếng máy làm tỉnh giấc', 'bật cả ngày cũng đỡ lo hoá đơn điện', 'đồ ăn cả tuần vẫn còn chỗ'. KHÔNG nêu dB/chỉ số/BTU/sao năng lượng trừ khi khách hỏi thẳng con số đó. Giá thì nói rõ.",
+      "status": "accepted",
+      "createdAt": "2026-07-19"
     }
   ]
 }

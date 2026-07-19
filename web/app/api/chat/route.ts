@@ -11,7 +11,9 @@ import type { ChatMessage } from "@/lib/chat-types";
 import { getModel, probeLLM } from "@/lib/llm";
 import { orchestrate } from "@/lib/agents/orchestrator";
 import { LlmModelService } from "@/lib/core/adapters/llm-model-service";
-import { looksLikePolicy } from "@/lib/core/pipeline/run-turn";
+import { isDeferral, looksLikePolicy } from "@/lib/core/pipeline/run-turn";
+import { lessonsHint } from "@/lib/core/learning/learning-store";
+import type { CategorySlug } from "@/lib/types";
 import {
   categoryChoices,
   createSearchAgent,
@@ -85,7 +87,20 @@ export async function POST(req: Request) {
   // Chip chọn ngành vẫn là luồng tĩnh: chưa dò ra ngành thì mời khách bấm chip,
   // khỏi tốn một vòng LLM chỉ để hỏi "anh/chị cần gì".
   if (model) {
-    const need = extract(userText, { hintCategory });
+    let need = extract(userText, { hintCategory });
+
+    // KHÁCH ỦY THÁC ("không biết", "tùy em", "cứ tư vấn giúp"): KHÔNG bắt bấm chip
+    // mới đi tiếp — người bán thật sẽ tự chọn hướng hợp hoàn cảnh rồi hỏi tiếp cho
+    // gọn. Đoán được ngành thì chốt tạm và đi tiếp; khách đổi ý chỉ cần nói một câu.
+    if (!need.category && isDeferral(userText)) {
+      const intent = await modelService.readIntent(userText);
+      const guess = intent.ok ? intent.data.suggestedCategory : null;
+      if (guess) {
+        hintCategory = guess;
+        need = extract(userText, { hintCategory: guess as CategorySlug });
+      }
+    }
+
     if (!need.category) {
       const stream = createUIMessageStream<ChatMessage>({
         execute: async ({ writer }) => {
@@ -112,7 +127,9 @@ export async function POST(req: Request) {
       results: null,
       products: [],
     };
-    const agent = createSearchAgent(model, state);
+    // Nạp BÀI HỌC đã duyệt vào chỉ dẫn agent — vòng tự cải tiến: lỗi các lượt trước
+    // được rút thành bài học, lượt sau không mắc lại.
+    const agent = createSearchAgent(model, state, await lessonsHint("intent"));
 
     const stream = createUIMessageStream<ChatMessage>({
       onError: (err) => {
