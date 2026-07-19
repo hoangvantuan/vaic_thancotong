@@ -107,16 +107,9 @@ export function ProductCard({ p }: { p: RecommendedProduct }) {
           </dl>
         )}
 
-        {/* Khuyến mãi: CHỈ một dòng quà chính — chuỗi gốc dài cả đoạn làm vỡ chiều
-            cao thẻ. Giữ nguyên văn đầy đủ ở tooltip để không mất thông tin. */}
-        {p.promotion && (
-          <p
-            className="mt-2 line-clamp-1 rounded-md bg-promo/10 px-2 py-1 text-[0.7rem] leading-snug text-promo"
-            title={p.promotion}
-          >
-            🎁 {p.promotion.split(";")[0].trim()}
-          </p>
-        )}
+        {/* Khuyến mãi TẠM ẨN: chuỗi quà tặng của nguồn dài cả đoạn, cắt kiểu gì cũng
+            đứt giữa câu và làm thẻ cao lên — che mất phần lý do tư vấn (thứ khách
+            cần đọc). Dữ liệu vẫn còn ở `p.promotion`; muốn bật lại thì render ở đây. */}
 
         {/* Lý do phù hợp */}
         <p className="mt-auto border-t border-border pt-2 text-[0.72rem] leading-relaxed text-muted">
