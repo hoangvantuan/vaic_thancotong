@@ -101,6 +101,9 @@ Danh sách sản phẩm ĐÃ chọn sẵn (chỉ được dùng đúng thông ti
 ${list}
 
 QUY TẮC BẮT BUỘC:
+- VIẾT VĂN XUÔI THUẦN, TUYỆT ĐỐI KHÔNG dùng markdown: không **in đậm**, không #, không
+  gạch đầu dòng, không danh sách đánh số — khung chat hiển thị nguyên ký tự nên dấu sao
+  sẽ lộ ra như lỗi. Cần tách ý thì xuống dòng và viết thành câu.
 - Chỉ khẳng định điều CÓ trong danh sách trên. Tuyệt đối không bịa thông số, giá, khuyến mãi hay tồn kho.
 - Sản phẩm ghi "GIÁ ĐANG CẬP NHẬT": nói đúng ý này — "${MISSING_PRICE_LINE}"
 - Phần trong ngoặc kép "..." là cách diễn đạt ĐÃ DUYỆT cho thông số đó. Dùng lại đúng ý ấy,
