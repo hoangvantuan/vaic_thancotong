@@ -29,7 +29,8 @@ export const LLM_CONFIG = {
 type ToolCallDelta = {
   index?: number;
   id?: string | null;
-  function?: { name?: string | null };
+  type?: string | null;
+  function?: { name?: string | null; arguments?: string | null };
 };
 
 /** Nén index gốc về slot liên tục và vá id trống cho MỘT delta tool-call. */
@@ -48,13 +49,55 @@ function repairOneToolCall(c: ToolCallDelta, state: Map<number, number>): void {
   if (opening && (c.id == null || c.id === "")) c.id = `toolcall_${slot}`;
 }
 
+/**
+ * GỘP các delta tool-call cùng slot NẰM TRONG CÙNG MỘT CHUNK về một delta duy nhất.
+ *
+ * gpt-oss-120b (FPT) phát cả tool-call trong MỘT event SSE, tách thành hai phần tử
+ * cùng index: phần đầu mang {name, arguments:""}, phần sau mang {arguments:"{}"}.
+ * @ai-sdk giả định name và arguments đến ở các event RIÊNG BIỆT: nó forward tool-call
+ * NGAY khi thấy `name` (lúc đó arguments còn rỗng) rồi đánh dấu index đã forward, nên
+ * phần "{}" đến sau bị bỏ lại — tool-call chốt với arguments RỖNG và execute lỗi/không
+ * chạy, khiến vòng lặp agent dừng ngay sau bước 1 (stream DONE mà không có câu trả lời).
+ *
+ * Gộp lại trước khi @ai-sdk đọc: một tool-call trọn vẹn {name, arguments:"{}"} → forward
+ * đúng một lần với arguments đầy đủ. Chỉ gộp trong phạm vi một chunk; các chunk arguments
+ * ở những event sau (nếu provider có stream kiểu đó) vẫn nối bình thường nhờ index đã nén.
+ */
+function mergeSameSlotDeltas(calls: ToolCallDelta[]): ToolCallDelta[] {
+  const bySlot = new Map<number, ToolCallDelta>();
+  const order: number[] = [];
+  for (const c of calls) {
+    const slot = c.index as number;
+    let m = bySlot.get(slot);
+    if (!m) {
+      m = { index: slot, function: { arguments: "" } };
+      bySlot.set(slot, m);
+      order.push(slot);
+    }
+    if (c.id != null && c.id !== "" && (m.id == null || m.id === "")) m.id = c.id;
+    if (c.type != null && m.type == null) m.type = c.type;
+    const name = c.function?.name;
+    if (name != null && name !== "") m.function!.name = name;
+    const args = c.function?.arguments;
+    if (args != null && args !== "") m.function!.arguments += args;
+  }
+  return order.map((slot) => bySlot.get(slot)!);
+}
+
 export function normalizeToolCallDeltas(chunk: unknown, state: Map<number, number>): void {
   const choices = (chunk as { choices?: unknown }).choices;
   if (!Array.isArray(choices)) return;
   for (const choice of choices) {
-    const calls = (choice as { delta?: { tool_calls?: unknown } })?.delta?.tool_calls;
+    const delta = (choice as { delta?: { tool_calls?: unknown } })?.delta;
+    const calls = delta?.tool_calls;
     if (!Array.isArray(calls)) continue;
     for (const call of calls) repairOneToolCall(call as ToolCallDelta, state);
+    // Sau khi nén index: nếu cùng chunk có nhiều mảnh cùng slot, gộp thành một.
+    if (calls.length > 1) {
+      (delta as { tool_calls: ToolCallDelta[] }).tool_calls = mergeSameSlotDeltas(
+        calls as ToolCallDelta[]
+      );
+    }
   }
 }
 
