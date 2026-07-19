@@ -270,9 +270,17 @@ export function Assistant() {
                   el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
                 }}
                 onKeyDown={(e) => {
+                  // Bộ gõ tiếng Việt (Telex/VNI) đang ghép chữ thì Enter là phím CHỐT
+                  // chữ, không phải gửi — nhận nhầm sẽ gửi thiếu ký tự cuối và để lại
+                  // phần đang gõ dở trong ô ("ko biết" → gửi "ko", còn "biết").
+                  if (e.nativeEvent.isComposing) return;
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    submit(input);
+                    // Lấy thẳng giá trị trong ô: state có thể chưa kịp nhận ký tự cuối.
+                    const value = e.currentTarget.value;
+                    if (!value.trim()) return;
+                    submit(value);
+                    e.currentTarget.style.height = "auto";
                   }
                 }}
                 placeholder="Nhập nhu cầu của mình…"
