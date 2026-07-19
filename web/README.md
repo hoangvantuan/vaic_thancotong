@@ -93,11 +93,34 @@ scripts/extract-catalog.mjs   Trích docs/dataset → data/<slug>.json (đọc c
 
 ### Thêm một ngành hàng mới
 
-1. Thêm entry vào `config/categories.json` (tên nhóm hàng thật, từ khoá, `fit`, `highlights`).
-2. Thêm một dòng vào bảng `LOADERS` trong `lib/data/catalog.ts`.
-3. `npm run data:extract && npm run build`.
+Cách nhanh — để máy draft, người duyệt:
 
-Không phải sửa agent hay giao diện — không có chỗ nào `if (category === ...)`.
+```bash
+npm run category:scaffold -- "Nồi cơm điện"   # tên nhóm hàng đúng như trong kho nguồn
+```
+
+Script sẽ: quét `docs/dataset/catalog/catalog.jsonl` lấy thống kê thật (field specs,
+độ phủ, giá trị mẫu) → nhờ LLM (ENV như app) draft entry config → **validate trên dữ
+liệu thật** (field phải tồn tại; `fit.parser` phải có trong `parsers.ts` và đọc được
+≥50% giá trị mẫu, không đạt thì bỏ fit kèm cảnh báo) → ghi vào `config/categories.json`
+→ tự chạy `data:extract` (sinh `data/<slug>.json` + `lib/data/loaders.generated.ts`).
+
+Flags: `--dry-run` (chỉ in draft), `--slug ten_slug`, `--no-llm` (sinh khung + TODO).
+
+Việc còn lại của người duyệt:
+
+1. Xem diff `config/categories.json` — chỉnh `keywords` / câu hỏi ngược / `fit` cho chuẩn văn nói.
+2. Highlight nào cần câu đời thường thì viết `plain` (phrasebook) tay — script cố tình
+   không draft phần này vì đó là câu chữ đã duyệt.
+3. `npm run check` rồi chạy thử hội thoại hỏi ngành mới.
+
+Cách tay (không LLM): tự thêm entry vào `config/categories.json` rồi `npm run data:extract`.
+
+Chỉ vậy — chip chọn ngành, câu clarify, prompt đọc-ý-định, scope-guard, judge và
+storefront đều derive từ registry; không có chỗ nào `if (category === ...)`. Hai chỗ
+tuỳ chọn phải sửa code: parser mới trong `lib/data/parsers.ts` (kèm probe tương ứng
+trong `scripts/scaffold-category.mjs`), và concept tiện ích đặc thù trong
+`lib/search/concepts.ts`.
 
 ### Chống bịa (guardrail)
 
