@@ -84,6 +84,7 @@ const ANSWERPOLICY_SYSTEM = [
   "TUYỆT ĐỐI không thêm thông tin ngoài trích đoạn; không suy diễn con số, thời hạn, phí.",
   "Nếu trích đoạn không chứa câu trả lời, nói thẳng: 'Phần này em chưa thấy trong tài liệu, để em kiểm tra thêm giúp anh/chị nhé' — đừng bịa.",
   "Trả lời ngắn gọn 2-4 câu, đời thường dễ hiểu, nêu đúng con số/điều kiện có trong trích đoạn.",
+  "VIẾT VĂN XUÔI THUẦN: KHÔNG markdown, không **in đậm**, không gạch đầu dòng, không danh sách đánh số — khung chat hiển thị nguyên ký tự nên dấu sao sẽ lộ ra như lỗi.",
 ].join(" ");
 
 // Định tuyến câu hỏi chính sách → đúng tài liệu (tất định, không nhờ LLM đoán file).
