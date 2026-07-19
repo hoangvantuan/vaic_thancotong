@@ -145,8 +145,9 @@ export function createSearchAgent(
 ) {
   const phanTichNhuCau = tool({
     description:
-      "Trích nhu cầu có cấu trúc (ngành, ngân sách, diện tích/số người, hãng, tiện ích) " +
-      "từ toàn bộ lời khách trong hội thoại. Tất định — cùng hội thoại luôn ra cùng kết quả.",
+      "Trích nhu cầu có cấu trúc (ngành, ngân sách, diện tích/số người, hãng, tiện ích). " +
+      "KHÔNG có tham số: luôn gọi với input rỗng {} — hệ thống TỰ đọc hội thoại, " +
+      "TUYỆT ĐỐI không chép lời khách hay hội thoại vào input. Tất định.",
     inputSchema: z.object({}),
     execute: async () => {
       const catalog = state.hintCategory ? await getCatalog(state.hintCategory) : [];
@@ -179,7 +180,8 @@ export function createSearchAgent(
     description:
       "Tìm và xếp hạng 1-3 sản phẩm phù hợp nhất từ catalog thật, theo nhu cầu đã phân tích. " +
       "Lọc cứng (ngành, hãng, quá yếu so với phòng, vượt ngân sách) rồi xếp hạng mềm có lý do. " +
-      "Chỉ gọi sau khi phan_tich_nhu_cau cho san_sang_tim = true.",
+      "Chỉ gọi sau khi phan_tich_nhu_cau cho san_sang_tim = true. " +
+      "KHÔNG có tham số: luôn gọi với input rỗng {}, không chép gì vào input.",
     inputSchema: z.object({}),
     execute: async () => {
       const need = state.need;
@@ -220,6 +222,9 @@ export function createSearchAgent(
     },
     stopWhen: stepCountIs(5),
     temperature: 0.4,
+    // Chặn trần token: khỏi phụ thuộc mặc định của endpoint (vLLM/FPT hay để thấp),
+    // tránh bị cắt giữa lúc stream tool-call — gốc của lỗi "Expected 'id' to be a string".
+    maxOutputTokens: 2048,
   });
 }
 
