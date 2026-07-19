@@ -225,6 +225,15 @@ export function createSearchAgent(
     // Chặn trần token: khỏi phụ thuộc mặc định của endpoint (vLLM/FPT hay để thấp),
     // tránh bị cắt giữa lúc stream tool-call — gốc của lỗi "Expected 'id' to be a string".
     maxOutputTokens: 2048,
+    // TẮT gọi tool SONG SONG. Endpoint FPT stream nhiều tool-call cùng lúc với chỉ
+    // số nhảy cóc (index 1 khi chưa có index 0) → mảng thưa trong @ai-sdk khiến flush
+    // đọc phần tử undefined và nổ "Cannot read properties of undefined (hasFinished)".
+    // Ép một tool mỗi bước là hết index thưa. providerOptions[provider] không thuộc
+    // schema chuẩn được rải thẳng vào request body (xem @ai-sdk/openai-compatible).
+    providerOptions: {
+      "local-llm": { parallel_tool_calls: false },
+      localLlm: { parallel_tool_calls: false },
+    },
   });
 }
 
