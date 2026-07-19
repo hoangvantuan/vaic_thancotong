@@ -14,6 +14,8 @@ import type { RankedRow } from "../contracts/ranking";
 import type { Recommendation, TurnInput, TurnResult } from "../contracts/turn";
 import { toOneToThree } from "../contracts/turn";
 import type { CategorySlug } from "@/lib/types";
+import { categoryLabelList } from "@/lib/data/category-config";
+import { extract as extractNeed } from "@/lib/search/extract";
 import { coreError, err, ok, type Result } from "../contracts/status";
 import type { CoreServices } from "../composition";
 import type { ExtractedNeeds } from "../ports/model-service";
@@ -221,14 +223,14 @@ export async function runTurn(
     }
   }
 
-  // SCOPE-GUARD — câu HIỆN TẠI nhắc ngành NGOÀI hỗ trợ (quạt/tủ lạnh/tivi…) phải
-  // THẮNG ngành đã chốt (khách đổi ý), từ chối khéo thay vì âm thầm tư vấn máy lạnh.
+  // SCOPE-GUARD — câu HIỆN TẠI nhắc ngành NGOÀI hỗ trợ (quạt/loa/máy nước nóng…)
+  // phải THẮNG ngành đã chốt (khách đổi ý), từ chối khéo thay vì âm thầm tư vấn tiếp.
   const outOfScope = outOfScopeMention(input.userText);
   if (outOfScope) {
     return save(
       declineTurn(
         "out_of_serving_scope",
-        `Dạ ${outOfScope} hiện bên em chưa có sẵn dữ liệu để tư vấn ạ. Bản demo này em đang hỗ trợ tư vấn MÁY LẠNH — anh/chị cần em tư vấn máy lạnh không ạ?`
+        `Dạ ${outOfScope} hiện bên em chưa có sẵn dữ liệu để tư vấn ạ. Bên em đang hỗ trợ tư vấn ${categoryLabelList()} — anh/chị cần em tư vấn nhóm nào không ạ?`
       )
     );
   }
@@ -489,16 +491,18 @@ export function isDeferral(text: string): boolean {
 }
 
 /**
- * Câu HIỆN TẠI nhắc RÕ một ngành NGOÀI phạm vi hỗ trợ (bản demo chỉ máy lạnh có
- * dữ liệu+luật)? Trả tên ngành để từ chối khéo; null nếu không, hoặc đang nói máy lạnh.
- * Chặn "quạt điều hòa" bị nhận nhầm máy lạnh + khách đổi sang ngành chưa hỗ trợ.
+ * Câu HIỆN TẠI nhắc RÕ một ngành NGOÀI phạm vi hỗ trợ? Trả tên ngành để từ chối
+ * khéo; null nếu không. Chặn "quạt điều hòa" bị nhận nhầm máy lạnh + khách đổi
+ * sang ngành chưa hỗ trợ.
+ *
+ * Phạm vi lấy từ REGISTRY: câu khớp keyword của bất kỳ ngành nào đã khai trong
+ * config/categories.json là trong phạm vi — thêm ngành mới (kèm keywords) thì
+ * guard này tự mở, không phải sửa danh sách ở đây. Danh sách dưới chỉ liệt các
+ * ngành phổ biến CHƯA có dữ liệu, để từ chối có gọi đúng tên thay vì im lặng.
  */
 function outOfScopeMention(text: string): string | null {
+  if (extractNeed(text).category) return null; // khớp ngành trong registry → trong phạm vi
   const t = text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d");
-  if (/\bmay lanh\b/.test(t)) return null; // có nhắc máy lạnh → trong phạm vi
-  // CHỈ liệt ngành KHÔNG có trong registry (không có dữ liệu để tư vấn). Các ngành
-  // đã khai trong config/categories.json (máy lạnh, tủ lạnh, máy giặt, tivi, điện
-  // thoại, laptop) đi luồng tư vấn bình thường — KHÔNG chặn ở đây.
   const map: [RegExp, string][] = [
     [/\bquat\b/, "quạt (quạt điều hòa/quạt hơi nước)"],
     [/\bloa\b|\btai nghe\b/, "loa/tai nghe"],

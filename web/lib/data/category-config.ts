@@ -37,6 +37,11 @@ export interface FitConfig {
    * là chuyện thường, lệch 7 người thì không — nên thang điểm phải theo ngành.
    */
   spread?: number;
+  /**
+   * Tiêu chí hoàn cảnh là QUYẾT ĐỊNH: khách đã nêu diện tích/số người mà sản phẩm
+   * không có dữ liệu fit thì không được xếp vào top (không bịa độ phù hợp).
+   */
+  critical?: boolean;
 }
 
 /**
@@ -91,6 +96,16 @@ export interface CategoryConfig {
   emoji: string;
   sourceCategoryNames: string[];
   keywords: string[];
+  /**
+   * Từ (đã có trong câu) làm keyword của ngành MẤT hiệu lực — chặn nhận nhầm:
+   * "quạt điều hòa" chứa "điều hòa" nhưng không phải máy lạnh.
+   */
+  keywordBlockers?: string[];
+  /**
+   * Hoàn cảnh gợi ngành cho tầng đọc-ý-định, vd "trời nóng/phòng oi bức".
+   * Không khai thì ngành vẫn chạy, chỉ không có mặt trong ví dụ gợi ý của prompt.
+   */
+  intentCue?: string;
   banned: string[];
   fit: FitConfig | null;
   highlights: HighlightConfig[];
@@ -116,6 +131,15 @@ export function allSlugs(): CategorySlug[] {
   return CATEGORIES.map((c) => c.slug);
 }
 
+/**
+ * "máy lạnh, tủ lạnh, …" — chuỗi liệt kê ngành đang hỗ trợ, dùng cho câu hỏi
+ * chọn ngành và các prompt cần nêu phạm vi. MỘT nguồn sự thật: thêm ngành vào
+ * categories.json là mọi câu/prompt tự cập nhật.
+ */
+export function categoryLabelList(): string {
+  return CATEGORIES.map((c) => c.label.toLowerCase()).join(", ");
+}
+
 /** Lấy parser theo tên khai báo trong config. */
 export function getParser(name: string): Parser {
   const p = PARSERS[name];
@@ -131,6 +155,7 @@ export function detectCategory(text: string): CategorySlug | undefined {
   const t = text.toLowerCase();
   let best: { slug: CategorySlug; len: number } | undefined;
   for (const c of CATEGORIES) {
+    if (c.keywordBlockers?.some((b) => t.includes(b.toLowerCase()))) continue;
     for (const kw of c.keywords) {
       if (t.includes(kw.toLowerCase())) {
         if (!best || kw.length > best.len) best = { slug: c.slug, len: kw.length };

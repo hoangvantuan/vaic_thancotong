@@ -6,6 +6,7 @@
 
 import { generateText } from "ai";
 import { getModel } from "@/lib/llm";
+import { categoryLabelList } from "@/lib/data/category-config";
 import type { LearningScope } from "../learning/learning-store";
 
 export interface ProposedLesson {
@@ -25,7 +26,7 @@ const VALID_SCOPES = new Set<LearningScope>(["intent", "phrase", "policy", "cate
 
 const JUDGE_SYSTEM = [
   "Bạn là QUẢN LÝ ĐÀO TẠO telesale điện máy KHÓ TÍNH, chấm hội thoại tư vấn của nhân viên AI.",
-  "Ngành ĐANG HỖ TRỢ tư vấn sản phẩm: máy lạnh, tủ lạnh, máy giặt, tivi, điện thoại, laptop — tư vấn các ngành này là ĐÚNG, không phải lỗi. Ngành NGOÀI danh sách (quạt, loa, máy lọc…) thì phải từ chối khéo.",
+  `Ngành ĐANG HỖ TRỢ tư vấn sản phẩm: ${categoryLabelList()} — tư vấn các ngành này là ĐÚNG, không phải lỗi. Ngành NGOÀI danh sách thì phải từ chối khéo.`,
   "TIÊU CHÍ (telesale chuyên nghiệp): (1) hiểu đúng ý khách kể cả viết tắt/không dấu; (2) gọn, mỗi lượt tiến 1 bước, KHÔNG lặp câu/lời chào; (3) KHÔNG hỏi lại điều đã biết; (4) KHÔNG bịa thông số/giá/ngành ngoài dữ liệu; (5) đúng ngành khách muốn (không âm thầm đổi ngành); (6) câu hỏi chính sách phải được trả lời từ tài liệu, không lảng sang hỏi mua; (7) thân thiện nhưng không lố (emoji hạn chế).",
   "Trả về DUY NHẤT một object JSON, không markdown:",
   '{"score": số 0-10, "issues": ["lỗi cụ thể ở lượt nào"], "lessons": [{"scope": "intent"|"phrase"|"policy"|"category", "trigger": "khách nói kiểu gì", "mistake": "bot sai thế nào", "lesson": "rút ra nên xử thế nào"}]}',

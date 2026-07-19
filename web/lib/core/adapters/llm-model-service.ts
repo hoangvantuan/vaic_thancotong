@@ -16,6 +16,7 @@
 import { generateText } from "ai";
 import { z } from "zod";
 import { getModel, probeLLM } from "@/lib/llm";
+import { allSlugs, CATEGORIES } from "@/lib/data/category-config";
 import { extract, type Need } from "@/lib/search/extract";
 import { ok, type Result } from "../contracts/status";
 import type { ExtractedNeeds, IntentRead, ModelService } from "../ports/model-service";
@@ -32,14 +33,14 @@ const EXTRACT_SYSTEM = [
   "priorities chỉ chọn trong: quiet (êm/ít ồn), energy (tiết kiệm điện), cheap (giá rẻ).",
 ].join(" ");
 
-const CATEGORY_SLUGS: readonly string[] = [
-  "may_lanh",
-  "tu_lanh",
-  "may_giat",
-  "tivi",
-  "dien_thoai",
-  "laptop",
-];
+// Vốn từ ngành hợp lệ lấy THẲNG từ registry — thêm ngành vào categories.json là
+// validate + prompt bên dưới tự cập nhật, không còn danh sách chép tay.
+const CATEGORY_SLUGS: readonly string[] = allSlugs();
+
+/** "trời nóng→may_lanh; giặt giũ→may_giat…" — ví dụ gợi ngành từ hoàn cảnh, theo config. */
+const INTENT_CUE_EXAMPLES = CATEGORIES.filter((c) => c.intentCue)
+  .map((c) => `${c.intentCue}→${c.slug}`)
+  .join("; ");
 const ALLOWED_PRIORITIES = new Set(["quiet", "energy", "cheap"]);
 
 const VALID_INTENTS = new Set([
@@ -58,10 +59,10 @@ const READINTENT_SYSTEM = [
   "Đọc lời khách rồi trả về DUY NHẤT một object JSON, không markdown, không giải thích:",
   '{"intent": một trong ["mua","chinh_sach","su_co","chao_hoi","ngoai_pham_vi"],',
   '"suggestedCategory": slug hoặc null, "reply": "..."}.',
-  "Slug hợp lệ: may_lanh, tu_lanh, may_giat, tivi, dien_thoai, laptop.",
+  `Slug hợp lệ: ${CATEGORY_SLUGS.join(", ")}.`,
   "QUY TẮC:",
   "- Đọc CẢ hội thoại. TUYỆT ĐỐI không lặp lại câu đã hỏi ở lượt trước. Nếu khách nói 'không biết / tùy em / cứ tư vấn giúp', ĐỪNG hỏi lại xác nhận ngành — hãy chốt ngành phù hợp nhất và hỏi sang thông tin kế tiếp (vd diện tích phòng, số người).",
-  "- Suy ý ĐỊNH khách muốn mua NGÀNH nào từ hoàn cảnh (nóng→may_lanh; nhà đông người/trữ đồ→tu_lanh; giặt giũ→may_giat), nhưng CHỈ để hỏi xác nhận — KHÔNG khẳng định.",
+  `- Suy ý ĐỊNH khách muốn mua NGÀNH nào từ hoàn cảnh (${INTENT_CUE_EXAMPLES}), nhưng CHỈ để hỏi xác nhận — KHÔNG khẳng định.`,
   '- reply cho intent=mua: ghi nhận NGẮN nhu cầu rồi hỏi xác nhận ngành, nêu 1 gợi ý ngành thay thế nếu hợp (vd "Dạ, trời nóng thế này mình lắp máy lạnh cho phòng, hay em tư vấn thêm quạt điều hòa tiết kiệm hơn ạ?").',
   "- reply cho intent=su_co: ghi nhận sự cố (ABC: acknowledge) + hỏi đang lỗi sản phẩm nào để tra bảo hành (KHÔNG ép mua mới).",
   "- reply cho intent=chinh_sach: nói sẽ kiểm tra chính sách (bảo hành/giao lắp/trả góp) + hỏi rõ sản phẩm/khu vực.",

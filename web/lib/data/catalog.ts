@@ -11,20 +11,14 @@ import { formatHighlight } from "./parsers";
 /**
  * Catalog đa ngành — mỗi ngành một file, NẠP LAZY khi lần đầu cần tới rồi cache in-memory.
  *
- * Dùng bảng import TĨNH: Next tách được mỗi ngành thành một chunk riêng (chỉ ngành khách
- * đang hỏi mới được nạp), đồng thời dữ liệu nằm sẵn trong bản build → deploy tất định,
- * không phụ thuộc cwd và không phải trace fs động.
+ * Bảng import TĨNH nằm ở `loaders.generated.ts` — SINH TỰ ĐỘNG từ categories.json bởi
+ * `npm run data:extract`: Next vẫn tách được mỗi ngành một chunk riêng, dữ liệu nằm sẵn
+ * trong bản build → deploy tất định, không phụ thuộc cwd và không phải trace fs động.
  *
- * Thêm ngành mới: thêm entry vào categories.json VÀ một dòng vào bảng LOADERS bên dưới.
+ * Thêm ngành mới: thêm entry vào categories.json rồi chạy `npm run data:extract`
+ * (hoặc `npm run category:scaffold` để máy draft entry) — KHÔNG phải sửa code.
  */
-const LOADERS: Record<CategorySlug, () => Promise<{ default: unknown }>> = {
-  may_lanh: () => import("@/data/may_lanh.json"),
-  tu_lanh: () => import("@/data/tu_lanh.json"),
-  may_giat: () => import("@/data/may_giat.json"),
-  tivi: () => import("@/data/tivi.json"),
-  dien_thoai: () => import("@/data/dien_thoai.json"),
-  laptop: () => import("@/data/laptop.json"),
-};
+import { LOADERS } from "./loaders.generated";
 
 type RawRecord = {
   product_id?: string | null;

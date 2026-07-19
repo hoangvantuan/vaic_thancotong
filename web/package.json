@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run lint && npm run test",
     "data:extract": "node scripts/extract-catalog.mjs",
-    "data:ingest": "node scripts/ingest-catalog.mjs"
+    "data:ingest": "node scripts/ingest-catalog.mjs",
+    "category:scaffold": "node scripts/scaffold-category.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "3.0.12",

@@ -19,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trợ lý tư vấn máy lạnh — Điện Máy Xanh (demo)",
+  title: "Trợ lý tư vấn điện máy — Điện Máy Xanh (demo)",
   description:
-    "Trợ lý tư vấn máy lạnh theo diện tích phòng và ngân sách, gợi ý từ dữ liệu sản phẩm thật.",
+    "Trợ lý tư vấn điện máy theo nhu cầu và ngân sách, gợi ý từ dữ liệu sản phẩm thật.",
 };
 
 export default function RootLayout({

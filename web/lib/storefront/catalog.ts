@@ -5,6 +5,7 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { CATEGORIES } from "@/lib/data/category-config";
 
 export interface Tile {
   id: string;
@@ -36,14 +37,9 @@ interface RawProduct {
   image_url?: string | null;
 }
 
-const CATS: [string, string][] = [
-  ["may_lanh", "Máy lạnh"],
-  ["tu_lanh", "Tủ lạnh"],
-  ["may_giat", "Máy giặt"],
-  ["tivi", "Tivi"],
-  ["laptop", "Laptop"],
-  ["dien_thoai", "Điện thoại"],
-];
+// Danh mục trưng bày lấy từ registry — thêm ngành vào categories.json là nền
+// cửa hàng tự có thêm khu (miễn là data/<slug>.json đã được extract).
+const CATS: [string, string][] = CATEGORIES.map((c) => [c.slug, c.label]);
 
 export async function loadShowcase(): Promise<Showcase> {
   const categories = CATS.map(([slug, label]) => ({ slug, label }));

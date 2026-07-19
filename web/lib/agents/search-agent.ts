@@ -4,6 +4,7 @@ import type { RecommendedProduct } from "@/lib/types";
 import { getCatalog } from "@/lib/data/catalog";
 import {
   CATEGORIES,
+  categoryLabelList,
   fitToText,
   getCategory,
   type CategoryConfig,
@@ -82,7 +83,7 @@ function productForLlm(s: Scored, i: number) {
 }
 
 const CLARIFY_QUESTIONS: Record<string, string> = {
-  category: "Anh/chị đang quan tâm nhóm sản phẩm nào (máy lạnh, tủ lạnh, máy giặt, tivi, điện thoại, laptop)?",
+  category: `Anh/chị đang quan tâm nhóm sản phẩm nào (${categoryLabelList()})?`,
   budget_max: "Anh/chị dự tính ngân sách khoảng bao nhiêu để em lọc đúng tầm giá ạ?",
 };
 

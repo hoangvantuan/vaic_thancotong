@@ -284,13 +284,13 @@ export function score(sp: SearchProduct, need: Need, cfg: CategoryConfig, w: Rec
   return { product: sp.p, reasons, total, caveats: caveatsOf(sp, reasons) };
 }
 
-// Ngành mà tiêu chí "hợp hoàn cảnh" là quyết định: thiếu nó thì KHÔNG được xếp
-// vào top khi khách đã nói rõ diện tích/số người. Không bịa độ phù hợp.
-const FIT_CRITICAL = new Set(["may_lanh", "tu_lanh", "may_giat"]);
-
-/** True nếu khách đã nêu ràng buộc quyết định mà sản phẩm KHÔNG có dữ liệu. */
+/**
+ * True nếu khách đã nêu ràng buộc quyết định mà sản phẩm KHÔNG có dữ liệu.
+ * Ngành nào coi tiêu chí hoàn cảnh là quyết định do config khai (`fit.critical`):
+ * thiếu nó thì KHÔNG được xếp vào top khi khách đã nói rõ diện tích/số người.
+ */
 function fitUnknown(sp: SearchProduct, need: Need, cfg: CategoryConfig): boolean {
-  if (!FIT_CRITICAL.has(sp.p.category)) return false;
+  if (!cfg.fit?.critical) return false;
   return needFitValue(need, cfg) != null && !ok(sp.fit);
 }
 

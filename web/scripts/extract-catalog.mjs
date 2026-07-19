@@ -48,6 +48,30 @@ const TOP_FIELDS = [
   "quantity_sold", "image_url", "url", "promotion",
 ];
 
+/**
+ * Sinh bảng LOADERS import tĩnh từ config — mỗi ngành một dòng để Next tách chunk.
+ * File sinh ra được commit; thêm ngành mới chỉ cần thêm entry config rồi chạy lại.
+ */
+function writeLoaders() {
+  const lines = categories.map(
+    (c) => `  ${c.slug}: () => import("@/data/${c.slug}.json"),`
+  );
+  const src = [
+    "// SINH TỰ ĐỘNG bởi `npm run data:extract` từ config/categories.json — ĐỪNG sửa tay.",
+    "// Bảng import TĨNH để Next tách mỗi ngành thành một chunk riêng (chỉ ngành khách",
+    "// đang hỏi mới được nạp) và dữ liệu nằm sẵn trong bản build.",
+    'import type { CategorySlug } from "@/lib/types";',
+    "",
+    "export const LOADERS: Record<CategorySlug, () => Promise<{ default: unknown }>> = {",
+    ...lines,
+    "};",
+    "",
+  ].join("\n");
+  const dest = resolve(WEB_ROOT, "lib/data/loaders.generated.ts");
+  writeFileSync(dest, src, "utf8");
+  console.log(`[extract] sinh lib/data/loaders.generated.ts (${categories.length} ngành)`);
+}
+
 async function main() {
   const keepBySlug = new Map(categories.map((c) => [c.slug, keepFieldsOf(c)]));
   const out = new Map(categories.map((c) => [c.slug, []]));
@@ -97,6 +121,7 @@ async function main() {
     console.log(`  ${c.emoji} ${c.label.padEnd(12)} ${String(rows.length).padStart(5)} sp → data/${c.slug}.json`);
   }
   console.log(`[extract] quét ${scanned} bản ghi → ${total} sp thuộc ${categories.length} ngành`);
+  writeLoaders();
 }
 
 main().catch((err) => {

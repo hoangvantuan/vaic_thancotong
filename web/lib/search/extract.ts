@@ -96,6 +96,9 @@ function fuzzyCategory(f: string, hints: Array<[string, CategorySlug]>): Categor
   let best: CategorySlug | null = null;
   let bestKey: [number, number] = [0, 0];
   for (const [w, cat] of hints) {
+    // Blocker áp cho CẢ đường mờ: "quạt điều hòa" khớp mờ "điều hòa" 2/2 từ nhưng
+    // vẫn không phải máy lạnh — thiếu chốt này thì guard phạm vi bị lọt.
+    if (KEYWORD_BLOCKERS.get(cat)?.some((b) => hasWord(f, b))) continue;
     const wt = w.replace(/,/g, " ").split(/\s+/).filter(Boolean);
     if (wt.length < 2) continue;
     const common = wt.filter((t) => qtokens.has(t)).length;
@@ -120,6 +123,17 @@ function fuzzyCategory(f: string, hints: Array<[string, CategorySlug]>): Categor
  * Trong MỘT dòng vẫn dò cụm dài trước, khớp trọn từ (\b) để "loa" không dính
  * trong "phao"; không dòng nào khớp nguyên chuỗi mới rơi về khớp mờ.
  */
+/**
+ * Từ chặn theo ngành (đã fold), khai ở config: có mặt trong câu thì keyword của
+ * ngành đó mất hiệu lực — vd "quạt điều hòa" chứa "điều hòa" nhưng không phải máy lạnh.
+ */
+const KEYWORD_BLOCKERS = new Map<CategorySlug, string[]>(
+  CATEGORIES.filter((c) => c.keywordBlockers?.length).map((c) => [
+    c.slug,
+    c.keywordBlockers!.map(fold),
+  ])
+);
+
 function detectCategoryRecent(f: string): CategorySlug | null {
   // Cụm CỤ THỂ (dài) thắng cụm chung: "quat dieu hoa" phải thắng "dieu hoa" (máy lạnh).
   const hints = [...categoryHints()].sort((a, b) => b[0].length - a[0].length);
@@ -128,8 +142,8 @@ function detectCategoryRecent(f: string): CategorySlug | null {
     const line = lines[i];
     const hit = hints.find(([w, slug]) => {
       if (!hasWord(line, w)) return false;
-      // "quạt điều hòa"/"quạt hơi nước" KHÔNG phải máy lạnh dù chứa chuỗi "điều hòa".
-      if (slug === "may_lanh" && hasWord(line, "quat")) return false;
+      const blockers = KEYWORD_BLOCKERS.get(slug);
+      if (blockers?.some((b) => hasWord(line, b))) return false;
       return true;
     });
     if (hit) return hit[1];

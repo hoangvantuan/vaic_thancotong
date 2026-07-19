@@ -34,6 +34,10 @@
         "aircon",
         "air conditioner"
       ],
+      "keywordBlockers": [
+        "quạt"
+      ],
+      "intentCue": "trời nóng/phòng oi bức",
       "banned": [
         "Điện năng tiêu thụ"
       ],
@@ -49,7 +53,8 @@
         "question": "Phòng mình rộng khoảng bao nhiêu m² ạ, để em chọn đúng công suất?",
         "subject": "phòng",
         "slack": 5,
-        "spread": 10
+        "spread": 10,
+        "critical": true
       },
       "highlights": [
         {
@@ -139,6 +144,7 @@
         "refrigerator",
         "side by side"
       ],
+      "intentCue": "nhà đông người/trữ đồ ăn",
       "banned": [],
       "fit": {
         "slot": "people",
@@ -151,7 +157,8 @@
         "question": "Nhà mình khoảng mấy người dùng ạ, để em chọn dung tích vừa đủ?",
         "subject": "nhà",
         "slack": 0,
-        "spread": 2
+        "spread": 2,
+        "critical": true
       },
       "highlights": [
         {
@@ -228,6 +235,7 @@
         "giặt sấy",
         "washing machine"
       ],
+      "intentCue": "giặt giũ",
       "banned": [],
       "fit": {
         "slot": "people",
@@ -240,7 +248,8 @@
         "question": "Nhà mình khoảng mấy người ạ, để em chọn khối lượng giặt phù hợp?",
         "subject": "nhà",
         "slack": 0,
-        "spread": 2
+        "spread": 2,
+        "critical": true
       },
       "highlights": [
         {
@@ -287,6 +296,7 @@
         "television",
         "màn hình lớn"
       ],
+      "intentCue": "xem phim/bóng đá màn hình lớn",
       "banned": [],
       "fit": {
         "slot": "screenInch",
@@ -346,6 +356,7 @@
         "samsung galaxy",
         "máy để chụp ảnh"
       ],
+      "intentCue": "liên lạc/chụp ảnh",
       "banned": [],
       "fit": null,
       "highlights": [
@@ -399,6 +410,7 @@
         "máy tính để học",
         "làm việc văn phòng"
       ],
+      "intentCue": "học tập/làm việc văn phòng",
       "banned": [],
       "fit": null,
       "highlights": [
