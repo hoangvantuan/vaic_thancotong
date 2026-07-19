@@ -10,6 +10,8 @@ import {
 import type { ChatMessage } from "@/lib/chat-types";
 import { getModel, probeLLM } from "@/lib/llm";
 import { orchestrate } from "@/lib/agents/orchestrator";
+import { LlmModelService } from "@/lib/core/adapters/llm-model-service";
+import { looksLikePolicy } from "@/lib/core/pipeline/run-turn";
 import {
   categoryChoices,
   createSearchAgent,
@@ -59,6 +61,22 @@ export async function POST(req: Request) {
 
   const userText = getUserText(messages);
 
+  // Cổng năng lực mô hình — dùng cho câu hỏi CHÍNH SÁCH và cho việc bắt sóng ý định.
+  const modelService = new LlmModelService();
+
+  // CHÍNH SÁCH (bảo hành/đổi trả/giao lắp/trả góp) — trả lời TỪ TÀI LIỆU kèm nguồn,
+  // độc lập với việc đã biết ngành hay chưa; không lảng sang hỏi mua. Không tra được
+  // tài liệu → rơi xuống luồng tư vấn bình thường bên dưới.
+  if (looksLikePolicy(userText)) {
+    const answered = await modelService.answerPolicy(userText);
+    if (answered.ok && answered.data.trim()) {
+      const stream = createUIMessageStream<ChatMessage>({
+        execute: async ({ writer }) => writeStaticText(writer, answered.data.trim()),
+      });
+      return createUIMessageStreamResponse({ stream });
+    }
+  }
+
   // Có LLM không? Không có → app vẫn chạy bằng luồng deterministic (vẫn ra sản phẩm thật).
   const llmReady = await probeLLM();
   const model = llmReady ? getModel() : null;
@@ -71,11 +89,16 @@ export async function POST(req: Request) {
     if (!need.category) {
       const stream = createUIMessageStream<ChatMessage>({
         execute: async ({ writer }) => {
-          writeStaticText(
-            writer,
-            "Dạ em chào anh/chị 👋 Em là trợ lý tư vấn của Điện Máy Xanh. " +
-              "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?"
-          );
+          // BẮT SÓNG Ý ĐỊNH: khách than "trời nóng quá", "nhà đông người"… thì đáp
+          // đúng hoàn cảnh rồi mới mời chọn, thay vì câu chào vô cảm giống nhau mọi lượt.
+          // Không đọc được ý định → giữ câu chào tất định (hội thoại không bao giờ kẹt).
+          const intent = await modelService.readIntent(userText);
+          const opener =
+            intent.ok && intent.data.reply.trim()
+              ? intent.data.reply.trim()
+              : "Dạ em chào anh/chị 👋 Em là trợ lý tư vấn của Điện Máy Xanh. " +
+                "Anh/chị đang quan tâm nhóm sản phẩm nào ạ?";
+          writeStaticText(writer, opener);
           writer.write({ type: "data-categories", data: categoryChoices() });
         },
       });

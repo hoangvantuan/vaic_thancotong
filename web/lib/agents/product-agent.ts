@@ -1,6 +1,7 @@
 import type { NormalizedProduct, Needs, RecommendedProduct } from "@/lib/types";
 import { fitMatches, fitToText, type CategoryConfig } from "@/lib/data/category-config";
 import { energyStars, minIndoorNoiseDb } from "@/lib/data/parsers";
+import { sellingFacts } from "@/lib/data/phrasebook";
 
 /**
  * SUB-AGENT: TÌM KIẾM SẢN PHẨM (đa ngành, thuần hàm — KHÔNG gọi LLM).
@@ -36,21 +37,25 @@ function buildReason(
   const fitText = cfg.fit ? fitToText(p.fit, cfg.fit.unit) : null;
   if (fitText) parts.push(needs.fitValue != null ? `hợp ${fitText}` : `dùng cho ${fitText}`);
 
-  // Nêu tối đa 2 thông số nổi bật (thẻ sản phẩm đã hiện đủ, không đọc lại bảng).
-  for (const h of p.highlights.slice(0, 2)) {
-    parts.push(`${h.label.toLowerCase()} ${h.text}`);
+  // Nói LỢI ÍCH bằng câu đời thường ĐÃ DUYỆT (phrasebook), KHÔNG đọc lại bảng thông
+  // số: khách cần "chạy êm, đêm ngủ không bị ù tai", không cần "độ ồn 33 dB". Thông
+  // số chưa có cách nói đã duyệt thì BỎ QUA — thẻ sản phẩm đã hiện số bên trên rồi.
+  for (const f of sellingFacts(p.highlights, cfg)) {
+    if (parts.length >= 3) break;
+    if (f.plain) parts.push(f.plain);
   }
 
-  // Chỉ KHẲNG ĐỊNH ưu điểm khi số liệu thật sự đạt ngưỡng — tránh nói quá.
-  if (pr.includes("quiet")) {
+  // Ưu tiên khách TỰ NÊU thì nhắc lại bằng lời thường (chỉ khi số liệu thật sự đạt
+  // ngưỡng — không nói quá), và chỉ khi phần trên chưa nói tới ý đó.
+  if (pr.includes("quiet") && !parts.some((t) => /êm|ồn/i.test(t))) {
     const noise = p.highlights.find((h) => /ồn/i.test(h.label));
     const db = minIndoorNoiseDb(noise?.title);
-    if (db != null && db <= QUIET_MAX_DB) parts.push(`vận hành êm (${db} dB)`);
+    if (db != null && db <= QUIET_MAX_DB) parts.push("chạy êm đúng ý anh/chị");
   }
-  if (pr.includes("energy")) {
+  if (pr.includes("energy") && !parts.some((t) => /điện/i.test(t))) {
     const label = p.highlights.find((h) => /năng lượng/i.test(h.label));
     const stars = energyStars(label?.title);
-    if (stars != null && stars >= ENERGY_MIN_STARS) parts.push(`tiết kiệm điện (${stars}★)`);
+    if (stars != null && stars >= ENERGY_MIN_STARS) parts.push("dùng thường xuyên cũng đỡ tốn điện");
   }
 
   if (parts.length === 0) return "Phù hợp nhu cầu cơ bản của anh/chị.";
