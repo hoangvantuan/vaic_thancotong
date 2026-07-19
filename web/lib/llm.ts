@@ -33,71 +33,71 @@ type ToolCallDelta = {
   function?: { name?: string | null; arguments?: string | null };
 };
 
-/** Nén index gốc về slot liên tục và vá id trống cho MỘT delta tool-call. */
-function repairOneToolCall(c: ToolCallDelta, state: Map<number, number>): void {
-  const orig = typeof c.index === "number" ? c.index : state.size;
-  let slot = state.get(orig);
-  const isOpening = slot === undefined; // chunk đầu tiên thấy index gốc này
-  if (slot === undefined) {
-    slot = state.size;
-    state.set(orig, slot);
-  }
-  c.index = slot;
-  // CHỈ vá id ở chunk MỞ ĐẦU (chunk arguments không mang id — vá nhầm sẽ khiến
-  // @ai-sdk tưởng là tool-call mới). Dấu hiệu: lần đầu thấy index, hoặc có function.name.
-  const opening = isOpening || (c.function?.name ?? "") !== "";
-  if (opening && (c.id == null || c.id === "")) c.id = `toolcall_${slot}`;
+/**
+ * Trạng thái sửa tool-call, DÙNG CHUNG cho cả một response stream.
+ * `slotOf`   : index-gốc quan sát được → slot liên tục 0,1,2… (đã cấp cho chunk MỞ ĐẦU).
+ * `lastSlot` : slot của tool-call mở đầu gần nhất — nơi các chunk "arguments" nối vào.
+ */
+export type ToolCallFixState = {
+  slotOf: Map<number, number>;
+  lastSlot: number | null;
+};
+
+export function createToolCallFixState(): ToolCallFixState {
+  return { slotOf: new Map(), lastSlot: null };
+}
+
+/** Một delta là "mở đầu" tool-call khi mang id hoặc function.name (không phải chunk args rời). */
+function isOpeningDelta(c: ToolCallDelta): boolean {
+  return (c.id != null && c.id !== "") || (c.function?.name ?? "") !== "";
 }
 
 /**
- * GỘP các delta tool-call cùng slot NẰM TRONG CÙNG MỘT CHUNK về một delta duy nhất.
+ * Vá MỘT delta tool-call về đúng chuẩn OpenAI streaming mà @ai-sdk mong đợi.
  *
- * gpt-oss-120b (FPT) phát cả tool-call trong MỘT event SSE, tách thành hai phần tử
- * cùng index: phần đầu mang {name, arguments:""}, phần sau mang {arguments:"{}"}.
- * @ai-sdk giả định name và arguments đến ở các event RIÊNG BIỆT: nó forward tool-call
- * NGAY khi thấy `name` (lúc đó arguments còn rỗng) rồi đánh dấu index đã forward, nên
- * phần "{}" đến sau bị bỏ lại — tool-call chốt với arguments RỖNG và execute lỗi/không
- * chạy, khiến vòng lặp agent dừng ngay sau bước 1 (stream DONE mà không có câu trả lời).
+ * gpt-oss-120b (FPT) stream tool-call SAI ở hai điểm, gây "stream DONE nhưng bot không
+ * trả lời" vì @ai-sdk không ghép nổi tool-call → vòng lặp agent dừng ngay sau bước 1:
  *
- * Gộp lại trước khi @ai-sdk đọc: một tool-call trọn vẹn {name, arguments:"{}"} → forward
- * đúng một lần với arguments đầy đủ. Chỉ gộp trong phạm vi một chunk; các chunk arguments
- * ở những event sau (nếu provider có stream kiểu đó) vẫn nối bình thường nhờ index đã nén.
+ *  1) INDEX NHẢY CÓC & KHÔNG KHỚP GIỮA CÁC EVENT: chunk mở đầu mang name ở index 0,
+ *     nhưng chunk "arguments" tiếp theo (ở event SSE khác) lại mang index 1. @ai-sdk gán
+ *     theo index nên tưởng là tool-call MỚI, vô danh → loại; tool-call thật thì chốt với
+ *     arguments rỗng.
+ *  2) THIẾU id ở chunk mở đầu (đôi lúc).
+ *
+ * Cách vá GIỮ ĐÚNG NGỮ NGHĨA: chunk mở đầu (có id/name) được cấp slot liên tục và ghi nhớ
+ * là "slot hiện hành". Chunk chỉ có "arguments" — bất kể index gốc là bao nhiêu — được ép
+ * về slot mở đầu gần nhất, KHÔNG cấp slot mới. Nhờ vậy name + arguments về đúng một tool-call.
  */
-function mergeSameSlotDeltas(calls: ToolCallDelta[]): ToolCallDelta[] {
-  const bySlot = new Map<number, ToolCallDelta>();
-  const order: number[] = [];
-  for (const c of calls) {
-    const slot = c.index as number;
-    let m = bySlot.get(slot);
-    if (!m) {
-      m = { index: slot, function: { arguments: "" } };
-      bySlot.set(slot, m);
-      order.push(slot);
+function repairOneToolCall(c: ToolCallDelta, state: ToolCallFixState): void {
+  if (isOpeningDelta(c)) {
+    const orig = typeof c.index === "number" ? c.index : state.slotOf.size;
+    let slot = state.slotOf.get(orig);
+    if (slot === undefined) {
+      slot = state.slotOf.size;
+      state.slotOf.set(orig, slot);
     }
-    if (c.id != null && c.id !== "" && (m.id == null || m.id === "")) m.id = c.id;
-    if (c.type != null && m.type == null) m.type = c.type;
-    const name = c.function?.name;
-    if (name != null && name !== "") m.function!.name = name;
-    const args = c.function?.arguments;
-    if (args != null && args !== "") m.function!.arguments += args;
+    c.index = slot;
+    state.lastSlot = slot;
+    if (c.id == null || c.id === "") c.id = `toolcall_${slot}`;
+    return;
   }
-  return order.map((slot) => bySlot.get(slot)!);
+  // Chunk chỉ có "arguments" (không id, không name) → nối vào tool-call mở đầu gần nhất.
+  // gpt-oss gửi index rác ở đây; bỏ qua nó, dùng lastSlot. Nếu chưa từng thấy chunk mở
+  // đầu nào (hiếm), cấp slot 0 để không mất dữ liệu.
+  if (state.lastSlot === null) {
+    state.lastSlot = state.slotOf.size;
+    state.slotOf.set(typeof c.index === "number" ? c.index : 0, state.lastSlot);
+  }
+  c.index = state.lastSlot;
 }
 
-export function normalizeToolCallDeltas(chunk: unknown, state: Map<number, number>): void {
+export function normalizeToolCallDeltas(chunk: unknown, state: ToolCallFixState): void {
   const choices = (chunk as { choices?: unknown }).choices;
   if (!Array.isArray(choices)) return;
   for (const choice of choices) {
-    const delta = (choice as { delta?: { tool_calls?: unknown } })?.delta;
-    const calls = delta?.tool_calls;
+    const calls = (choice as { delta?: { tool_calls?: unknown } })?.delta?.tool_calls;
     if (!Array.isArray(calls)) continue;
     for (const call of calls) repairOneToolCall(call as ToolCallDelta, state);
-    // Sau khi nén index: nếu cùng chunk có nhiều mảnh cùng slot, gộp thành một.
-    if (calls.length > 1) {
-      (delta as { tool_calls: ToolCallDelta[] }).tool_calls = mergeSameSlotDeltas(
-        calls as ToolCallDelta[]
-      );
-    }
   }
 }
 
@@ -115,8 +115,8 @@ const repairFetch: typeof fetch = async (input, init) => {
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
   let buf = "";
-  // Ánh xạ index-gốc → slot liên tục, DÙNG CHUNG cho cả stream này (mỗi response một map).
-  const slotMap = new Map<number, number>();
+  // Trạng thái sửa tool-call, DÙNG CHUNG cho cả stream này (mỗi response một state).
+  const fixState = createToolCallFixState();
 
   const repaired = new ReadableStream<Uint8Array>({
     async pull(controller) {
@@ -143,7 +143,7 @@ const repairFetch: typeof fetch = async (input, init) => {
                 console.error("[llm.raw]", JSON.stringify(tc));
               }
             }
-            normalizeToolCallDeltas(obj, slotMap);
+            normalizeToolCallDeltas(obj, fixState);
             if (process.env.DEBUG_LLM) {
               const tc = (obj as { choices?: { delta?: { tool_calls?: unknown } }[] }).choices?.[0];
               if (tc?.delta?.tool_calls) console.error("[llm.fixed]", JSON.stringify(tc.delta.tool_calls));
